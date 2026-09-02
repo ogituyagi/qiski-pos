@@ -5,67 +5,109 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QisKi Juice POS</title>
   <style>
+    :root {
+      --primary-pink: #e91e63;
+      --primary-pink-dark: #c2185b;
+      --accent-orange: #ff8c00;
+      --accent-orange-hover: #e07b00;
+      --bg-cream: #fff9f5;
+      --card-bg: #ffffff;
+      --text-dark: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #f1e4d8;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    html, body { width: 100%; height: 100%; background-color: #e8f5e9; color: #333; overflow: hidden; }
+    html, body { width: 100%; height: 100%; background-color: var(--bg-cream); color: var(--text-dark); overflow: hidden; }
     
     .hidden { display: none !important; }
-    .btn { border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px; }
-    .btn-primary { background: #27ae60; color: white; }
+    
+    /* Buttons */
+    .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-primary { background: var(--accent-orange); color: white; }
+    .btn-primary:hover { background: var(--accent-orange-hover); }
     .btn-secondary { background: #e74c3c; color: white; }
     .btn-warning { background: #f39c12; color: white; }
 
     /* Login Page */
-    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: #e8f5e9; }
-    .login-card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 360px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .login-card h2 { margin-bottom: 20px; text-align: center; color: #27ae60; }
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; }
-    .form-group input, .form-group select { width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
+    .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.1); border: 1px solid var(--border-color); }
+    .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 800; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
+    .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
+    .form-group input:focus { border-color: var(--primary-pink); }
 
-    /* Main App Container (FIX OVERLAP) */
-    #app-page { background: #f4f6f8; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    header { background: #1e8449; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; height: 45px; flex-shrink: 0; }
+    /* Main App Layout */
+    #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
     
-    .view-content { padding: 10px; flex: 1; height: calc(100vh - 45px); overflow: hidden; }
+    header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; }
     
-    /* Layout POS Flex Fix */
-    .pos-layout { display: flex; flex-direction: column; gap: 10px; height: 100%; overflow: hidden; }
+    .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
+    .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
+    
     @media (min-width: 768px) {
       .pos-layout { flex-direction: row; }
-      .menu-section { flex: 6; overflow-y: auto; height: 100%; padding-right: 5px; }
-      .cart-section { flex: 4; height: 100%; }
+      .menu-section { flex: 6.2; overflow-y: auto; height: 100%; padding-right: 4px; }
+      .cart-section { flex: 3.8; height: 100%; }
     }
 
     /* Customer Header */
-    .customer-header { background: #fff; padding: 8px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 8px; display: flex; gap: 8px; }
+    .customer-header { background: #fff; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; gap: 8px; }
 
     /* Menu Grid */
-    .category-title { font-size: 13px; font-weight: bold; color: #1e8449; margin: 10px 0 6px 0; border-bottom: 2px solid #27ae60; padding-bottom: 2px; }
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 8px; }
-    .menu-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 6px; text-align: center; background: #fff; cursor: pointer; border-left: 4px solid #27ae60; user-select: none; }
-    .menu-card:active { transform: scale(0.96); background: #e8f5e9; }
-    .menu-card h4 { font-size: 12px; margin-bottom: 4px; color: #333; }
-    .menu-card .price { color: #27ae60; font-weight: bold; font-size: 11px; }
-
-    /* Cart Section (Tinggi Terkunci, No Overlap) */
-    .cart-section { background: #fff; padding: 12px; border-radius: 8px; display: flex; flex-direction: column; height: 100%; box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden; }
-    .cart-items { flex: 1; overflow-y: auto; margin: 8px 0; padding-right: 4px; }
-    .cart-item { padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; flex-direction: column; gap: 3px; }
-    .cart-item-header { display: flex; justify-content: space-between; align-items: center; }
-    .cart-item-notes { font-size: 11px; color: #d35400; background: #fef5e7; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; }
-    .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; cursor: pointer; }
+    .category-title { font-size: 13px; font-weight: 800; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+    .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
     
-    .cart-footer { border-top: 2px dashed #eee; padding-top: 8px; background: #fff; flex-shrink: 0; }
-    .cart-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #2c3e50; }
-    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; }
+    .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
+    .menu-card h4 { font-size: 12px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
+    .menu-card .price { color: var(--accent-orange); font-weight: 800; font-size: 12px; }
+
+    /* Modern Cart Section */
+    .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
+    
+    .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1.5px solid var(--border-color); flex-shrink: 0; }
+    .cart-header h3 { font-size: 15px; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
+
+    .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
+    
+    /* Modern Cart Item Card */
+    .cart-item { background: #fff9f6; border: 1px solid #ffe8dc; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s ease; }
+    .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .cart-item-price { font-size: 13px; font-weight: 800; color: var(--text-dark); }
+    
+    .cart-item-notes { font-size: 11px; color: #d35400; background: #ffe0cc; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
+    
+    .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
+    
+    .btn-custom { background: #fff; border: 1px solid #ffd0b3; color: var(--accent-orange); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .btn-custom:hover { background: #fff0e6; }
+
+    .qty-control { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--border-color); border-radius: 20px; padding: 2px 6px; }
+    .btn-qty { width: 24px; height: 24px; border-radius: 50%; border: none; background: #f0f0f0; color: var(--text-dark); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .btn-qty:hover { background: var(--accent-orange); color: white; }
+    .qty-num { font-weight: 800; font-size: 13px; min-width: 16px; text-align: center; }
+
+    .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
+    .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .cart-total label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
+    .cart-total val { font-size: 20px; font-weight: 900; color: var(--text-dark); }
+    
+    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
 
     /* Modals */
-    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
-    .modal-content { background: white; padding: 18px; border-radius: 10px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-    .chip-group { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-    .chip { border: 1px solid #ccc; padding: 6px 10px; border-radius: 16px; font-size: 12px; cursor: pointer; background: #f9f9f9; }
-    .chip.selected { background: #27ae60; color: white; border-color: #27ae60; }
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+    .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+    .modal-header h3 { font-size: 16px; font-weight: 800; color: var(--text-dark); }
+    
+    .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+    .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
+    .chip.selected { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
   </style>
 </head>
 <body>
@@ -73,12 +115,12 @@
   <!-- PAGE 1: LOGIN -->
   <div id="login-page">
     <div class="login-card">
-      <h2>🥤 QisKi Juice</h2>
-      <p style="text-align: center; color: #666; margin-bottom: 15px; font-size: 12px;">Point of Sales System</p>
+      <h2>QisKi Juice</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 13px; font-weight: 600;">Point of Sales System</p>
       <form onsubmit="handleLogin(event)">
         <div class="form-group"><label>Username</label><input type="text" id="username" required></div>
         <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
-        <button type="submit" class="btn btn-primary" style="width: 100%;">LOGIN KASIR</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">LOGIN KASIR</button>
       </form>
     </div>
   </div>
@@ -86,8 +128,15 @@
   <!-- PAGE 2: MAIN APP -->
   <div id="app-page" class="hidden">
     <header>
-      <div><b>🥤 QisKi Juice POS</b> | <span id="user-display">Kasir</span></div>
-      <button onclick="logout()" class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;">Logout</button>
+      <div class="header-brand">
+        <!-- SVG Logo Juice Icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>QisKi Juice POS</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span id="user-display" style="font-size: 13px; font-weight: 600;">Kasir</span>
+        <button onclick="logout()" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 4px 10px; font-size: 11px;">Logout</button>
+      </div>
     </header>
 
     <div class="view-content">
@@ -96,8 +145,8 @@
         <!-- LEFT: CATALOG -->
         <div class="menu-section">
           <div class="customer-header">
-            <input type="text" id="cust-name" placeholder="Nama Pelanggan / No. Pemesan..." style="flex:2; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:13px;">
-            <select id="select-customer-type" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:12px;">
+            <input type="text" id="cust-name" placeholder="Nama Pelanggan / No. Pemesan..." style="flex:2; padding:9px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none;">
+            <select id="select-customer-type" style="flex:1; padding:9px; border:1.5px solid var(--border-color); border-radius:8px; font-size:12px; outline:none;">
               <option value="REGULAR">Umum</option>
               <option value="MEMBER">Member QSK</option>
             </select>
@@ -105,17 +154,24 @@
           <div id="catalog-container"></div>
         </div>
 
-        <!-- RIGHT: CART -->
+        <!-- RIGHT: MODERN CART -->
         <div class="cart-section">
-          <h3 style="font-size:14px; border-bottom:1px solid #eee; padding-bottom:5px; flex-shrink: 0;">Keranjang Pesanan</h3>
+          <div class="cart-header">
+            <h3>
+              <!-- SVG Cart Icon -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+              Keranjang Pesanan
+            </h3>
+          </div>
+
           <div class="cart-items" id="cart-items">
-            <p style="color: #888; text-align: center; margin-top: 30px; font-size:13px;">Keranjang kosong</p>
+            <p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 600;">Keranjang masih kosong</p>
           </div>
 
           <div class="cart-footer">
             <div class="cart-total">
-              <span>Total:</span>
-              <span id="cart-total-val">Rp 0</span>
+              <label>Total Pembayaran</label>
+              <val id="cart-total-val">Rp 0</val>
             </div>
             <div class="cart-actions">
               <button onclick="clearCart()" class="btn btn-secondary">Batal</button>
@@ -134,7 +190,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="custom-modal-title">Custom Order</h3>
-        <button onclick="closeModal('custom-modal')" style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
+        <button onclick="closeModal('custom-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
       
       <div class="form-group">
@@ -146,7 +202,7 @@
         </div>
       </div>
 
-      <div class="form-group" style="margin-top:12px;">
+      <div class="form-group" style="margin-top:14px;">
         <label>Level Gula (Sugar):</label>
         <div class="chip-group" id="sugar-chips">
           <div class="chip selected" onclick="selectChip(this, 'sugar', 'Normal Sugar')">Normal Sugar</div>
@@ -155,23 +211,23 @@
         </div>
       </div>
 
-      <!-- CONTROLLER MODE 1: DARI HOLD TAP (TOMBOL + / -) -->
-      <div class="form-group hidden" style="margin-top:12px;" id="mode-hold-group">
+      <!-- MODE 1: HOLD TAP (+ / -) -->
+      <div class="form-group hidden" style="margin-top:14px;" id="mode-hold-group">
         <label>Jumlah Pesanan Custom (Pcs):</label>
-        <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
+        <div style="display:flex; align-items:center; gap:14px; margin-top:8px;">
           <button class="btn-qty" onclick="adjustHoldQty(-1)" style="width:36px; height:36px; font-size:16px;">-</button>
-          <span id="hold-qty-val" style="font-weight:bold; font-size:18px;">1</span>
+          <span id="hold-qty-val" style="font-weight:800; font-size:18px;">1</span>
           <button class="btn-qty" onclick="adjustHoldQty(1)" style="width:36px; height:36px; font-size:16px;">+</button>
         </div>
       </div>
 
-      <!-- CONTROLLER MODE 2: DARI KERANJANG (DROPDOWN SMART SPLIT) -->
-      <div class="form-group hidden" style="margin-top:12px;" id="mode-cart-group">
+      <!-- MODE 2: CARTS SMART SPLIT DROPDOWN -->
+      <div class="form-group hidden" style="margin-top:14px;" id="mode-cart-group">
         <label>Terapkan catatan ini ke berapa item?</label>
-        <select id="custom-apply-qty" style="padding:6px; font-size:13px; margin-top:4px;"></select>
+        <select id="custom-apply-qty" style="padding:8px; font-size:13px; margin-top:6px; font-weight: 600;"></select>
       </div>
 
-      <button onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 15px;">MASUKKAN KE KERANJANG</button>
+      <button onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 12px;">SIMPAN KE KERANJANG</button>
     </div>
   </div>
 
@@ -179,10 +235,10 @@
   <div id="payment-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Pembayaran</h3>
-        <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
+        <h3>Pembayaran Transaksi</h3>
+        <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
-      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#e8f5e9; font-weight:bold; color:#27ae60; font-size:16px;"></div>
+      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#fff5f8; font-weight:800; color:var(--primary-pink); font-size:18px;"></div>
       <div class="form-group">
         <label>Metode Pembayaran</label>
         <select id="pay-method" onchange="togglePayMethod()">
@@ -192,9 +248,9 @@
       </div>
       <div id="cash-group">
         <div class="form-group"><label>Uang Diterima</label><input type="number" id="pay-cash-paid" oninput="calculatePayment()" placeholder="0"></div>
-        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:bold; color:#d35400;"></div>
+        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:800; color:var(--accent-orange);"></div>
       </div>
-      <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 10px;">SELESAIKAN TRANSAKSI</button>
+      <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
     </div>
   </div>
 
@@ -231,15 +287,13 @@
     var currentUser = null;
     var currentCart = [];
     
-    // State Modal Custom
-    var modalTriggerSource = null; // 'HOLD' atau 'CART'
+    var modalTriggerSource = null; 
     var activeCartIndex = null;
     var activeProductId = null;
     var holdCustomQty = 1;
     var selectedIce = "Normal Ice";
     var selectedSugar = "Normal Sugar";
 
-    // Variables Hold Tap
     var holdTimer = null;
     var isLongPress = false;
 
@@ -305,7 +359,6 @@
       }).join('');
     }
 
-    // HOLD TAP HANDLER
     function startHold(productId) {
       isLongPress = false;
       holdTimer = setTimeout(function() {
@@ -316,16 +369,11 @@
 
     function endHold(productId) {
       clearTimeout(holdTimer);
-      if (!isLongPress) {
-        directAddToCart(productId);
-      }
+      if (!isLongPress) { directAddToCart(productId); }
     }
 
-    function cancelHold() {
-      clearTimeout(holdTimer);
-    }
+    function cancelHold() { clearTimeout(holdTimer); }
 
-    // Direct Add to Cart (Tap Cepat)
     function directAddToCart(productId) {
       var prod = productsData.find(p => p.id === productId);
       var existing = currentCart.find(i => i.id === productId && (!i.notes || i.notes === "Normal"));
@@ -345,7 +393,6 @@
       updateCartUI();
     }
 
-    // MODAL MODE 1: TRIGGER DARI HOLD TAP
     function openHoldCustomModal(productId) {
       modalTriggerSource = 'HOLD';
       activeProductId = productId;
@@ -362,7 +409,6 @@
       document.getElementById('custom-modal').classList.remove('hidden');
     }
 
-    // MODAL MODE 2: TRIGGER DARI TOMBOL CUSTOM DI KERANJANG
     function openCartCustomModal(index) {
       modalTriggerSource = 'CART';
       activeCartIndex = index;
@@ -408,7 +454,6 @@
       var newNote = `${selectedIce}, ${selectedSugar}`;
 
       if (modalTriggerSource === 'HOLD') {
-        // SIMPAN DARI HOLD TAP
         var prod = productsData.find(p => p.id === activeProductId);
         currentCart.push({
           cartItemId: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
@@ -419,7 +464,6 @@
           notes: newNote
         });
       } else if (modalTriggerSource === 'CART') {
-        // SIMPAN DARI KERANJANG (SMART SPLIT)
         var targetItem = currentCart[activeCartIndex];
         var applyQty = Number(document.getElementById('custom-apply-qty').value);
 
@@ -442,10 +486,11 @@
       updateCartUI();
     }
 
+    // UPDATE UI KERANJANG MODERN (SVG ONLY, NO EMOJI)
     function updateCartUI() {
       var container = document.getElementById('cart-items');
       if (currentCart.length === 0) {
-        container.innerHTML = '<p style="color: #888; text-align: center; margin-top: 30px; font-size:13px;">Keranjang kosong</p>';
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 600;">Keranjang masih kosong</p>';
         document.getElementById('cart-total-val').innerText = 'Rp 0';
         return;
       }
@@ -457,15 +502,28 @@
         return `
           <div class="cart-item">
             <div class="cart-item-header">
-              <strong>${item.nama}</strong>
-              <small style="font-weight:bold;">Rp ${subtotal.toLocaleString('id-ID')}</small>
+              <span class="cart-item-title">${item.nama}</span>
+              <span class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</span>
             </div>
-            ${item.notes !== "Normal" ? `<div class="cart-item-notes">📝 ${item.notes}</div>` : ''}
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-              <button onclick="openCartCustomModal(${idx})" class="btn btn-warning" style="font-size:10px; padding:3px 8px;">⚙️ Custom</button>
-              <div style="display:flex; align-items:center; gap:6px;">
+            
+            ${item.notes !== "Normal" ? `
+              <div class="cart-item-notes">
+                <!-- SVG Edit/Pencil Icon -->
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                ${item.notes}
+              </div>
+            ` : ''}
+
+            <div class="cart-item-footer">
+              <button onclick="openCartCustomModal(${idx})" class="btn-custom">
+                <!-- SVG Settings Icon -->
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Custom
+              </button>
+              
+              <div class="qty-control">
                 <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
-                <span style="font-weight:bold; font-size:13px;">${item.qty}</span>
+                <span class="qty-num">${item.qty}</span>
                 <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
               </div>
             </div>
