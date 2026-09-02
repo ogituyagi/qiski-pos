@@ -6,15 +6,16 @@
   <title>QisKi Juice POS</title>
   <style>
     :root {
-      --primary-pink: #e91e63;
-      --primary-pink-dark: #c2185b;
-      --accent-orange: #ff8c00;
-      --accent-orange-hover: #e07b00;
-      --bg-cream: #fff9f5;
+      /* PALET WARNA UTAMA: ORANGE CITRUS */
+      --primary-orange: #ff8c00;
+      --primary-orange-dark: #e07b00;
+      --accent-pink: #e91e63;
+      --accent-pink-dark: #c2185b;
+      --bg-cream: #fffaf5;
       --card-bg: #ffffff;
       --text-dark: #2c3e50;
       --text-muted: #7f8c8d;
-      --border-color: #f1e4d8;
+      --border-color: #ffe3d1;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -24,24 +25,25 @@
     
     /* Buttons */
     .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-    .btn-primary { background: var(--accent-orange); color: white; }
-    .btn-primary:hover { background: var(--accent-orange-hover); }
+    .btn-primary { background: var(--primary-orange); color: white; }
+    .btn-primary:hover { background: var(--primary-orange-dark); }
     .btn-secondary { background: #e74c3c; color: white; }
     .btn-warning { background: #f39c12; color: white; }
 
     /* Login Page */
     #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
-    .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.1); border: 1px solid var(--border-color); }
-    .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 800; }
+    .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(255, 140, 0, 0.12); border: 1px solid var(--border-color); }
+    .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-orange); font-size: 24px; font-weight: 800; }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
     .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
-    .form-group input:focus { border-color: var(--primary-pink); }
+    .form-group input:focus { border-color: var(--primary-orange); }
 
     /* Main App Layout */
     #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
     
-    header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    /* Header Utama Warna Orange */
+    header { background: linear-gradient(135deg, var(--primary-orange), var(--primary-orange-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; }
     
     .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
@@ -57,14 +59,14 @@
     .customer-header { background: #fff; padding: 10px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; gap: 8px; }
 
     /* Menu Grid */
-    .category-title { font-size: 13px; font-weight: 800; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-    .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
+    .category-title { font-size: 13px; font-weight: 800; color: var(--primary-orange-dark); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+    .category-title::after { content: ''; flex: 1; height: 2px; background: #ffe0cc; border-radius: 2px; }
     
     .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
     .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; }
-    .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
+    .menu-card:active { transform: scale(0.95); background: #fff3eb; border-color: var(--primary-orange); }
     .menu-card h4 { font-size: 12px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
-    .menu-card .price { color: var(--accent-orange); font-weight: 800; font-size: 12px; }
+    .menu-card .price { color: var(--primary-orange); font-weight: 800; font-size: 12px; }
 
     /* Modern Cart Section */
     .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
@@ -75,21 +77,21 @@
     .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
     
     /* Modern Cart Item Card */
-    .cart-item { background: #fff9f6; border: 1px solid #ffe8dc; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s ease; }
+    .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s ease; }
     .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
     .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
     .cart-item-price { font-size: 13px; font-weight: 800; color: var(--text-dark); }
     
-    .cart-item-notes { font-size: 11px; color: #d35400; background: #ffe0cc; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
+    .cart-item-notes { font-size: 11px; color: var(--accent-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
     
     .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
     
-    .btn-custom { background: #fff; border: 1px solid #ffd0b3; color: var(--accent-orange); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .btn-custom { background: #fff; border: 1px solid #ffd0b3; color: var(--primary-orange); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
     .btn-custom:hover { background: #fff0e6; }
 
     .qty-control { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--border-color); border-radius: 20px; padding: 2px 6px; }
     .btn-qty { width: 24px; height: 24px; border-radius: 50%; border: none; background: #f0f0f0; color: var(--text-dark); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-    .btn-qty:hover { background: var(--accent-orange); color: white; }
+    .btn-qty:hover { background: var(--primary-orange); color: white; }
     .qty-num { font-weight: 800; font-size: 13px; min-width: 16px; text-align: center; }
 
     .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
@@ -107,7 +109,7 @@
     
     .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
     .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
-    .chip.selected { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
+    .chip.selected { background: var(--primary-orange); color: white; border-color: var(--primary-orange); }
   </style>
 </head>
 <body>
@@ -238,7 +240,7 @@
         <h3>Pembayaran Transaksi</h3>
         <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
-      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#fff5f8; font-weight:800; color:var(--primary-pink); font-size:18px;"></div>
+      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:800; color:var(--primary-orange-dark); font-size:18px;"></div>
       <div class="form-group">
         <label>Metode Pembayaran</label>
         <select id="pay-method" onchange="togglePayMethod()">
@@ -248,7 +250,7 @@
       </div>
       <div id="cash-group">
         <div class="form-group"><label>Uang Diterima</label><input type="number" id="pay-cash-paid" oninput="calculatePayment()" placeholder="0"></div>
-        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:800; color:var(--accent-orange);"></div>
+        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:800; color:var(--accent-pink);"></div>
       </div>
       <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
     </div>
@@ -486,7 +488,6 @@
       updateCartUI();
     }
 
-    // UPDATE UI KERANJANG MODERN (SVG ONLY, NO EMOJI)
     function updateCartUI() {
       var container = document.getElementById('cart-items');
       if (currentCart.length === 0) {
