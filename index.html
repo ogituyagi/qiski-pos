@@ -48,8 +48,32 @@
     .menu-card .price { color: #27ae60; font-weight: bold; font-size: 12px; }
 
     /* Cart Section */
-    .cart-section { background: #fff; padding: 12px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; }
-    .cart-items { flex: 1; overflow-y: auto; margin: 10px 0; max-height: 350px; }
+/* Layout Keranjang Kanan */
+.cart-section { 
+  background: #fff; 
+  padding: 12px; 
+  border-radius: 8px; 
+  display: flex; 
+  flex-direction: column; 
+  height: 100%; /* Isi penuh tinggi layar */
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+/* List Item Pesanan */
+.cart-items { 
+  flex: 1; /* Ambil sisa ruang kosong di tengah */
+  overflow-y: auto; 
+  margin: 10px 0; 
+  max-height: none !important; /* Hapus batasan 350px */
+  padding-right: 4px;
+}
+
+/* Footer Keranjang (Total & Tombol) */
+.cart-footer {
+  border-top: 2px dashed #eee;
+  padding-top: 10px;
+  background: #fff;
+}
     .cart-item { padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; flex-direction: column; gap: 4px; }
     .cart-item-header { display: flex; justify-content: space-between; align-items: center; }
     .cart-item-notes { font-size: 11px; color: #d35400; background: #fef5e7; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; }
@@ -271,26 +295,71 @@
       });
     }
 
-    // Render Katalog Menu per Kategori
-    function renderCatalog() {
-      var container = document.getElementById('catalog-container');
-      var categories = ["Jus Tunggal", "Mix Buah", "Healthy Mix"];
-      
-      container.innerHTML = categories.map(cat => {
-        var items = productsData.filter(p => p.kategori === cat);
-        return `
-          <div class="category-title">${cat}</div>
-          <div class="menu-grid">
-            ${items.map(p => `
-              <div class="menu-card" onclick="directAddToCart('${p.id}')">
-                <h4>${p.nama}</h4>
-                <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
-              </div>
-            `).join('')}
+// Variable Hold Tap
+var holdTimer = null;
+var isLongPress = false;
+
+// 1. Render Katalog dengan Event Hold Tap
+function renderCatalog() {
+  var container = document.getElementById('catalog-container');
+  var categories = ["Jus Tunggal", "Mix Buah", "Healthy Mix"];
+  
+  container.innerHTML = categories.map(cat => {
+    var items = productsData.filter(p => p.kategori === cat);
+    return `
+      <div class="category-title">${cat}</div>
+      <div class="menu-grid">
+        ${items.map(p => `
+          <div class="menu-card" 
+               onmousedown="startHold('${p.id}')" 
+               onmouseup="endHold('${p.id}')" 
+               onmouseleave="cancelHold()"
+               ontouchstart="startHold('${p.id}')" 
+               ontouchend="endHold('${p.id}')"
+               ontouchcancel="cancelHold()">
+            <h4>${p.nama}</h4>
+            <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
           </div>
-        `;
-      }).join('');
-    }
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+// 2. Logic Handler Hold Tap
+function startHold(productId) {
+  isLongPress = false;
+  holdTimer = setTimeout(function() {
+    isLongPress = true;
+    openDirectCustomModal(productId);
+  }, 500); // 0.5 detik tahan
+}
+
+function endHold(productId) {
+  clearTimeout(holdTimer);
+  if (!isLongPress) {
+    directAddToCart(productId); // Tap cepat biasa
+  }
+}
+
+function cancelHold() {
+  clearTimeout(holdTimer);
+}
+
+// 3. Buka Custom Modal Langsung dari Kartu Menu
+function openDirectCustomModal(productId) {
+  var prod = productsData.find(p => p.id === productId);
+  currentCart.push({
+    cartItemId: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+    id: prod.id,
+    nama: prod.nama,
+    harga: prod.harga,
+    qty: 1,
+    notes: "Normal"
+  });
+  updateCartUI();
+  openCustomModal(currentCart.length - 1);
+}
 
     // Direct Tap (Opsi A: Tambah Cepat)
     function directAddToCart(productId) {
