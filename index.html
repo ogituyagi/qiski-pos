@@ -253,26 +253,15 @@
                 <input type="text" id="cust-name" placeholder="Masukkan Nama Pelanggan..." oninput="handleCustomerNameInput()" style="width:100%; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700;">
               </div>
 
-<!-- CUSTOM SEARCH MEMBER CONTAINER -->
-<div id="select-member-container" class="hidden" style="position: relative;">
-  <input type="text" id="member-search-input" placeholder="Cari Nama Member / No. HP..." 
-         onfocus="showMemberDropdown()" 
-         oninput="filterMemberList()" 
-         style="width:100%; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700; background: #fff;">
-  
-  <!-- DROPDOWN LIST CUSTOM -->
-  <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
-    
-    <!-- OPSI UTAMA: TAMBAH MEMBER BARU (PINNED AT TOP) -->
-    <div onclick="openAddMemberModal()" style="padding: 10px 12px; cursor: pointer; font-weight: 800; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Tambah Member Baru
-    </div>
-
-    <!-- LIST ITEM MEMBER -->
-    <div id="member-items-list"></div>
-  </div>
-</div>
+              <!-- SELECT MEMBER (UNTUK MEMBER QSK) -->
+              <div id="select-member-container" class="hidden">
+                <select id="select-member-list" onchange="handleMemberSelectChange()" style="width:100%; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700;">
+                  <option value="">-- Pilih Member QSK / Cari No HP --</option>
+                  <option value="MEMBER-001">Budi Santoso (08123456789)</option>
+                  <option value="MEMBER-002">Siti Aminah (08987654321)</option>
+                </select>
+              </div>
+            </div>
 
             <!-- STEP 2: KATALOG MENU (HIDDEN UNTIL NAME IS FILLED) -->
             <div id="catalog-container" class="hidden"></div>
@@ -845,113 +834,6 @@
 
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
     function logout() { localStorage.removeItem('qiski_session'); location.reload(); }
-
-    // Data Dummy Member awal
-var membersData = [
-  { id: "MEMBER-001", name: "Budi Santoso", phone: "08123456789" },
-  { id: "MEMBER-002", name: "Siti Aminah", phone: "08987654321" }
-];
-
-var selectedMemberId = null;
-
-// Render list ke dalam dropdown custom
-function renderMemberList(filterText = "") {
-  var container = document.getElementById('member-items-list');
-  var keyword = filterText.toLowerCase();
-
-  var filtered = membersData.filter(m => 
-    m.name.toLowerCase().includes(keyword) || m.phone.includes(keyword)
-  );
-
-  if (filtered.length === 0) {
-    container.innerHTML = `<div style="padding: 10px 12px; color: var(--text-muted); font-size: 12px; text-align: center;">Member tidak ditemukan</div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(m => `
-    <div onclick="selectMember('${m.id}', '${m.name}', '${m.phone}')" style="padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f9f9f9; transition: 0.15s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='#fff'">
-      ${m.name} <span style="color: var(--text-muted); font-size: 11px; font-weight: 500;">(${m.phone})</span>
-    </div>
-  `).join('');
-}
-
-function showMemberDropdown() {
-  document.getElementById('member-dropdown').classList.remove('hidden');
-  renderMemberList(document.getElementById('member-search-input').value);
-}
-
-function filterMemberList() {
-  var keyword = document.getElementById('member-search-input').value;
-  renderMemberList(keyword);
-  document.getElementById('member-dropdown').classList.remove('hidden');
-}
-
-function selectMember(id, name, phone) {
-  selectedMemberId = id;
-  document.getElementById('member-search-input').value = `${name} (${phone})`;
-  document.getElementById('member-dropdown').classList.add('hidden');
-  handleCustomerNameInput();
-}
-
-// Tutup dropdown kalau kasir klik di luar area pencarian
-document.addEventListener('click', function(e) {
-  var container = document.getElementById('select-member-container');
-  if (container && !container.contains(e.target)) {
-    var dropdown = document.getElementById('member-dropdown');
-    if (dropdown) dropdown.classList.add('hidden');
-  }
-});
-
-// Update fungsi getActiveCustomerName untuk ambil data member
-function getActiveCustomerName() {
-  if (selectedCustomerType === 'REGULAR') {
-    return document.getElementById('cust-name').value.trim();
-  } else {
-    return document.getElementById('member-search-input').value.trim();
-  }
-}
-
-// Update validasi buka katalog menu
-function handleCustomerNameInput() {
-  var isValid = false;
-  
-  if (selectedCustomerType === 'REGULAR') {
-    var nameVal = document.getElementById('cust-name').value.trim();
-    isValid = nameVal.length > 0;
-  } else {
-    isValid = selectedMemberId !== null && document.getElementById('member-search-input').value.trim() !== '';
-  }
-
-  var catalogContainer = document.getElementById('catalog-container');
-  var catalogPlaceholder = document.getElementById('catalog-placeholder');
-
-  if (isValid) {
-    catalogContainer.classList.remove('hidden');
-    catalogPlaceholder.classList.add('hidden');
-  } else {
-    catalogContainer.classList.add('hidden');
-    catalogPlaceholder.classList.remove('hidden');
-  }
-}
-
-// Handler Simpan Member Baru dari Modal
-function handleSaveNewMember(e) {
-  e.preventDefault();
-  var name = document.getElementById('new-member-name').value.trim();
-  var phone = document.getElementById('new-member-phone').value.trim();
-  var dob = document.getElementById('new-member-dob').value;
-
-  var newId = 'MEMBER-' + Date.now();
-  
-  // Push ke array data member lokal
-  membersData.push({ id: newId, name: name, phone: phone });
-
-  // Otomatis pilih member baru tersebut
-  selectMember(newId, name, phone);
-
-  closeModal('add-member-modal');
-  alert(`Member baru "${name}" berhasil didaftarkan!`);
-}
   </script>
 </body>
 </html>
