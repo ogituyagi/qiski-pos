@@ -3,110 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>QisKi Juice</title>
+  <title>QisKi Juice POS</title>
   <style>
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-    }
-
-    /* CSS Reset */
-    html, body {
-      width: 100%;
-      height: 100%;
-      background-color: #e8f5e9;
-      color: #333;
-      overflow-x: hidden;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    /* Utility */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    html, body { width: 100%; height: 100%; background-color: #e8f5e9; color: #333; overflow-x: hidden; }
+    
     .hidden { display: none !important; }
     .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
     .btn-primary { background: #27ae60; color: white; }
     .btn-secondary { background: #e74c3c; color: white; }
     .btn-warning { background: #f39c12; color: white; }
     .btn-info { background: #2980b9; color: white; }
-    
-    /* Login Page Fix */
-    #login-page { 
-      display: flex; 
-      justify-content: center; 
-      align-items: center; 
-      width: 100%;
-      min-height: 100%; 
-      padding: 20px; 
-      background-color: #e8f5e9; 
-    }
-    .login-card { 
-      background: white; 
-      padding: 30px; 
-      border-radius: 12px; 
-      width: 100%; 
-      max-width: 360px; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-    }
+
+    /* Login Page */
+    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 100%; padding: 20px; background-color: #e8f5e9; }
+    .login-card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 360px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .login-card h2 { margin-bottom: 20px; text-align: center; color: #27ae60; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+
+    /* App Header & Navigation */
+    #app-page { background: #f4f6f8; min-height: 100%; display: flex; flex-direction: column; }
+    header { background: #1e8449; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
     
-    /* Mencegah auto-zoom iOS/Android saat tap input */
-    .form-group input, .form-group select { 
-      width: 100%; 
-      padding: 10px; 
-      border: 1px solid #ccc; 
-      border-radius: 6px; 
-      font-size: 16px; 
-    }
+    /* Navigation Bar */
+    .nav-bar { background: #145a32; display: flex; overflow-x: auto; padding: 0 10px; }
+    .nav-tab { background: none; border: none; color: #a9dfbf; padding: 12px 16px; font-weight: bold; cursor: pointer; font-size: 13px; border-bottom: 3px solid transparent; white-space: nowrap; }
+    .nav-tab.active { color: white; border-bottom-color: #2ec4b6; background: rgba(255,255,255,0.1); }
 
-    /* Main App Layout */
-    #app-page {
-      background: #f4f6f8;
-      min-height: 100%;
-    }
-
-    /* Header Navigation */
-    header { background: #1e8449; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-    .header-btns { display: flex; gap: 8px; }
-
-    /* App Layout */
-    .container { display: flex; flex-direction: column; height: calc(100vh - 55px); }
-    .pos-layout { display: flex; flex: 1; overflow: hidden; flex-direction: column; }
-
+    /* Main Container & Views */
+    .view-content { padding: 15px; flex: 1; overflow-y: auto; }
+    
+    /* POS View */
+    .pos-layout { display: flex; flex-direction: column; gap: 15px; }
     @media (min-width: 768px) {
-      .pos-layout { flex-direction: row; }
-      .menu-section { flex: 6; }
+      .pos-layout { flex-direction: row; height: calc(100vh - 120px); }
+      .menu-section { flex: 6; overflow-y: auto; }
       .cart-section { flex: 4; border-left: 1px solid #ddd; }
     }
 
-    /* Menu Section */
-    .menu-section { padding: 15px; overflow-y: auto; background: #fff; }
-    .customer-type { display: flex; gap: 10px; margin-bottom: 15px; }
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 10px; }
     .menu-card { border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; text-align: center; background: #fafafa; cursor: pointer; border-left: 4px solid #27ae60; }
     .menu-card:active { transform: scale(0.97); }
     .menu-card h4 { font-size: 14px; margin-bottom: 4px; }
     .menu-card .price { color: #27ae60; font-weight: bold; font-size: 13px; }
 
     /* Cart Section */
-    .cart-section { background: #fdfdfd; padding: 15px; display: flex; flex-direction: column; height: 100%; }
-    .cart-items { flex: 1; overflow-y: auto; margin: 10px 0; }
+    .cart-section { background: #fff; padding: 15px; border-radius: 10px; display: flex; flex-direction: column; }
+    .cart-items { flex: 1; overflow-y: auto; margin: 10px 0; max-height: 300px; }
     .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #eee; }
-    .cart-controls { display: flex; align-items: center; gap: 8px; }
     .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; cursor: pointer; }
-
-    .cart-footer { background: #fff; padding: 10px; border-top: 2px solid #eee; }
     .cart-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #2c3e50; }
     .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
-    /* Modals Overlay */
+    /* Cards & Tables (Dashboard Views) */
+    .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; }
+    .stat-card { background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center; }
+    .stat-card h3 { color: #27ae60; font-size: 18px; }
+
+    /* Modals */
     .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
     .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    
-    /* List item modal */
     .modal-list-item { border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
@@ -131,63 +91,125 @@
     </div>
   </div>
 
-  <!-- PAGE 2: MAIN POS APP -->
+  <!-- PAGE 2: MAIN APP -->
   <div id="app-page" class="hidden">
     <header>
-      <div><b>🥤 QisKi Juice</b> | <span id="user-display">Kasir</span> (<span id="role-badge">ROLE</span>)</div>
-      <div class="header-btns">
-        <button onclick="openPendingModal()" class="btn btn-warning" style="font-size: 12px;">🛒 Pending (<span id="pending-count">0</span>)</button>
-        <button onclick="openKitchenModal()" class="btn btn-info" style="font-size: 12px;">🍹 Kantung Proses</button>
-        <button onclick="logout()" class="btn btn-secondary" style="font-size: 12px;">Logout</button>
+      <div><b>🥤 QisKi Juice</b> | <span id="user-display">Kasir</span></div>
+      <div>
+        <button onclick="logout()" class="btn btn-secondary" style="font-size: 11px; padding: 6px 10px;">Logout</button>
       </div>
     </header>
 
-    <div class="container">
-      <div class="pos-layout">
-        
-        <!-- SECTION MENU -->
-        <div class="menu-section">
-          <!-- TIPE PELANGGAN (STEP 1) -->
-          <div class="customer-type">
-            <select id="select-customer-type" class="form-group" style="margin-bottom:0;" onchange="handleCustomerTypeChange()">
-              <option value="REGULAR">Pelanggan Umum (Regular)</option>
-              <option value="MEMBER">Member QisKi (QSK)</option>
-            </select>
-            <select id="select-member-list" class="form-group hidden" style="margin-bottom:0;"></select>
-          </div>
+    <!-- NAVIGATION TABS -->
+    <div class="nav-bar">
+      <button class="nav-tab active" onclick="switchTab('pos-view', this)">🛒 Kasir POS</button>
+      <button class="nav-tab" onclick="switchTab('rekap-view', this)">📊 Rekap Shift</button>
+      <button class="nav-tab" onclick="switchTab('cashflow-view', this)">💸 Cash Flow</button>
+      <button class="nav-tab" onclick="openKitchenModal()">🍹 Antrian Bar (<span id="bar-count">0</span>)</button>
+    </div>
 
-          <!-- KATALOG MENU (STEP 2) -->
-          <h3 style="margin-bottom: 10px; font-size: 15px; color: #555;">Katalog Menu Juice</h3>
-          <div class="menu-grid" id="menu-grid"></div>
-        </div>
-
-        <!-- SECTION CART -->
-        <div class="cart-section">
-          <h3>Keranjang Pesanan</h3>
-          <div class="cart-items" id="cart-items">
-            <p style="color: #888; text-align: center; margin-top: 20px;">Keranjang kosong</p>
-          </div>
-
-          <div class="cart-footer">
-            <div class="cart-total">
-              <span>Total:</span>
-              <span id="cart-total-val">Rp 0</span>
+    <div class="view-content">
+      
+      <!-- TAB 1: KASIR POS -->
+      <div id="pos-view" class="tab-view">
+        <div class="pos-layout">
+          <div class="menu-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div class="customer-type" style="flex:1; margin-right:10px;">
+                <select id="select-customer-type" class="form-group" style="margin-bottom:0;" onchange="handleCustomerTypeChange()">
+                  <option value="REGULAR">Pelanggan Umum (Regular)</option>
+                  <option value="MEMBER">Member QisKi (QSK)</option>
+                </select>
+                <select id="select-member-list" class="form-group hidden" style="margin-bottom:0; margin-top:5px;"></select>
+              </div>
+              <button onclick="openPendingModal()" class="btn btn-warning" style="font-size: 12px; white-space: nowrap;">
+                🛒 Pending (<span id="pending-count">0</span>)
+              </button>
             </div>
 
-            <!-- ACTION BUTTONS (STEP 3) -->
-            <div class="cart-actions">
-              <button onclick="clearCart()" class="btn btn-secondary">Batal</button>
-              <button onclick="savePendingOrder()" class="btn btn-warning">Pending</button>
-              <button onclick="openPaymentModal()" class="btn btn-primary">Proses</button>
+            <h3 style="margin-bottom: 10px; font-size: 15px; color: #555;">Katalog Menu Juice</h3>
+            <div class="menu-grid" id="menu-grid"></div>
+          </div>
+
+          <div class="cart-section">
+            <h3>Keranjang Pesanan</h3>
+            <div class="cart-items" id="cart-items">
+              <p style="color: #888; text-align: center; margin-top: 20px;">Keranjang kosong</p>
+            </div>
+            <div class="cart-footer">
+              <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-val">Rp 0</span>
+              </div>
+              <div class="cart-actions">
+                <button onclick="clearCart()" class="btn btn-secondary">Batal</button>
+                <button onclick="savePendingOrder()" class="btn btn-warning">Pending</button>
+                <button onclick="openPaymentModal()" class="btn btn-primary">Proses</button>
+              </div>
             </div>
           </div>
         </div>
-
       </div>
+
+      <!-- TAB 2: REKAP SHIFT HARIAN -->
+      <div id="rekap-view" class="tab-view hidden">
+        <div class="card">
+          <h2>📊 Rekap Penjualan Shift Hari Ini</h2>
+          <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Ringkasan transaksi kasir yang masuk di sesi ini.</p>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <small>Total Omzet</small>
+              <h3 id="stat-total-omzet">Rp 0</h3>
+            </div>
+            <div class="stat-card">
+              <small>Tunai (Cash)</small>
+              <h3 id="stat-cash-omzet" style="color: #27ae60;">Rp 0</h3>
+            </div>
+            <div class="stat-card">
+              <small>Non-Tunai (QRIS)</small>
+              <h3 id="stat-qris-omzet" style="color: #2980b9;">Rp 0</h3>
+            </div>
+            <div class="stat-card">
+              <small>Total Transaksi</small>
+              <h3 id="stat-count-trans" style="color: #f39c12;">0</h3>
+            </div>
+          </div>
+          <button onclick="refreshRekapData()" class="btn btn-info" style="width: 100%;">Refresh Data Rekap</button>
+        </div>
+      </div>
+
+      <!-- TAB 3: CASH FLOW (PENGELUARAN / MODAL) -->
+      <div id="cashflow-view" class="tab-view hidden">
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+          <h2>💸 Pencatatan Arus Kas (Cash Flow)</h2>
+          <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Catat uang modal awal atau pengeluaran operasional mendadak.</p>
+          
+          <form onsubmit="handleCashFlowSubmit(event)">
+            <div class="form-group">
+              <label>Jenis Arus Kas</label>
+              <select id="cf-type" required>
+                <option value="OUT">Pengeluaran Toko (Expenses)</option>
+                <option value="IN">Modal Awal / Kas Masuk</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Nominal (Rp)</label>
+              <input type="number" id="cf-amount" placeholder="Contoh: 15000" required>
+            </div>
+            <div class="form-group">
+              <label>Keterangan / Keperluan</label>
+              <input type="text" id="cf-note" placeholder="Contoh: Beli es batu kristal 2 plastik" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Simpan Arus Kas</button>
+          </form>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- MODAL 1: PAYMENT & KEMBALIAN -->
+  <!-- MODALS (PAYMENT, PENDING, KITCHEN) -->
   <div id="payment-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -227,7 +249,6 @@
     </div>
   </div>
 
-  <!-- MODAL 2: KANTUNG PENDING -->
   <div id="pending-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -238,7 +259,6 @@
     </div>
   </div>
 
-  <!-- MODAL 3: KANTUNG PROSES (BAR/KITCHEN) -->
   <div id="kitchen-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -250,37 +270,41 @@
   </div>
 
   <script>
-    // ⚠️ GANTI URL DI BAWAH DENGAN URL WEB APP GOOGLE APPS SCRIPT KAMU
     var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_rJIxw0NilgbmxqSmgrTJWasiJ5_O_aGCT20QCnki1BjA/exec";
 
-    // Global State
     var currentUser = null;
     var productsData = [];
     var membersData = [];
     var currentCart = [];
     var activeKitchenOrders = [];
+    var shiftTransactions = [];
 
-    // Auto-Login Check saat Halaman di-load
     document.addEventListener("DOMContentLoaded", function() {
       checkExistingSession();
     });
+
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.remove('hidden');
+      if(btn) btn.classList.add('active');
+
+      if (tabId === 'rekap-view') refreshRekapData();
+    }
 
     function checkExistingSession() {
       var savedSession = localStorage.getItem('qiski_session');
       if (savedSession) {
         currentUser = JSON.parse(savedSession);
         document.getElementById('user-display').innerText = currentUser.nama;
-        document.getElementById('role-badge').innerText = currentUser.role;
-        
         document.getElementById('login-page').classList.add('hidden');
         document.getElementById('app-page').classList.remove('hidden');
-        
         loadMasterData();
         updatePendingCount();
       }
     }
 
-    // 1. Authentication via API fetch
     function handleLogin(e) {
       e.preventDefault();
       var u = document.getElementById('username').value;
@@ -290,30 +314,23 @@
         method: 'POST',
         body: JSON.stringify({ action: 'checkLogin', username: u, password: p })
       })
-      .then(function(res) { return res.json(); })
-      .then(function(res) {
+      .then(res => res.json())
+      .then(res => {
         if (res.success) {
           currentUser = res.user;
           localStorage.setItem('qiski_session', JSON.stringify(currentUser));
-
           document.getElementById('user-display').innerText = currentUser.nama;
-          document.getElementById('role-badge').innerText = currentUser.role;
-          
           document.getElementById('login-page').classList.add('hidden');
           document.getElementById('app-page').classList.remove('hidden');
-          
           loadMasterData();
           updatePendingCount();
         } else {
           alert(res.message);
         }
       })
-      .catch(function(err) {
-        alert("Gagal terhubung ke API: " + err);
-      });
+      .catch(err => alert("Gagal terhubung ke API: " + err));
     }
 
-    // 2. Load Master Data via API fetch
     function loadMasterData() {
       var cached = localStorage.getItem('qiski_master_data');
       if (cached) {
@@ -325,38 +342,31 @@
       }
 
       fetch(API_URL + "?action=getInitialData")
-      .then(function(res) { return res.json(); })
-      .then(function(data) {
+      .then(res => res.json())
+      .then(data => {
         productsData = data.products;
         membersData = data.members;
         localStorage.setItem('qiski_master_data', JSON.stringify(data));
         renderMenuGrid();
         renderMemberList();
       })
-      .catch(function(err) {
-        console.error("Gagal sync master data:", err);
-      });
+      .catch(err => console.error("Sync master error:", err));
     }
 
-    // 3. Render Functions
     function renderMenuGrid() {
       var grid = document.getElementById('menu-grid');
-      grid.innerHTML = productsData.map(function(p) {
-        return `
-          <div class="menu-card" onclick="addToCart('${p.id}')">
-            <h4>${p.nama}</h4>
-            <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
-          </div>
-        `;
-      }).join('');
+      grid.innerHTML = productsData.map(p => `
+        <div class="menu-card" onclick="addToCart('${p.id}')">
+          <h4>${p.nama}</h4>
+          <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
+        </div>
+      `).join('');
     }
 
     function renderMemberList() {
       var select = document.getElementById('select-member-list');
       select.innerHTML = '<option value="">-- Pilih Member QSK --</option>' + 
-        membersData.map(function(m) {
-          return `<option value="${m.id}">${m.nama} (${m.id})</option>`;
-        }).join('');
+        membersData.map(m => `<option value="${m.id}">${m.nama} (${m.id})</option>`).join('');
     }
 
     function handleCustomerTypeChange() {
@@ -366,26 +376,19 @@
       else memSelect.classList.add('hidden');
     }
 
-    // 4. Cart Logic
     function addToCart(productId) {
-      var prod = productsData.find(function(p) { return p.id === productId; });
-      var existing = currentCart.find(function(item) { return item.id === productId; });
-
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        currentCart.push({ id: prod.id, nama: prod.nama, harga: prod.harga, qty: 1 });
-      }
+      var prod = productsData.find(p => p.id === productId);
+      var existing = currentCart.find(i => i.id === productId);
+      if (existing) existing.qty += 1;
+      else currentCart.push({ id: prod.id, nama: prod.nama, harga: prod.harga, qty: 1 });
       updateCartUI();
     }
 
     function updateQty(productId, delta) {
-      var item = currentCart.find(function(i) { return i.id === productId; });
+      var item = currentCart.find(i => i.id === productId);
       if (item) {
         item.qty += delta;
-        if (item.qty <= 0) {
-          currentCart = currentCart.filter(function(i) { return i.id !== productId; });
-        }
+        if (item.qty <= 0) currentCart = currentCart.filter(i => i.id !== productId);
       }
       updateCartUI();
     }
@@ -397,9 +400,8 @@
         document.getElementById('cart-total-val').innerText = 'Rp 0';
         return;
       }
-
       var total = 0;
-      container.innerHTML = currentCart.map(function(item) {
+      container.innerHTML = currentCart.map(item => {
         var subtotal = item.harga * item.qty;
         total += subtotal;
         return `
@@ -408,7 +410,7 @@
               <strong>${item.nama}</strong><br>
               <small>Rp ${item.harga.toLocaleString('id-ID')}</small>
             </div>
-            <div class="cart-controls">
+            <div style="display:flex; align-items:center; gap:8px;">
               <button class="btn-qty" onclick="updateQty('${item.id}', -1)">-</button>
               <span>${item.qty}</span>
               <button class="btn-qty" onclick="updateQty('${item.id}', 1)">+</button>
@@ -416,37 +418,24 @@
           </div>
         `;
       }).join('');
-
       document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
     }
 
-    function clearCart() {
-      currentCart = [];
-      updateCartUI();
-    }
+    function clearCart() { currentCart = []; updateCartUI(); }
 
-    // 5. Kantung Pending Logic
     function savePendingOrder() {
       if (currentCart.length === 0) return alert('Keranjang masih kosong!');
       var name = prompt('Input nama/catatan untuk Kantung Pending:');
       if (!name) return;
-
       var custType = document.getElementById('select-customer-type').value;
       var memberId = custType === 'MEMBER' ? document.getElementById('select-member-list').value : 'REGULAR';
 
-      var pendingData = {
-        id: 'PEND-' + Date.now(),
-        customerName: name,
-        customerId: memberId,
-        cart: currentCart,
-        time: new Date().toLocaleTimeString()
-      };
-
+      var pendingData = { id: 'PEND-' + Date.now(), customerName: name, customerId: memberId, cart: currentCart, time: new Date().toLocaleTimeString() };
       var pendingList = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
       pendingList.push(pendingData);
       localStorage.setItem('qiski_pending', JSON.stringify(pendingList));
 
-      alert(`Order a/n "${name}" berhasil disimpan di Kantung Pending!`);
+      alert(`Order a/n "${name}" disimpan di Pending!`);
       clearCart();
       updatePendingCount();
     }
@@ -459,34 +448,26 @@
     function openPendingModal() {
       var list = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
       var container = document.getElementById('pending-list-container');
-
       if (list.length === 0) {
         container.innerHTML = '<p style="text-align:center; color:#888;">Kantung pending kosong.</p>';
       } else {
-        container.innerHTML = list.map(function(item, index) {
-          return `
-            <div class="modal-list-item">
-              <div>
-                <strong>${item.customerName}</strong> (${item.time})<br>
-                <small>${item.cart.length} Menu | Total Item: ${item.cart.reduce(function(a,b){ return a + b.qty; }, 0)}</small>
-              </div>
-              <div>
-                <button onclick="loadPendingOrder(${index})" class="btn btn-primary" style="font-size:12px;">Load</button>
-                <button onclick="deletePendingOrder(${index})" class="btn btn-secondary" style="font-size:12px;">Hapus</button>
-              </div>
+        container.innerHTML = list.map((item, index) => `
+          <div class="modal-list-item">
+            <div><strong>${item.customerName}</strong> (${item.time})<br><small>${item.cart.length} Menu</small></div>
+            <div>
+              <button onclick="loadPendingOrder(${index})" class="btn btn-primary" style="font-size:12px;">Load</button>
+              <button onclick="deletePendingOrder(${index})" class="btn btn-secondary" style="font-size:12px;">Hapus</button>
             </div>
-          `;
-        }).join('');
+          </div>
+        `).join('');
       }
       document.getElementById('pending-modal').classList.remove('hidden');
     }
 
     function loadPendingOrder(index) {
       var list = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-      var target = list[index];
-      currentCart = target.cart;
+      currentCart = list[index].cart;
       updateCartUI();
-      
       list.splice(index, 1);
       localStorage.setItem('qiski_pending', JSON.stringify(list));
       updatePendingCount();
@@ -501,33 +482,28 @@
       updatePendingCount();
     }
 
-    // 6. Payment & Checkout Modals
     function openPaymentModal() {
-      if (currentCart.length === 0) return alert('Keranjang masih kosong!');
-      var subtotal = currentCart.reduce(function(a, b) { return a + (b.harga * b.qty); }, 0);
-      
+      if (currentCart.length === 0) return alert('Keranjang kosong!');
+      var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
       document.getElementById('pay-subtotal').value = 'Rp ' + subtotal.toLocaleString('id-ID');
       document.getElementById('pay-discount').value = 0;
       document.getElementById('pay-cash-paid').value = '';
       document.getElementById('pay-change').value = 'Rp 0';
-      
       calculatePayment();
       document.getElementById('payment-modal').classList.remove('hidden');
     }
 
     function togglePayMethod() {
       var method = document.getElementById('pay-method').value;
-      var cashGroup = document.getElementById('cash-group');
-      if (method === 'QRIS') cashGroup.classList.add('hidden');
-      else cashGroup.classList.remove('hidden');
+      if (method === 'QRIS') document.getElementById('cash-group').classList.add('hidden');
+      else document.getElementById('cash-group').classList.remove('hidden');
       calculatePayment();
     }
 
     function calculatePayment() {
-      var subtotal = currentCart.reduce(function(a, b) { return a + (b.harga * b.qty); }, 0);
+      var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
       var discount = Number(document.getElementById('pay-discount').value) || 0;
       var totalAkhir = Math.max(0, subtotal - discount);
-      
       document.getElementById('pay-total-akhir').value = 'Rp ' + totalAkhir.toLocaleString('id-ID');
 
       var method = document.getElementById('pay-method').value;
@@ -539,106 +515,107 @@
     }
 
     function submitTransaction() {
-      var subtotal = currentCart.reduce(function(a, b) { return a + (b.harga * b.qty); }, 0);
+      var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
       var discount = Number(document.getElementById('pay-discount').value) || 0;
       var totalAkhir = Math.max(0, subtotal - discount);
       var method = document.getElementById('pay-method').value;
       var cashPaid = method === 'CASH' ? Number(document.getElementById('pay-cash-paid').value) || 0 : totalAkhir;
 
-      if (method === 'CASH' && cashPaid < totalAkhir) {
-        return alert('Uang pembayaran masih kurang!');
-      }
+      if (method === 'CASH' && cashPaid < totalAkhir) return alert('Uang pembayaran masih kurang!');
 
       var custType = document.getElementById('select-customer-type').value;
       var memberId = custType === 'MEMBER' ? (document.getElementById('select-member-list').value || 'MEMBER_UNSPECIFIED') : 'REGULAR';
 
       var payload = {
-        kasirId: currentUser.id,
-        customerId: memberId,
-        subtotal: subtotal,
-        diskon: discount,
-        totalAkhir: totalAkhir,
-        metode: method,
-        cashPaid: cashPaid,
-        kembalian: Math.max(0, cashPaid - totalAkhir),
-        items: currentCart
+        kasirId: currentUser.id, customerId: memberId, subtotal: subtotal, diskon: discount,
+        totalAkhir: totalAkhir, metode: method, cashPaid: cashPaid, kembalian: Math.max(0, cashPaid - totalAkhir), items: currentCart
       };
 
-      // Simpan Ke Background Backend via API fetch
       fetch(API_URL, {
         method: 'POST',
         body: JSON.stringify({ action: 'saveTransaction', payload: payload })
       })
-      .then(function(res) { return res.json(); })
-      .then(function(res) {
+      .then(res => res.json())
+      .then(res => {
         if (res.success) {
-          activeKitchenOrders.push({
-            transId: res.transId,
-            items: currentCart.slice(),
-            status: 'PROSES',
-            time: new Date().toLocaleTimeString()
-          });
-
-          alert('Transaksi Berhasil! Trans_ID: ' + res.transId + '\nMasuk ke Kantung Proses Bar.');
+          activeKitchenOrders.push({ transId: res.transId, items: currentCart.slice(), status: 'PROSES', time: new Date().toLocaleTimeString() });
+          shiftTransactions.push(payload);
+          
+          document.getElementById('bar-count').innerText = activeKitchenOrders.length;
+          alert('Transaksi Berhasil! Trans_ID: ' + res.transId);
           closeModal('payment-modal');
           clearCart();
         } else {
-          alert('Gagal menyimpan transaksi: ' + res.message);
+          alert('Gagal simpan transaksi: ' + res.message);
         }
       })
-      .catch(function(err) {
-        alert("Gagal terhubung ke API saat simpan transaksi: " + err);
+      .catch(err => alert("API error: " + err));
+    }
+
+    function refreshRekapData() {
+      var totalOmzet = shiftTransactions.reduce((a, b) => a + b.totalAkhir, 0);
+      var cashOmzet = shiftTransactions.filter(t => t.metode === 'CASH').reduce((a, b) => a + b.totalAkhir, 0);
+      var qrisOmzet = shiftTransactions.filter(t => t.metode === 'QRIS').reduce((a, b) => a + b.totalAkhir, 0);
+
+      document.getElementById('stat-total-omzet').innerText = 'Rp ' + totalOmzet.toLocaleString('id-ID');
+      document.getElementById('stat-cash-omzet').innerText = 'Rp ' + cashOmzet.toLocaleString('id-ID');
+      document.getElementById('stat-qris-omzet').innerText = 'Rp ' + qrisOmzet.toLocaleString('id-ID');
+      document.getElementById('stat-count-trans').innerText = shiftTransactions.length;
+    }
+
+    function handleCashFlowSubmit(e) {
+      e.preventDefault();
+      var type = document.getElementById('cf-type').value;
+      var amount = Number(document.getElementById('cf-amount').value) || 0;
+      var note = document.getElementById('cf-note').value;
+
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'saveCashFlow', payload: { type: type, amount: amount, note: note, kasirId: currentUser.id } })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if(res.success) {
+          alert('Pengeluaran/Kas berhasil dicatat!');
+          e.target.reset();
+        }
       });
     }
 
-    // 7. Kantung Proses Logic
     function openKitchenModal() {
       var container = document.getElementById('kitchen-list-container');
       if (activeKitchenOrders.length === 0) {
         container.innerHTML = '<p style="text-align:center; color:#888;">Tidak ada antrian di Bar saat ini.</p>';
       } else {
-        container.innerHTML = activeKitchenOrders.map(function(ord, idx) {
-          return `
-            <div class="modal-list-item" style="flex-direction:column; align-items:flex-start;">
-              <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold;">
-                <span>#${ord.transId.slice(-6)} (${ord.time})</span>
-                <span style="color:#f39c12;">${ord.status}</span>
-              </div>
-              <div style="font-size:13px; margin:5px 0;">
-                ${ord.items.map(function(i) { return `${i.nama} x ${i.qty}`; }).join(', ')}
-              </div>
-              <div style="display:flex; gap:5px; width:100%; margin-top:5px;">
-                ${ord.status === 'PROSES' ? `<button onclick="updateKitchenStatus(${idx}, 'SIAP_DIAMBIL')" class="btn btn-warning" style="font-size:11px; flex:1;">Set Siap Diambil</button>` : ''}
-                <button onclick="updateKitchenStatus(${idx}, 'SELESAI')" class="btn btn-primary" style="font-size:11px; flex:1;">Selesai / Took</button>
-              </div>
+        container.innerHTML = activeKitchenOrders.map((ord, idx) => `
+          <div class="modal-list-item" style="flex-direction:column; align-items:flex-start;">
+            <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold;">
+              <span>#${ord.transId.slice(-6)} (${ord.time})</span>
+              <span style="color:#f39c12;">${ord.status}</span>
             </div>
-          `;
-        }).join('');
+            <div style="font-size:13px; margin:5px 0;">
+              ${ord.items.map(i => `${i.nama} x ${i.qty}`).join(', ')}
+            </div>
+            <div style="display:flex; gap:5px; width:100%; margin-top:5px;">
+              <button onclick="updateKitchenStatus(${idx}, 'SELESAI')" class="btn btn-primary" style="font-size:11px; flex:1;">Selesai</button>
+            </div>
+          </div>
+        `).join('');
       }
       document.getElementById('kitchen-modal').classList.remove('hidden');
     }
 
     function updateKitchenStatus(idx, newStatus) {
       var target = activeKitchenOrders[idx];
-      target.status = newStatus;
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'updateOrderStatus', transId: target.transId, status: newStatus })
-      });
-
-      if (newStatus === 'SELESAI') {
-        activeKitchenOrders.splice(idx, 1);
-      }
+      fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateOrderStatus', transId: target.transId, status: newStatus }) });
+      activeKitchenOrders.splice(idx, 1);
+      document.getElementById('bar-count').innerText = activeKitchenOrders.length;
       openKitchenModal();
     }
 
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
     function logout() {
-      if (confirm('Yakin ingin keluar dari akun kasir?')) {
+      if (confirm('Yakin ingin keluar?')) {
         localStorage.removeItem('qiski_session');
         location.reload();
       }
