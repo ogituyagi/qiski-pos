@@ -4,114 +4,123 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QisKi Juice POS</title>
-<style>
-  /* Import Google Font Roboto */
-  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+  <style>
+    /* Import Google Font Roboto */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
 
-  :root {
-    --primary-orange: #ff8c00;
-    --primary-orange-dark: #e07b00;
-    --primary-pink: #e91e63;
-    --primary-pink-dark: #c2185b;
+    :root {
+      --primary-orange: #ff8c00;
+      --primary-orange-dark: #e07b00;
+      --primary-pink: #e91e63;
+      --primary-pink-dark: #c2185b;
+      --bg-cream: #fffaf5;
+      --card-bg: #ffffff;
+      --text-dark: #2c3e50;
+      --text-muted: #7f8c8d;
+      --border-color: #ffd8be;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', -apple-system, sans-serif; }
+    html, body { width: 100%; height: 100%; background-color: var(--bg-cream); color: var(--text-dark); overflow: hidden; }
     
-    --bg-cream: #fffaf5;
-    --card-bg: #ffffff;
-    --text-dark: #2c3e50;
-    --text-muted: #7f8c8d;
-    --border-color: #ffd8be;
-  }
+    .hidden { display: none !important; }
+    
+    /* Buttons */
+    .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-primary { background: var(--primary-orange); color: white; }
+    .btn-primary:hover { background: var(--primary-orange-dark); }
+    .btn-secondary { background: #e74c3c; color: white; }
+    .btn-warning { background: #f39c12; color: white; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', -apple-system, sans-serif; }
-  html, body { width: 100%; height: 100%; background-color: var(--bg-cream); color: var(--text-dark); overflow: hidden; }
-  
-  .hidden { display: none !important; }
-  
-  /* Buttons */
-  .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-  .btn-primary { background: var(--primary-orange); color: white; }
-  .btn-primary:hover { background: var(--primary-orange-dark); }
-  .btn-secondary { background: #e74c3c; color: white; }
-  .btn-warning { background: #f39c12; color: white; }
+    /* Login Page */
+    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
+    .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.12); border: 1.5px solid var(--border-color); }
+    .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 900; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
+    .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
+    .form-group input:focus { border-color: var(--primary-pink); }
 
-  /* Login Page */
-  #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
-  .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.12); border: 1.5px solid var(--border-color); }
-  .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 900; }
-  .form-group { margin-bottom: 14px; }
-  .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
-  .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
-  .form-group input:focus { border-color: var(--primary-pink); }
+    /* Main App Layout */
+    #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(233, 30, 99, 0.2); }
+    .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 16px; cursor: pointer; }
+    
+    .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow-y: auto; }
 
-  /* Main App Layout */
-  #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-  
-  header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(233, 30, 99, 0.2); }
-  .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 16px; }
-  
-  .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
-  .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
-  
-  @media (min-width: 768px) {
-    .pos-layout { flex-direction: row; }
-    .menu-section { flex: 6.2; overflow-y: auto; height: 100%; padding-right: 4px; }
-    .cart-section { flex: 3.8; height: 100%; }
-  }
+    /* DASHBOARD HOME MENU (IKON BESAR) */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 900px; margin: 40px auto 0 auto; padding: 0 10px; }
+    .dash-card { background: white; border: 2px solid var(--border-color); border-radius: 18px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .dash-card:hover { transform: translateY(-4px); border-color: var(--primary-pink); box-shadow: 0 8px 25px rgba(233, 30, 99, 0.15); }
+    .dash-icon { width: 56px; height: 56px; border-radius: 50%; background: #fff0f3; color: var(--primary-pink); display: flex; align-items: center; justify-content: center; }
+    .dash-card:nth-child(2) .dash-icon { background: #fff5e6; color: var(--primary-orange); }
+    .dash-card:nth-child(3) .dash-icon { background: #e8f5e9; color: #27ae60; }
+    .dash-card h3 { font-size: 16px; font-weight: 900; color: var(--text-dark); }
+    .dash-card p { font-size: 12px; color: var(--text-muted); font-weight: 500; }
 
-  /* Customer Header */
-  .customer-header { background: #fff; padding: 10px; border-radius: 12px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; gap: 8px; }
+    /* POS LAYOUT FLOW */
+    .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
+    @media (min-width: 768px) {
+      .pos-layout { flex-direction: row; }
+      .menu-section { flex: 6.2; overflow-y: auto; height: 100%; padding-right: 4px; }
+      .cart-section { flex: 3.8; height: 100%; }
+    }
 
-  /* Menu Grid */
-  .category-title { font-size: 13px; font-weight: 900; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-  .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
-  
-  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-  .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; border-left: 4px solid var(--primary-orange); }
-  .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
-  .menu-card h4 { font-size: 13px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
-  .menu-card .price { color: var(--primary-orange); font-weight: 900; font-size: 13px; }
+    /* Customer Gate Box */
+    .customer-gate-box { background: #fff; padding: 16px; border-radius: 14px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.02); margin-bottom: 12px; }
+    .customer-gate-box h4 { font-size: 13px; font-weight: 900; color: var(--primary-pink); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-  /* Cart Section */
-  .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
-  
-  .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1.5px solid var(--border-color); flex-shrink: 0; }
-  .cart-header h3 { font-size: 15px; font-weight: 900; color: var(--primary-pink); display: flex; align-items: center; gap: 8px; }
+    /* Menu Grid */
+    .category-title { font-size: 13px; font-weight: 900; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+    .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
+    
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; border-left: 4px solid var(--primary-orange); }
+    .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
+    .menu-card h4 { font-size: 13px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
+    .menu-card .price { color: var(--primary-orange); font-weight: 900; font-size: 13px; }
 
-  .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
-  
-  .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
-  .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-  .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
-  .cart-item-price { font-size: 13px; font-weight: 900; color: var(--text-dark); }
-  
-  .cart-item-notes { font-size: 11px; color: var(--primary-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; width: fit-content; }
-  
-  .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
-  
-  .btn-custom { background: #fff; border: 1px solid #ffccd5; color: var(--primary-pink); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-  .btn-custom:hover { background: #fff0f3; }
+    /* Cart Section */
+    .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
+    .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1.5px solid var(--border-color); flex-shrink: 0; }
+    .cart-header h3 { font-size: 15px; font-weight: 900; color: var(--primary-pink); display: flex; align-items: center; gap: 8px; }
 
-  .qty-control { display: flex; align-items: center; gap: 6px; }
-  .btn-qty { width: 28px; height: 28px; border-radius: 8px; border: none; background: #f3e5db; color: var(--text-dark); font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all 0.2s ease; }
-  .btn-qty:hover { background: var(--primary-pink); color: white; }
-  .qty-num { font-weight: 900; font-size: 13px; min-width: 20px; text-align: center; color: var(--text-dark); }
+    .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
+    
+    .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+    .cart-item-price { font-size: 13px; font-weight: 900; color: var(--text-dark); }
+    
+    .cart-item-notes { font-size: 11px; color: var(--primary-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; width: fit-content; }
+    
+    .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
+    
+    .btn-custom { background: #fff; border: 1px solid #ffccd5; color: var(--primary-pink); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .btn-custom:hover { background: #fff0f3; }
 
-  .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
-  .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .cart-total label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
-  .cart-total val { font-size: 20px; font-weight: 900; color: var(--text-dark); }
-  
-  .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
+    .qty-control { display: flex; align-items: center; gap: 6px; }
+    .btn-qty { width: 28px; height: 28px; border-radius: 8px; border: none; background: #f3e5db; color: var(--text-dark); font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all 0.2s ease; }
+    .btn-qty:hover { background: var(--primary-pink); color: white; }
+    .qty-num { font-weight: 900; font-size: 13px; min-width: 20px; text-align: center; color: var(--text-dark); }
 
-  /* Modals */
-  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
-  .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1.5px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-  .modal-header h3 { font-size: 16px; font-weight: 900; color: var(--primary-pink); }
-  
-  .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-  .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
-  .chip.selected { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
-</style>
+    .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
+    .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .cart-total label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
+    .cart-total val { font-size: 20px; font-weight: 900; color: var(--text-dark); }
+    
+    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
+
+    /* Modals */
+    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+    .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1.5px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+    .modal-header h3 { font-size: 16px; font-weight: 900; color: var(--primary-pink); }
+    
+    .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+    .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
+    .chip.selected { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
+  </style>
 </head>
 <body>
 
@@ -131,60 +140,115 @@
   <!-- PAGE 2: MAIN APP -->
   <div id="app-page" class="hidden">
     <header>
-      <div class="header-brand">
-        <!-- SVG Logo Juice Icon -->
+      <div class="header-brand" onclick="showDashboard()">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span>QisKi Juice POS</span>
       </div>
       <div style="display: flex; align-items: center; gap: 12px;">
-        <span id="user-display" style="font-size: 13px; font-weight: 600;">Kasir</span>
+        <span id="user-display" style="font-size: 13px; font-weight: 700;">Kasir</span>
         <button onclick="logout()" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 4px 10px; font-size: 11px;">Logout</button>
       </div>
     </header>
 
     <div class="view-content">
-      <div class="pos-layout">
-        
-        <!-- LEFT: CATALOG -->
-        <div class="menu-section">
-          <div class="customer-header">
-            <input type="text" id="cust-name" placeholder="Nama Pelanggan / No. Pemesan..." style="flex:2; padding:9px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none;">
-            <select id="select-customer-type" style="flex:1; padding:9px; border:1.5px solid var(--border-color); border-radius:8px; font-size:12px; outline:none;">
-              <option value="REGULAR">Umum</option>
-              <option value="MEMBER">Member QSK</option>
-            </select>
-          </div>
-          <div id="catalog-container"></div>
+      
+      <!-- VIEW 1: HOME DASHBOARD MENU -->
+      <div id="home-dashboard-view">
+        <div style="text-align: center; margin-top: 20px;">
+          <h2 style="font-size: 22px; font-weight: 900; color: var(--primary-pink);">Menu Utama</h2>
+          <p style="color: var(--text-muted); font-size: 13px; font-weight: 500; margin-top: 4px;">Pilih salah satu menu operasional kasir di bawah ini</p>
         </div>
 
-        <!-- RIGHT: MODERN CART -->
-        <div class="cart-section">
-          <div class="cart-header">
-            <h3>
-              <!-- SVG Cart Icon -->
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-              Keranjang Pesanan
-            </h3>
+        <div class="dashboard-grid">
+          <div class="dash-card" onclick="openNewOrderFlow()">
+            <div class="dash-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <h3>Pesanan Baru</h3>
+            <p>Buat transaksi penjualan jus baru untuk pelanggan</p>
           </div>
 
-          <div class="cart-items" id="cart-items">
-            <p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 600;">Keranjang masih kosong</p>
+          <div class="dash-card" onclick="openDummyMenu('Daftar Pesanan (Pending & Bar Queue)')">
+            <div class="dash-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h3>Daftar Pesanan</h3>
+            <p>Lihat antrian Kantung Pending dan proses Bar</p>
           </div>
 
-          <div class="cart-footer">
-            <div class="cart-total">
-              <label>Total Pembayaran</label>
-              <val id="cart-total-val">Rp 0</val>
+          <div class="dash-card" onclick="openDummyMenu('Rekap Penjualan Shift')">
+            <div class="dash-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             </div>
-            <div class="cart-actions">
-              <button onclick="clearCart()" class="btn btn-secondary">Batal</button>
-              <button onclick="savePendingOrder()" class="btn btn-warning">Pending</button>
-              <button onclick="openPaymentModal()" class="btn btn-primary">Bayar</button>
-            </div>
+            <h3>Rekap Pesanan</h3>
+            <p>Ringkasan total omzet tunai dan QRIS hari ini</p>
           </div>
         </div>
-
       </div>
+
+      <!-- VIEW 2: FLOW PESANAN BARU -->
+      <div id="new-order-view" class="hidden" style="height: 100%;">
+        <div style="margin-bottom: 10px;">
+          <button onclick="showDashboard()" class="btn" style="background: #fff; border: 1.5px solid var(--border-color); color: var(--text-dark); font-size: 11px; padding: 4px 10px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Kembali ke Dashboard
+          </button>
+        </div>
+
+        <div class="pos-layout">
+          <!-- LEFT: CATALOG & CUSTOMER GATE -->
+          <div class="menu-section">
+            <!-- STEP 1: MANDATORY NAME GATE -->
+            <div class="customer-gate-box">
+              <h4>1. Identitas Pemesan (Wajib Diisi)</h4>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="cust-name" placeholder="Masukkan Nama / No. Pemesan..." oninput="handleCustomerNameInput()" style="flex:2; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700;">
+                <select id="select-customer-type" style="flex:1; padding:10px; border:1.5px solid var(--border-color); border-radius:8px; font-size:12px; outline:none; font-weight:700;">
+                  <option value="REGULAR">Umum</option>
+                  <option value="MEMBER">Member QSK</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- STEP 2: KATALOG MENU (HIDDEN UNTIL NAME IS FILLED) -->
+            <div id="catalog-container" class="hidden"></div>
+            
+            <!-- EMPTY STATE BEFORE NAME IS FILLED -->
+            <div id="catalog-placeholder" style="text-align: center; padding: 50px 20px; background: #fff; border-radius: 14px; border: 1.5px dashed var(--border-color);">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <p style="color: var(--text-muted); font-size: 13px; font-weight: 700; margin-top: 10px;">Silakan isi Nama Pelanggan di atas terlebih dahulu untuk membuka Katalog Menu Juice.</p>
+            </div>
+          </div>
+
+          <!-- RIGHT: MODERN CART -->
+          <div class="cart-section">
+            <div class="cart-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                Keranjang Pesanan
+              </h3>
+            </div>
+
+            <div class="cart-items" id="cart-items">
+              <p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 700;">Keranjang masih kosong</p>
+            </div>
+
+            <div class="cart-footer">
+              <div class="cart-total">
+                <label>Total Pembayaran</label>
+                <val id="cart-total-val">Rp 0</val>
+              </div>
+              <div class="cart-actions">
+                <button onclick="clearCart()" class="btn btn-secondary">Batal</button>
+                <button onclick="savePendingOrder()" class="btn btn-warning">Pending</button>
+                <button onclick="openPaymentModal()" class="btn btn-primary">Bayar</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -219,7 +283,7 @@
         <label>Jumlah Pesanan Custom (Pcs):</label>
         <div style="display:flex; align-items:center; gap:14px; margin-top:8px;">
           <button class="btn-qty" onclick="adjustHoldQty(-1)" style="width:36px; height:36px; font-size:16px;">-</button>
-          <span id="hold-qty-val" style="font-weight:800; font-size:18px;">1</span>
+          <span id="hold-qty-val" style="font-weight:900; font-size:18px;">1</span>
           <button class="btn-qty" onclick="adjustHoldQty(1)" style="width:36px; height:36px; font-size:16px;">+</button>
         </div>
       </div>
@@ -227,7 +291,7 @@
       <!-- MODE 2: CARTS SMART SPLIT DROPDOWN -->
       <div class="form-group hidden" style="margin-top:14px;" id="mode-cart-group">
         <label>Terapkan catatan ini ke berapa item?</label>
-        <select id="custom-apply-qty" style="padding:8px; font-size:13px; margin-top:6px; font-weight: 600;"></select>
+        <select id="custom-apply-qty" style="padding:8px; font-size:13px; margin-top:6px; font-weight: 700;"></select>
       </div>
 
       <button onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 12px;">SIMPAN KE KERANJANG</button>
@@ -241,7 +305,7 @@
         <h3>Pembayaran Transaksi</h3>
         <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
-      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:800; color:var(--primary-orange-dark); font-size:18px;"></div>
+      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:900; color:var(--primary-orange-dark); font-size:18px;"></div>
       <div class="form-group">
         <label>Metode Pembayaran</label>
         <select id="pay-method" onchange="togglePayMethod()">
@@ -251,7 +315,7 @@
       </div>
       <div id="cash-group">
         <div class="form-group"><label>Uang Diterima</label><input type="number" id="pay-cash-paid" oninput="calculatePayment()" placeholder="0"></div>
-        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:800; color:var(--accent-pink);"></div>
+        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);"></div>
       </div>
       <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
     </div>
@@ -312,6 +376,7 @@
         document.getElementById('user-display').innerText = currentUser.nama;
         document.getElementById('login-page').classList.add('hidden');
         document.getElementById('app-page').classList.remove('hidden');
+        showDashboard();
       }
     }
 
@@ -332,8 +397,44 @@
           document.getElementById('user-display').innerText = currentUser.nama;
           document.getElementById('login-page').classList.add('hidden');
           document.getElementById('app-page').classList.remove('hidden');
+          showDashboard();
         } else { alert(res.message); }
       });
+    }
+
+    // NAVIGATION VIEWS
+    function showDashboard() {
+      document.getElementById('home-dashboard-view').classList.remove('hidden');
+      document.getElementById('new-order-view').classList.add('hidden');
+    }
+
+    function openNewOrderFlow() {
+      document.getElementById('home-dashboard-view').classList.add('hidden');
+      document.getElementById('new-order-view').classList.remove('hidden');
+      
+      // Reset State
+      document.getElementById('cust-name').value = '';
+      handleCustomerNameInput();
+      clearCart();
+    }
+
+    function openDummyMenu(title) {
+      alert('Fitur "' + title + '" masih dalam tahap pengadopsian backend.');
+    }
+
+    // GATEWAY CHECK: NAMA PEMESAN WAJIB DIISI SEBELUM KATALOG BUKA
+    function handleCustomerNameInput() {
+      var nameVal = document.getElementById('cust-name').value.trim();
+      var catalogContainer = document.getElementById('catalog-container');
+      var catalogPlaceholder = document.getElementById('catalog-placeholder');
+
+      if (nameVal.length > 0) {
+        catalogContainer.classList.remove('hidden');
+        catalogPlaceholder.classList.add('hidden');
+      } else {
+        catalogContainer.classList.add('hidden');
+        catalogPlaceholder.classList.remove('hidden');
+      }
     }
 
     function renderCatalog() {
@@ -489,50 +590,50 @@
       updateCartUI();
     }
 
-function updateCartUI() {
-  var container = document.getElementById('cart-items');
-  if (currentCart.length === 0) {
-    container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 700;">Keranjang masih kosong</p>';
-    document.getElementById('cart-total-val').innerText = 'Rp 0';
-    return;
-  }
+    function updateCartUI() {
+      var container = document.getElementById('cart-items');
+      if (currentCart.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 700;">Keranjang masih kosong</p>';
+        document.getElementById('cart-total-val').innerText = 'Rp 0';
+        return;
+      }
 
-  var total = 0;
-  container.innerHTML = currentCart.map((item, idx) => {
-    var subtotal = item.harga * item.qty;
-    total += subtotal;
-    return `
-      <div class="cart-item">
-        <div class="cart-item-header">
-          <span class="cart-item-title">${item.nama}</span>
-          <span class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</span>
-        </div>
-        
-        ${item.notes !== "Normal" ? `
-          <div class="cart-item-notes">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            <span>${item.notes}</span>
+      var total = 0;
+      container.innerHTML = currentCart.map((item, idx) => {
+        var subtotal = item.harga * item.qty;
+        total += subtotal;
+        return `
+          <div class="cart-item">
+            <div class="cart-item-header">
+              <span class="cart-item-title">${item.nama}</span>
+              <span class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</span>
+            </div>
+            
+            ${item.notes !== "Normal" ? `
+              <div class="cart-item-notes">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <span>${item.notes}</span>
+              </div>
+            ` : ''}
+
+            <div class="cart-item-footer">
+              <button onclick="openCartCustomModal(${idx})" class="btn-custom">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Custom
+              </button>
+              
+              <div class="qty-control">
+                <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
+                <span class="qty-num">${item.qty}</span>
+                <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
+              </div>
+            </div>
           </div>
-        ` : ''}
+        `;
+      }).join('');
 
-        <div class="cart-item-footer">
-          <button onclick="openCartCustomModal(${idx})" class="btn-custom">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Custom
-          </button>
-          
-          <div class="qty-control">
-            <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
-            <span class="qty-num">${item.qty}</span>
-            <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-}
+      document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+    }
 
     function updateQty(index, delta) {
       currentCart[index].qty += delta;
@@ -541,6 +642,19 @@ function updateCartUI() {
     }
 
     function clearCart() { currentCart = []; updateCartUI(); }
+
+    function savePendingOrder() {
+      if (currentCart.length === 0) return alert('Keranjang masih kosong!');
+      var custName = document.getElementById('cust-name').value;
+
+      var pendingData = { id: 'PEND-' + Date.now(), customerName: custName, cart: currentCart, time: new Date().toLocaleTimeString() };
+      var pendingList = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
+      pendingList.push(pendingData);
+      localStorage.setItem('qiski_pending', JSON.stringify(pendingList));
+
+      alert('Order a/n "' + custName + '" disimpan di Pending!');
+      showDashboard();
+    }
 
     function openPaymentModal() {
       if (currentCart.length === 0) return alert('Keranjang kosong!');
@@ -592,8 +706,7 @@ function updateCartUI() {
         if (res.success) {
           alert('Transaksi a/n ' + custName + ' Berhasil!');
           closeModal('payment-modal');
-          document.getElementById('cust-name').value = '';
-          clearCart();
+          showDashboard();
         } else { alert('Gagal simpan: ' + res.message); }
       });
     }
