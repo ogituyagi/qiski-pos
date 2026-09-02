@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QisKi Juice POS</title>
   <style>
-    /* Import Google Font Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
 
     :root {
@@ -39,16 +38,22 @@
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
     .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
-    .form-group input:focus { border-color: var(--primary-pink); }
 
     /* Main App Layout */
     #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Header with Integrated Navigation Tabs */
     header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(233, 30, 99, 0.2); }
     .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 16px; cursor: pointer; }
     
+    /* Header Tabs */
+    .header-tabs { display: flex; gap: 6px; }
+    .tab-btn { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px; }
+    .tab-btn:hover, .tab-btn.active { background: white; color: var(--primary-pink); }
+
     .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow-y: auto; }
 
-    /* DASHBOARD HOME MENU (IKON BESAR) */
+    /* Dashboard Grid */
     .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 900px; margin: 40px auto 0 auto; padding: 0 10px; }
     .dash-card { background: white; border: 2px solid var(--border-color); border-radius: 18px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .dash-card:hover { transform: translateY(-4px); border-color: var(--primary-pink); box-shadow: 0 8px 25px rgba(233, 30, 99, 0.15); }
@@ -58,7 +63,7 @@
     .dash-card h3 { font-size: 16px; font-weight: 900; color: var(--text-dark); }
     .dash-card p { font-size: 12px; color: var(--text-muted); font-weight: 500; }
 
-    /* POS LAYOUT FLOW */
+    /* POS Layout */
     .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
     @media (min-width: 768px) {
       .pos-layout { flex-direction: row; }
@@ -66,9 +71,14 @@
       .cart-section { flex: 3.8; height: 100%; }
     }
 
-    /* Customer Gate Box */
-    .customer-gate-box { background: #fff; padding: 16px; border-radius: 14px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.02); margin-bottom: 12px; }
-    .customer-gate-box h4 { font-size: 13px; font-weight: 900; color: var(--primary-pink); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    /* Customer Gate Box (Radio Chips First) */
+    .customer-gate-box { background: #fff; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .customer-gate-box h4 { font-size: 12px; font-weight: 900; color: var(--primary-pink); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Radio Chips Styling */
+    .radio-chip-group { display: flex; gap: 10px; }
+    .radio-chip { flex: 1; border: 1.5px solid var(--border-color); padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; background: #fff; color: var(--text-dark); transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .radio-chip.selected { background: #fff0f3; border-color: var(--primary-pink); color: var(--primary-pink); }
 
     /* Menu Grid */
     .category-title { font-size: 13px; font-weight: 900; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
@@ -140,12 +150,31 @@
   <!-- PAGE 2: MAIN APP -->
   <div id="app-page" class="hidden">
     <header>
+      <!-- BRAND LOGO -->
       <div class="header-brand" onclick="showDashboard()">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span>QisKi Juice POS</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span id="user-display" style="font-size: 13px; font-weight: 700;">Kasir</span>
+
+      <!-- HEADER NAVIGATION TABS -->
+      <div class="header-tabs">
+        <button class="tab-btn active" id="tab-home" onclick="showDashboard()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </button>
+        <button class="tab-btn" id="tab-pending" onclick="openDummyMenu('Kantung Pending')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Pending
+        </button>
+        <button class="tab-btn" id="tab-kitchen" onclick="openDummyMenu('Antrian Bar / Dapur')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A8 8 0 0 1 12 4a8 8 0 0 1 6 9.87"/><line x1="6" y1="17" x2="18" y2="17"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Antrian Proses
+        </button>
+      </div>
+
+      <!-- USER PROFILE & LOGOUT -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="user-display" style="font-size: 12px; font-weight: 700;">Kasir</span>
         <button onclick="logout()" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 4px 10px; font-size: 11px;">Logout</button>
       </div>
     </header>
@@ -188,24 +217,38 @@
 
       <!-- VIEW 2: FLOW PESANAN BARU -->
       <div id="new-order-view" class="hidden" style="height: 100%;">
-        <div style="margin-bottom: 10px;">
-          <button onclick="showDashboard()" class="btn" style="background: #fff; border: 1.5px solid var(--border-color); color: var(--text-dark); font-size: 11px; padding: 4px 10px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-            Kembali ke Dashboard
-          </button>
-        </div>
-
         <div class="pos-layout">
+          
           <!-- LEFT: CATALOG & CUSTOMER GATE -->
           <div class="menu-section">
-            <!-- STEP 1: MANDATORY NAME GATE -->
+            
+            <!-- STEP 1: RE-ORDERED GATEWAY (JENIS DULU BARU NAMA) -->
             <div class="customer-gate-box">
               <h4>1. Identitas Pemesan (Wajib Diisi)</h4>
-              <div style="display: flex; gap: 8px;">
-                <input type="text" id="cust-name" placeholder="Masukkan Nama / No. Pemesan..." oninput="handleCustomerNameInput()" style="flex:2; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700;">
-                <select id="select-customer-type" style="flex:1; padding:10px; border:1.5px solid var(--border-color); border-radius:8px; font-size:12px; outline:none; font-weight:700;">
-                  <option value="REGULAR">Umum</option>
-                  <option value="MEMBER">Member QSK</option>
+              
+              <!-- RADIO CHIPS DUA PILIHAN: UMUM & MEMBER -->
+              <div class="radio-chip-group">
+                <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Pelanggan Umum
+                </div>
+                <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Member QSK
+                </div>
+              </div>
+
+              <!-- INPUT NAMA PELANGGAN (UNTUK UMUM) -->
+              <div id="input-nama-container">
+                <input type="text" id="cust-name" placeholder="Masukkan Nama Pelanggan..." oninput="handleCustomerNameInput()" style="width:100%; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700;">
+              </div>
+
+              <!-- SELECT MEMBER (UNTUK MEMBER QSK) -->
+              <div id="select-member-container" class="hidden">
+                <select id="select-member-list" onchange="handleMemberSelectChange()" style="width:100%; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700;">
+                  <option value="">-- Pilih Member QSK / Cari No HP --</option>
+                  <option value="MEMBER-001">Budi Santoso (08123456789)</option>
+                  <option value="MEMBER-002">Siti Aminah (08987654321)</option>
                 </select>
               </div>
             </div>
@@ -216,7 +259,7 @@
             <!-- EMPTY STATE BEFORE NAME IS FILLED -->
             <div id="catalog-placeholder" style="text-align: center; padding: 50px 20px; background: #fff; border-radius: 14px; border: 1.5px dashed var(--border-color);">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <p style="color: var(--text-muted); font-size: 13px; font-weight: 700; margin-top: 10px;">Silakan isi Nama Pelanggan di atas terlebih dahulu untuk membuka Katalog Menu Juice.</p>
+              <p style="color: var(--text-muted); font-size: 13px; font-weight: 700; margin-top: 10px;">Silakan isi Identitas Pelanggan di atas terlebih dahulu untuk membuka Katalog Menu Juice.</p>
             </div>
           </div>
 
@@ -353,6 +396,7 @@
 
     var currentUser = null;
     var currentCart = [];
+    var selectedCustomerType = 'REGULAR'; // 'REGULAR' atau 'MEMBER'
     
     var modalTriggerSource = null; 
     var activeCartIndex = null;
@@ -402,33 +446,78 @@
       });
     }
 
-    // NAVIGATION VIEWS
+    // NAVIGATION VIEWS & HEADER TABS
+    function setActiveHeaderTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      if(tabId) document.getElementById(tabId).classList.add('active');
+    }
+
     function showDashboard() {
+      setActiveHeaderTab('tab-home');
       document.getElementById('home-dashboard-view').classList.remove('hidden');
       document.getElementById('new-order-view').classList.add('hidden');
     }
 
     function openNewOrderFlow() {
+      setActiveHeaderTab(null); // Deselect all header tabs saat masuk flow pesanan baru
       document.getElementById('home-dashboard-view').classList.add('hidden');
       document.getElementById('new-order-view').classList.remove('hidden');
       
-      // Reset State
+      // Reset Input Identitas & Keranjang
+      selectCustomerType('REGULAR');
       document.getElementById('cust-name').value = '';
+      document.getElementById('select-member-list').value = '';
       handleCustomerNameInput();
       clearCart();
     }
 
     function openDummyMenu(title) {
-      alert('Fitur "' + title + '" masih dalam tahap pengadopsian backend.');
+      if (title === 'Kantung Pending') setActiveHeaderTab('tab-pending');
+      else if (title === 'Antrian Bar / Dapur') setActiveHeaderTab('tab-kitchen');
+      alert('Fitur "' + title + '" siap diintegrasikan dengan database backend.');
     }
 
-    // GATEWAY CHECK: NAMA PEMESAN WAJIB DIISI SEBELUM KATALOG BUKA
+    // GATEWAY LOGIC (JENIS PELANGGAN & INPUT NAMA)
+    function selectCustomerType(type) {
+      selectedCustomerType = type;
+      var chipUmum = document.getElementById('chip-umum');
+      var chipMember = document.getElementById('chip-member');
+      var inputNama = document.getElementById('input-nama-container');
+      var selectMember = document.getElementById('select-member-container');
+
+      if (type === 'REGULAR') {
+        chipUmum.classList.add('selected');
+        chipMember.classList.remove('selected');
+        inputNama.classList.remove('hidden');
+        selectMember.classList.add('hidden');
+      } else {
+        chipMember.classList.add('selected');
+        chipUmum.classList.remove('selected');
+        inputNama.classList.add('hidden');
+        selectMember.classList.remove('hidden');
+      }
+      handleCustomerNameInput();
+    }
+
+    function handleMemberSelectChange() {
+      handleCustomerNameInput();
+    }
+
     function handleCustomerNameInput() {
-      var nameVal = document.getElementById('cust-name').value.trim();
+      var isValid = false;
+      
+      if (selectedCustomerType === 'REGULAR') {
+        var nameVal = document.getElementById('cust-name').value.trim();
+        isValid = nameVal.length > 0;
+      } else {
+        var memberVal = document.getElementById('select-member-list').value;
+        isValid = memberVal !== '';
+      }
+
       var catalogContainer = document.getElementById('catalog-container');
       var catalogPlaceholder = document.getElementById('catalog-placeholder');
 
-      if (nameVal.length > 0) {
+      if (isValid) {
         catalogContainer.classList.remove('hidden');
         catalogPlaceholder.classList.add('hidden');
       } else {
@@ -643,9 +732,18 @@
 
     function clearCart() { currentCart = []; updateCartUI(); }
 
+    function getActiveCustomerName() {
+      if (selectedCustomerType === 'REGULAR') {
+        return document.getElementById('cust-name').value.trim();
+      } else {
+        var select = document.getElementById('select-member-list');
+        return select.options[select.selectedIndex].text;
+      }
+    }
+
     function savePendingOrder() {
       if (currentCart.length === 0) return alert('Keranjang masih kosong!');
-      var custName = document.getElementById('cust-name').value;
+      var custName = getActiveCustomerName();
 
       var pendingData = { id: 'PEND-' + Date.now(), customerName: custName, cart: currentCart, time: new Date().toLocaleTimeString() };
       var pendingList = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
@@ -658,8 +756,7 @@
 
     function openPaymentModal() {
       if (currentCart.length === 0) return alert('Keranjang kosong!');
-      var custName = document.getElementById('cust-name').value;
-      if (!custName) return alert('Silakan isi nama/no pelanggan terlebih dahulu!');
+      var custName = getActiveCustomerName();
 
       var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
       document.getElementById('pay-total-akhir').value = 'Rp ' + subtotal.toLocaleString('id-ID');
@@ -688,7 +785,7 @@
       var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
       var method = document.getElementById('pay-method').value;
       var cashPaid = method === 'CASH' ? Number(document.getElementById('pay-cash-paid').value) || 0 : subtotal;
-      var custName = document.getElementById('cust-name').value;
+      var custName = getActiveCustomerName();
 
       if (method === 'CASH' && cashPaid < subtotal) return alert('Uang pembayaran masih kurang!');
 
