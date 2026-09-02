@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QisKi Juice POS</title>
 <style>
-  /* Import Google Font Poppins */
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+  /* Import Google Font Roboto */
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
 
   :root {
     --primary-orange: #ff8c00;
@@ -21,7 +21,7 @@
     --border-color: #ffd8be;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', -apple-system, sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', -apple-system, sans-serif; }
   html, body { width: 100%; height: 100%; background-color: var(--bg-cream); color: var(--text-dark); overflow: hidden; }
   
   .hidden { display: none !important; }
@@ -36,7 +36,7 @@
   /* Login Page */
   #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
   .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.12); border: 1.5px solid var(--border-color); }
-  .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 800; }
+  .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 900; }
   .form-group { margin-bottom: 14px; }
   .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
   .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
@@ -46,7 +46,7 @@
   #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
   
   header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(233, 30, 99, 0.2); }
-  .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; }
+  .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 16px; }
   
   .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
   .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
@@ -61,41 +61,39 @@
   .customer-header { background: #fff; padding: 10px; border-radius: 12px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; gap: 8px; }
 
   /* Menu Grid */
-  .category-title { font-size: 13px; font-weight: 800; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+  .category-title { font-size: 13px; font-weight: 900; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
   .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
   
   .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
   .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; border-left: 4px solid var(--primary-orange); }
   .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
-  .menu-card h4 { font-size: 12px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
-  .menu-card .price { color: var(--primary-orange); font-weight: 800; font-size: 12px; }
+  .menu-card h4 { font-size: 13px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
+  .menu-card .price { color: var(--primary-orange); font-weight: 900; font-size: 13px; }
 
-  /* Modern Cart Section */
+  /* Cart Section */
   .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
   
   .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1.5px solid var(--border-color); flex-shrink: 0; }
-  .cart-header h3 { font-size: 15px; font-weight: 800; color: var(--primary-pink); display: flex; align-items: center; gap: 8px; }
+  .cart-header h3 { font-size: 15px; font-weight: 900; color: var(--primary-pink); display: flex; align-items: center; gap: 8px; }
 
   .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
   
-  /* Modern Cart Item Card */
-  .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s ease; }
+  .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
   .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
   .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
-  .cart-item-price { font-size: 13px; font-weight: 800; color: var(--text-dark); }
+  .cart-item-price { font-size: 13px; font-weight: 900; color: var(--text-dark); }
   
-  .cart-item-notes { font-size: 11px; color: var(--primary-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
+  .cart-item-notes { font-size: 11px; color: var(--primary-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; width: fit-content; }
   
   .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
   
   .btn-custom { background: #fff; border: 1px solid #ffccd5; color: var(--primary-pink); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
   .btn-custom:hover { background: #fff0f3; }
 
-  /* FIX QTY CONTROL (CLEAN & NO DOUBLE BORDER) */
   .qty-control { display: flex; align-items: center; gap: 6px; }
-  .btn-qty { width: 28px; height: 28px; border-radius: 8px; border: none; background: #f3e5db; color: var(--text-dark); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: justify; justify-content: center; font-size: 15px; transition: all 0.2s ease; }
-  .btn-qty:hover { background: var(--primary-orange); color: white; }
-  .qty-num { font-weight: 800; font-size: 13px; min-width: 20px; text-align: center; color: var(--text-dark); }
+  .btn-qty { width: 28px; height: 28px; border-radius: 8px; border: none; background: #f3e5db; color: var(--text-dark); font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all 0.2s ease; }
+  .btn-qty:hover { background: var(--primary-pink); color: white; }
+  .qty-num { font-weight: 900; font-size: 13px; min-width: 20px; text-align: center; color: var(--text-dark); }
 
   .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
   .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -108,7 +106,7 @@
   .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
   .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1.5px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
   .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-  .modal-header h3 { font-size: 16px; font-weight: 800; color: var(--primary-pink); }
+  .modal-header h3 { font-size: 16px; font-weight: 900; color: var(--primary-pink); }
   
   .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
   .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
@@ -491,52 +489,50 @@
       updateCartUI();
     }
 
-    function updateCartUI() {
-      var container = document.getElementById('cart-items');
-      if (currentCart.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 600;">Keranjang masih kosong</p>';
-        document.getElementById('cart-total-val').innerText = 'Rp 0';
-        return;
-      }
+function updateCartUI() {
+  var container = document.getElementById('cart-items');
+  if (currentCart.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 700;">Keranjang masih kosong</p>';
+    document.getElementById('cart-total-val').innerText = 'Rp 0';
+    return;
+  }
 
-      var total = 0;
-      container.innerHTML = currentCart.map((item, idx) => {
-        var subtotal = item.harga * item.qty;
-        total += subtotal;
-        return `
-          <div class="cart-item">
-            <div class="cart-item-header">
-              <span class="cart-item-title">${item.nama}</span>
-              <span class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</span>
-            </div>
-            
-            ${item.notes !== "Normal" ? `
-              <div class="cart-item-notes">
-                <!-- SVG Edit/Pencil Icon -->
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                ${item.notes}
-              </div>
-            ` : ''}
-
-            <div class="cart-item-footer">
-              <button onclick="openCartCustomModal(${idx})" class="btn-custom">
-                <!-- SVG Settings Icon -->
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                Custom
-              </button>
-              
-              <div class="qty-control">
-                <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
-                <span class="qty-num">${item.qty}</span>
-                <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
-              </div>
-            </div>
+  var total = 0;
+  container.innerHTML = currentCart.map((item, idx) => {
+    var subtotal = item.harga * item.qty;
+    total += subtotal;
+    return `
+      <div class="cart-item">
+        <div class="cart-item-header">
+          <span class="cart-item-title">${item.nama}</span>
+          <span class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</span>
+        </div>
+        
+        ${item.notes !== "Normal" ? `
+          <div class="cart-item-notes">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>${item.notes}</span>
           </div>
-        `;
-      }).join('');
+        ` : ''}
 
-      document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-    }
+        <div class="cart-item-footer">
+          <button onclick="openCartCustomModal(${idx})" class="btn-custom">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Custom
+          </button>
+          
+          <div class="qty-control">
+            <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
+            <span class="qty-num">${item.qty}</span>
+            <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+}
 
     function updateQty(index, delta) {
       currentCart[index].qty += delta;
