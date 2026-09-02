@@ -9,7 +9,7 @@
     html, body { width: 100%; height: 100%; background-color: #e8f5e9; color: #333; overflow-x: hidden; }
     
     .hidden { display: none !important; }
-    .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
+    .btn { border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px; }
     .btn-primary { background: #27ae60; color: white; }
     .btn-secondary { background: #e74c3c; color: white; }
     .btn-warning { background: #f39c12; color: white; }
@@ -19,55 +19,51 @@
     #login-page { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 100%; padding: 20px; background-color: #e8f5e9; }
     .login-card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 360px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .login-card h2 { margin-bottom: 20px; text-align: center; color: #27ae60; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; }
+    .form-group input, .form-group select { width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
 
-    /* App Header & Navigation */
+    /* App Header & Layout */
     #app-page { background: #f4f6f8; min-height: 100%; display: flex; flex-direction: column; }
-    header { background: #1e8449; color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+    header { background: #1e8449; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
     
-    /* Navigation Bar */
-    .nav-bar { background: #145a32; display: flex; overflow-x: auto; padding: 0 10px; }
-    .nav-tab { background: none; border: none; color: #a9dfbf; padding: 12px 16px; font-weight: bold; cursor: pointer; font-size: 13px; border-bottom: 3px solid transparent; white-space: nowrap; }
-    .nav-tab.active { color: white; border-bottom-color: #2ec4b6; background: rgba(255,255,255,0.1); }
-
-    /* Main Container & Views */
-    .view-content { padding: 15px; flex: 1; overflow-y: auto; }
+    .view-content { padding: 12px; flex: 1; overflow-y: auto; }
     
-    /* POS View */
-    .pos-layout { display: flex; flex-direction: column; gap: 15px; }
+    .pos-layout { display: flex; flex-direction: column; gap: 12px; }
     @media (min-width: 768px) {
-      .pos-layout { flex-direction: row; height: calc(100vh - 120px); }
-      .menu-section { flex: 6; overflow-y: auto; }
-      .cart-section { flex: 4; border-left: 1px solid #ddd; }
+      .pos-layout { flex-direction: row; height: calc(100vh - 70px); }
+      .menu-section { flex: 6; overflow-y: auto; padding-right: 10px; }
+      .cart-section { flex: 4; border-left: 1px solid #ddd; padding-left: 10px; }
     }
 
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 10px; }
-    .menu-card { border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; text-align: center; background: #fafafa; cursor: pointer; border-left: 4px solid #27ae60; }
-    .menu-card:active { transform: scale(0.97); }
-    .menu-card h4 { font-size: 14px; margin-bottom: 4px; }
-    .menu-card .price { color: #27ae60; font-weight: bold; font-size: 13px; }
+    /* Customer Input Header */
+    .customer-header { background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 12px; display: flex; gap: 8px; }
+
+    /* Menu Grid & Cards */
+    .category-title { font-size: 14px; font-weight: bold; color: #1e8449; margin: 12px 0 6px 0; border-bottom: 2px solid #27ae60; padding-bottom: 2px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .menu-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; text-align: center; background: #fff; cursor: pointer; border-left: 4px solid #27ae60; position: relative; }
+    .menu-card:active { transform: scale(0.96); background: #e8f5e9; }
+    .menu-card h4 { font-size: 13px; margin-bottom: 4px; color: #333; }
+    .menu-card .price { color: #27ae60; font-weight: bold; font-size: 12px; }
 
     /* Cart Section */
-    .cart-section { background: #fff; padding: 15px; border-radius: 10px; display: flex; flex-direction: column; }
-    .cart-items { flex: 1; overflow-y: auto; margin: 10px 0; max-height: 300px; }
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #eee; }
-    .btn-qty { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; cursor: pointer; }
-    .cart-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-bottom: 10px; color: #2c3e50; }
-    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-
-    /* Cards & Tables (Dashboard Views) */
-    .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; }
-    .stat-card { background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center; }
-    .stat-card h3 { color: #27ae60; font-size: 18px; }
+    .cart-section { background: #fff; padding: 12px; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; }
+    .cart-items { flex: 1; overflow-y: auto; margin: 10px 0; max-height: 350px; }
+    .cart-item { padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; flex-direction: column; gap: 4px; }
+    .cart-item-header { display: flex; justify-content: space-between; align-items: center; }
+    .cart-item-notes { font-size: 11px; color: #d35400; background: #fef5e7; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; }
+    .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; cursor: pointer; }
+    .cart-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 10px; color: #2c3e50; }
+    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
     /* Modals */
     .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    .modal-list-item { border: 1px solid #eee; padding: 10px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-content { background: white; padding: 18px; border-radius: 10px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+    .chip-group { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .chip { border: 1px solid #ccc; padding: 6px 10px; border-radius: 16px; font-size: 12px; cursor: pointer; background: #f9f9f9; }
+    .chip.selected { background: #27ae60; color: white; border-color: #27ae60; }
   </style>
 </head>
 <body>
@@ -76,7 +72,7 @@
   <div id="login-page">
     <div class="login-card">
       <h2>🥤 QisKi Juice</h2>
-      <p style="text-align: center; color: #666; margin-bottom: 15px; font-size: 13px;">Point of Sales System</p>
+      <p style="text-align: center; color: #666; margin-bottom: 15px; font-size: 12px;">Point of Sales System</p>
       <form onsubmit="handleLogin(event)">
         <div class="form-group">
           <label>Username</label>
@@ -94,204 +90,155 @@
   <!-- PAGE 2: MAIN APP -->
   <div id="app-page" class="hidden">
     <header>
-      <div><b>🥤 QisKi Juice</b> | <span id="user-display">Kasir</span></div>
+      <div><b>🥤 QisKi Juice POS</b> | <span id="user-display">Kasir</span></div>
       <div>
-        <button onclick="logout()" class="btn btn-secondary" style="font-size: 11px; padding: 6px 10px;">Logout</button>
+        <button onclick="logout()" class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;">Logout</button>
       </div>
     </header>
 
-    <!-- NAVIGATION TABS -->
-    <div class="nav-bar">
-      <button class="nav-tab active" onclick="switchTab('pos-view', this)">🛒 Kasir POS</button>
-      <button class="nav-tab" onclick="switchTab('rekap-view', this)">📊 Rekap Shift</button>
-      <button class="nav-tab" onclick="switchTab('cashflow-view', this)">💸 Cash Flow</button>
-      <button class="nav-tab" onclick="openKitchenModal()">🍹 Antrian Bar (<span id="bar-count">0</span>)</button>
-    </div>
-
     <div class="view-content">
-      
-      <!-- TAB 1: KASIR POS -->
-      <div id="pos-view" class="tab-view">
-        <div class="pos-layout">
-          <div class="menu-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <div class="customer-type" style="flex:1; margin-right:10px;">
-                <select id="select-customer-type" class="form-group" style="margin-bottom:0;" onchange="handleCustomerTypeChange()">
-                  <option value="REGULAR">Pelanggan Umum (Regular)</option>
-                  <option value="MEMBER">Member QisKi (QSK)</option>
-                </select>
-                <select id="select-member-list" class="form-group hidden" style="margin-bottom:0; margin-top:5px;"></select>
-              </div>
-              <button onclick="openPendingModal()" class="btn btn-warning" style="font-size: 12px; white-space: nowrap;">
-                🛒 Pending (<span id="pending-count">0</span>)
-              </button>
-            </div>
-
-            <h3 style="margin-bottom: 10px; font-size: 15px; color: #555;">Katalog Menu Juice</h3>
-            <div class="menu-grid" id="menu-grid"></div>
+      <div class="pos-layout">
+        
+        <!-- LEFT: MENU CATALOG -->
+        <div class="menu-section">
+          <!-- STEP 1: INPUT NAMA PELANGGAN PERTAMA KALI -->
+          <div class="customer-header">
+            <input type="text" id="cust-name" placeholder="Nama Pelanggan / No. Pemesan..." style="flex:2; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:13px;">
+            <select id="select-customer-type" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:12px;" onchange="handleCustomerTypeChange()">
+              <option value="REGULAR">Umum</option>
+              <option value="MEMBER">Member QSK</option>
+            </select>
           </div>
 
-          <div class="cart-section">
-            <h3>Keranjang Pesanan</h3>
+          <!-- KATALOG MENU DARI GAMBAR -->
+          <div id="catalog-container"></div>
+        </div>
+
+        <!-- RIGHT: CART SUMMARY -->
+        <div class="cart-section">
+          <div>
+            <h3 style="font-size:15px; border-bottom:1px solid #eee; padding-bottom:5px;">Keranjang Pesanan</h3>
             <div class="cart-items" id="cart-items">
-              <p style="color: #888; text-align: center; margin-top: 20px;">Keranjang kosong</p>
+              <p style="color: #888; text-align: center; margin-top: 30px; font-size:13px;">Keranjang kosong</p>
             </div>
-            <div class="cart-footer">
-              <div class="cart-total">
-                <span>Total:</span>
-                <span id="cart-total-val">Rp 0</span>
-              </div>
-              <div class="cart-actions">
-                <button onclick="clearCart()" class="btn btn-secondary">Batal</button>
-                <button onclick="savePendingOrder()" class="btn btn-warning">Pending</button>
-                <button onclick="openPaymentModal()" class="btn btn-primary">Proses</button>
-              </div>
+          </div>
+
+          <div class="cart-footer">
+            <div class="cart-total">
+              <span>Total:</span>
+              <span id="cart-total-val">Rp 0</span>
+            </div>
+            <div class="cart-actions">
+              <button onclick="clearCart()" class="btn btn-secondary">Batal</button>
+              <button onclick="savePendingOrder()" class="btn btn-warning">Pending</button>
+              <button onclick="openPaymentModal()" class="btn btn-primary">Bayar</button>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- TAB 2: REKAP SHIFT HARIAN -->
-      <div id="rekap-view" class="tab-view hidden">
-        <div class="card">
-          <h2>📊 Rekap Penjualan Shift Hari Ini</h2>
-          <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Ringkasan transaksi kasir yang masuk di sesi ini.</p>
-          
-          <div class="stats-grid">
-            <div class="stat-card">
-              <small>Total Omzet</small>
-              <h3 id="stat-total-omzet">Rp 0</h3>
-            </div>
-            <div class="stat-card">
-              <small>Tunai (Cash)</small>
-              <h3 id="stat-cash-omzet" style="color: #27ae60;">Rp 0</h3>
-            </div>
-            <div class="stat-card">
-              <small>Non-Tunai (QRIS)</small>
-              <h3 id="stat-qris-omzet" style="color: #2980b9;">Rp 0</h3>
-            </div>
-            <div class="stat-card">
-              <small>Total Transaksi</small>
-              <h3 id="stat-count-trans" style="color: #f39c12;">0</h3>
-            </div>
-          </div>
-          <button onclick="refreshRekapData()" class="btn btn-info" style="width: 100%;">Refresh Data Rekap</button>
-        </div>
       </div>
-
-      <!-- TAB 3: CASH FLOW (PENGELUARAN / MODAL) -->
-      <div id="cashflow-view" class="tab-view hidden">
-        <div class="card" style="max-width: 500px; margin: 0 auto;">
-          <h2>💸 Pencatatan Arus Kas (Cash Flow)</h2>
-          <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Catat uang modal awal atau pengeluaran operasional mendadak.</p>
-          
-          <form onsubmit="handleCashFlowSubmit(event)">
-            <div class="form-group">
-              <label>Jenis Arus Kas</label>
-              <select id="cf-type" required>
-                <option value="OUT">Pengeluaran Toko (Expenses)</option>
-                <option value="IN">Modal Awal / Kas Masuk</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Nominal (Rp)</label>
-              <input type="number" id="cf-amount" placeholder="Contoh: 15000" required>
-            </div>
-            <div class="form-group">
-              <label>Keterangan / Keperluan</label>
-              <input type="text" id="cf-note" placeholder="Contoh: Beli es batu kristal 2 plastik" required>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Simpan Arus Kas</button>
-          </form>
-        </div>
-      </div>
-
     </div>
   </div>
 
-  <!-- MODALS (PAYMENT, PENDING, KITCHEN) -->
+  <!-- MODAL CUSTOM MODIFIER (HYBRID OPSI A) -->
+  <div id="custom-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="custom-modal-title">Custom Order</h3>
+        <button onclick="closeModal('custom-modal')" style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
+      </div>
+      
+      <div class="form-group">
+        <label>Level Es (Ice):</label>
+        <div class="chip-group" id="ice-chips">
+          <div class="chip selected" onclick="selectChip(this, 'ice', 'Normal Ice')">Normal Ice</div>
+          <div class="chip" onclick="selectChip(this, 'ice', 'Less Ice')">Less Ice</div>
+          <div class="chip" onclick="selectChip(this, 'ice', 'No Ice')">No Ice</div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:12px;">
+        <label>Level Gula (Sugar):</label>
+        <div class="chip-group" id="sugar-chips">
+          <div class="chip selected" onclick="selectChip(this, 'sugar', 'Normal Sugar')">Normal Sugar</div>
+          <div class="chip" onclick="selectChip(this, 'sugar', 'Less Sugar')">Less Sugar</div>
+          <div class="chip" onclick="selectChip(this, 'sugar', 'No Sugar')">No Sugar</div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:12px;" id="apply-qty-group">
+        <label>Terapkan catatan ini ke berapa item?</label>
+        <select id="custom-apply-qty" style="padding:6px; font-size:13px;"></select>
+      </div>
+
+      <button onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 15px;">SIMPAN CATATAN</button>
+    </div>
+  </div>
+
+  <!-- MODAL PAYMENT -->
   <div id="payment-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Pembayaran QisKi Juice</h3>
+        <h3>Pembayaran</h3>
         <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
       </div>
-      <div class="form-group">
-        <label>Subtotal Pesanan</label>
-        <input type="text" id="pay-subtotal" readonly style="background:#eee; font-weight:bold;">
-      </div>
-      <div class="form-group">
-        <label>Diskon (Rp)</label>
-        <input type="number" id="pay-discount" value="0" oninput="calculatePayment()" placeholder="0">
-      </div>
-      <div class="form-group">
-        <label>Total Akhir</label>
-        <input type="text" id="pay-total-akhir" readonly style="background:#e8f5e9; font-weight:bold; color:#27ae60; font-size:16px;">
-      </div>
+      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#e8f5e9; font-weight:bold; color:#27ae60; font-size:16px;"></div>
       <div class="form-group">
         <label>Metode Pembayaran</label>
         <select id="pay-method" onchange="togglePayMethod()">
-          <option value="CASH">Uang Tunai (Cash)</option>
+          <option value="CASH">Cash / Tunai</option>
           <option value="QRIS">QRIS / Non-Tunai</option>
         </select>
       </div>
       <div id="cash-group">
-        <div class="form-group">
-          <label>Uang Diterima (Cash Paid)</label>
-          <input type="number" id="pay-cash-paid" oninput="calculatePayment()" placeholder="Masukkan nominal uang">
-        </div>
-        <div class="form-group">
-          <label>Kembalian</label>
-          <input type="text" id="pay-change" readonly style="font-weight:bold; color:#d35400;">
-        </div>
+        <div class="form-group"><label>Uang Diterima</label><input type="number" id="pay-cash-paid" oninput="calculatePayment()" placeholder="0"></div>
+        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:bold; color:#d35400;"></div>
       </div>
-      <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;">BAYAR & CETAK STRUK</button>
-    </div>
-  </div>
-
-  <div id="pending-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>🛒 Kantung Pending (Hold Order)</h3>
-        <button onclick="closeModal('pending-modal')" style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
-      </div>
-      <div id="pending-list-container"></div>
-    </div>
-  </div>
-
-  <div id="kitchen-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>🍹 Kantung Proses (Antrian Bar)</h3>
-        <button onclick="closeModal('kitchen-modal')" style="border:none; background:none; font-size:18px; cursor:pointer;">✖</button>
-      </div>
-      <div id="kitchen-list-container"></div>
+      <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 10px;">SELESAIKAN TRANSAKSI</button>
     </div>
   </div>
 
   <script>
     var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_rJIxw0NilgbmxqSmgrTJWasiJ5_O_aGCT20QCnki1BjA/exec";
 
+    // MASTER DATA PRODUK DARI GAMBAR DOKUMEN A4
+    var productsData = [
+      { id: "JUS-001", nama: "Jus Apel", harga: 8000, kategori: "Jus Tunggal" },
+      { id: "JUS-002", nama: "Jus Alpukat", harga: 8000, kategori: "Jus Tunggal" },
+      { id: "JUS-003", nama: "Jus Belimbing", harga: 8000, kategori: "Jus Tunggal" },
+      { id: "JUS-004", nama: "Jus Buah Naga", harga: 8000, kategori: "Jus Tunggal" },
+      { id: "JUS-005", nama: "Jus Jeruk", harga: 8000, kategori: "Jus Tunggal" },
+      { id: "JUS-006", nama: "Jus Melon", harga: 7000, kategori: "Jus Tunggal" },
+      { id: "JUS-007", nama: "Jus Nanas", harga: 7000, kategori: "Jus Tunggal" },
+      { id: "JUS-008", nama: "Jus Pepaya", harga: 7000, kategori: "Jus Tunggal" },
+      { id: "JUS-009", nama: "Jus Stroberi", harga: 7000, kategori: "Jus Tunggal" },
+      { id: "JUS-010", nama: "Jus Sirsak", harga: 7000, kategori: "Jus Tunggal" },
+
+      { id: "MIX-001", nama: "Mangga + Jeruk", harga: 10000, kategori: "Mix Buah" },
+      { id: "MIX-002", nama: "Pisang + Stroberi", harga: 10000, kategori: "Mix Buah" },
+      { id: "MIX-003", nama: "Stroberi + Belimbing", harga: 10000, kategori: "Mix Buah" },
+      { id: "MIX-004", nama: "Mangga + Buah Naga", harga: 10000, kategori: "Mix Buah" },
+      { id: "MIX-005", nama: "Nanas + Lemon", harga: 10000, kategori: "Mix Buah" },
+      { id: "MIX-006", nama: "Alpukat + Cokelat", harga: 10000, kategori: "Mix Buah" },
+
+      { id: "HLT-001", nama: "Wortel + Apel", harga: 13000, kategori: "Healthy Mix" },
+      { id: "HLT-002", nama: "Tomat + Wortel", harga: 13000, kategori: "Healthy Mix" },
+      { id: "HLT-003", nama: "Apel + Timun", harga: 12000, kategori: "Healthy Mix" },
+      { id: "HLT-004", nama: "Wortel + Pir", harga: 12000, kategori: "Healthy Mix" },
+      { id: "HLT-005", nama: "Timun + Apel", harga: 12000, kategori: "Healthy Mix" },
+      { id: "HLT-006", nama: "Wortel + Nanas", harga: 12000, kategori: "Healthy Mix" }
+    ];
+
     var currentUser = null;
-    var productsData = [];
-    var membersData = [];
     var currentCart = [];
-    var activeKitchenOrders = [];
-    var shiftTransactions = [];
+    var activeCustomIndex = null;
+    var selectedIce = "Normal Ice";
+    var selectedSugar = "Normal Sugar";
 
     document.addEventListener("DOMContentLoaded", function() {
       checkExistingSession();
+      renderCatalog();
     });
-
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById(tabId).classList.remove('hidden');
-      if(btn) btn.classList.add('active');
-
-      if (tabId === 'rekap-view') refreshRekapData();
-    }
 
     function checkExistingSession() {
       var savedSession = localStorage.getItem('qiski_session');
@@ -300,8 +247,6 @@
         document.getElementById('user-display').innerText = currentUser.nama;
         document.getElementById('login-page').classList.add('hidden');
         document.getElementById('app-page').classList.remove('hidden');
-        loadMasterData();
-        updatePendingCount();
       }
     }
 
@@ -322,73 +267,48 @@
           document.getElementById('user-display').innerText = currentUser.nama;
           document.getElementById('login-page').classList.add('hidden');
           document.getElementById('app-page').classList.remove('hidden');
-          loadMasterData();
-          updatePendingCount();
-        } else {
-          alert(res.message);
-        }
-      })
-      .catch(err => alert("Gagal terhubung ke API: " + err));
+        } else { alert(res.message); }
+      });
     }
 
-    function loadMasterData() {
-      var cached = localStorage.getItem('qiski_master_data');
-      if (cached) {
-        var data = JSON.parse(cached);
-        productsData = data.products;
-        membersData = data.members;
-        renderMenuGrid();
-        renderMemberList();
-      }
-
-      fetch(API_URL + "?action=getInitialData")
-      .then(res => res.json())
-      .then(data => {
-        productsData = data.products;
-        membersData = data.members;
-        localStorage.setItem('qiski_master_data', JSON.stringify(data));
-        renderMenuGrid();
-        renderMemberList();
-      })
-      .catch(err => console.error("Sync master error:", err));
+    // Render Katalog Menu per Kategori
+    function renderCatalog() {
+      var container = document.getElementById('catalog-container');
+      var categories = ["Jus Tunggal", "Mix Buah", "Healthy Mix"];
+      
+      container.innerHTML = categories.map(cat => {
+        var items = productsData.filter(p => p.kategori === cat);
+        return `
+          <div class="category-title">${cat}</div>
+          <div class="menu-grid">
+            ${items.map(p => `
+              <div class="menu-card" onclick="directAddToCart('${p.id}')">
+                <h4>${p.nama}</h4>
+                <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }).join('');
     }
 
-    function renderMenuGrid() {
-      var grid = document.getElementById('menu-grid');
-      grid.innerHTML = productsData.map(p => `
-        <div class="menu-card" onclick="addToCart('${p.id}')">
-          <h4>${p.nama}</h4>
-          <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
-        </div>
-      `).join('');
-    }
-
-    function renderMemberList() {
-      var select = document.getElementById('select-member-list');
-      select.innerHTML = '<option value="">-- Pilih Member QSK --</option>' + 
-        membersData.map(m => `<option value="${m.id}">${m.nama} (${m.id})</option>`).join('');
-    }
-
-    function handleCustomerTypeChange() {
-      var type = document.getElementById('select-customer-type').value;
-      var memSelect = document.getElementById('select-member-list');
-      if (type === 'MEMBER') memSelect.classList.remove('hidden');
-      else memSelect.classList.add('hidden');
-    }
-
-    function addToCart(productId) {
+    // Direct Tap (Opsi A: Tambah Cepat)
+    function directAddToCart(productId) {
       var prod = productsData.find(p => p.id === productId);
-      var existing = currentCart.find(i => i.id === productId);
-      if (existing) existing.qty += 1;
-      else currentCart.push({ id: prod.id, nama: prod.nama, harga: prod.harga, qty: 1 });
-      updateCartUI();
-    }
+      // Cari item di keranjang yang belum punya custom note khusus
+      var existing = currentCart.find(i => i.id === productId && (!i.notes || i.notes === "Normal"));
 
-    function updateQty(productId, delta) {
-      var item = currentCart.find(i => i.id === productId);
-      if (item) {
-        item.qty += delta;
-        if (item.qty <= 0) currentCart = currentCart.filter(i => i.id !== productId);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        currentCart.push({
+          cartItemId: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          id: prod.id,
+          nama: prod.nama,
+          harga: prod.harga,
+          qty: 1,
+          notes: "Normal"
+        });
       }
       updateCartUI();
     }
@@ -396,100 +316,110 @@
     function updateCartUI() {
       var container = document.getElementById('cart-items');
       if (currentCart.length === 0) {
-        container.innerHTML = '<p style="color: #888; text-align: center; margin-top: 20px;">Keranjang kosong</p>';
+        container.innerHTML = '<p style="color: #888; text-align: center; margin-top: 30px; font-size:13px;">Keranjang kosong</p>';
         document.getElementById('cart-total-val').innerText = 'Rp 0';
         return;
       }
+
       var total = 0;
-      container.innerHTML = currentCart.map(item => {
+      container.innerHTML = currentCart.map((item, idx) => {
         var subtotal = item.harga * item.qty;
         total += subtotal;
         return `
           <div class="cart-item">
-            <div>
-              <strong>${item.nama}</strong><br>
-              <small>Rp ${item.harga.toLocaleString('id-ID')}</small>
+            <div class="cart-item-header">
+              <strong>${item.nama}</strong>
+              <small style="font-weight:bold;">Rp ${subtotal.toLocaleString('id-ID')}</small>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <button class="btn-qty" onclick="updateQty('${item.id}', -1)">-</button>
-              <span>${item.qty}</span>
-              <button class="btn-qty" onclick="updateQty('${item.id}', 1)">+</button>
+            ${item.notes !== "Normal" ? `<div class="cart-item-notes">📝 ${item.notes}</div>` : ''}
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+              <button onclick="openCustomModal(${idx})" class="btn btn-warning" style="font-size:10px; padding:3px 8px;">⚙️ Custom</button>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
+                <span style="font-weight:bold; font-size:13px;">${item.qty}</span>
+                <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
+              </div>
             </div>
           </div>
         `;
       }).join('');
+
       document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+    }
+
+    function updateQty(index, delta) {
+      currentCart[index].qty += delta;
+      if (currentCart[index].qty <= 0) {
+        currentCart.splice(index, 1);
+      }
+      updateCartUI();
     }
 
     function clearCart() { currentCart = []; updateCartUI(); }
 
-    function savePendingOrder() {
-      if (currentCart.length === 0) return alert('Keranjang masih kosong!');
-      var name = prompt('Input nama/catatan untuk Kantung Pending:');
-      if (!name) return;
-      var custType = document.getElementById('select-customer-type').value;
-      var memberId = custType === 'MEMBER' ? document.getElementById('select-member-list').value : 'REGULAR';
-
-      var pendingData = { id: 'PEND-' + Date.now(), customerName: name, customerId: memberId, cart: currentCart, time: new Date().toLocaleTimeString() };
-      var pendingList = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-      pendingList.push(pendingData);
-      localStorage.setItem('qiski_pending', JSON.stringify(pendingList));
-
-      alert(`Order a/n "${name}" disimpan di Pending!`);
-      clearCart();
-      updatePendingCount();
-    }
-
-    function updatePendingCount() {
-      var list = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-      document.getElementById('pending-count').innerText = list.length;
-    }
-
-    function openPendingModal() {
-      var list = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-      var container = document.getElementById('pending-list-container');
-      if (list.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#888;">Kantung pending kosong.</p>';
-      } else {
-        container.innerHTML = list.map((item, index) => `
-          <div class="modal-list-item">
-            <div><strong>${item.customerName}</strong> (${item.time})<br><small>${item.cart.length} Menu</small></div>
-            <div>
-              <button onclick="loadPendingOrder(${index})" class="btn btn-primary" style="font-size:12px;">Load</button>
-              <button onclick="deletePendingOrder(${index})" class="btn btn-secondary" style="font-size:12px;">Hapus</button>
-            </div>
-          </div>
-        `).join('');
+    // Custom Order Modal Logic (Smart Split)
+    function openCustomModal(index) {
+      activeCustomIndex = index;
+      var item = currentCart[index];
+      document.getElementById('custom-modal-title').innerText = 'Custom: ' + item.nama;
+      
+      // Populate Dropdown Jumlah Item yang Kena Custom
+      var select = document.getElementById('custom-apply-qty');
+      select.innerHTML = '';
+      for (var i = 1; i <= item.qty; i++) {
+        select.innerHTML += `<option value="${i}">${i} Pcs ${i === item.qty ? '(Semua)' : ''}</option>`;
       }
-      document.getElementById('pending-modal').classList.remove('hidden');
+      select.value = item.qty;
+
+      document.getElementById('custom-modal').classList.remove('hidden');
     }
 
-    function loadPendingOrder(index) {
-      var list = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-      currentCart = list[index].cart;
+    function selectChip(el, type, val) {
+      var parent = el.parentElement;
+      parent.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      if (type === 'ice') selectedIce = val;
+      if (type === 'sugar') selectedSugar = val;
+    }
+
+    function saveCustomModifier() {
+      if (activeCustomIndex === null) return;
+
+      var targetItem = currentCart[activeCustomIndex];
+      var applyQty = Number(document.getElementById('custom-apply-qty').value);
+      var newNote = `${selectedIce}, ${selectedSugar}`;
+
+      if (applyQty === targetItem.qty) {
+        // Jika diterapkan ke SEMUA pcs
+        targetItem.notes = newNote;
+      } else {
+        // Jika diterapkan sebagian (SMART SPLIT)
+        targetItem.qty -= applyQty; // Kurangi qty item lama
+        
+        // Push item baru hasil pecahan dengan catatan kustom
+        currentCart.push({
+          cartItemId: Date.now() + '_split',
+          id: targetItem.id,
+          nama: targetItem.nama,
+          harga: targetItem.harga,
+          qty: applyQty,
+          notes: newNote
+        });
+      }
+
+      closeModal('custom-modal');
       updateCartUI();
-      list.splice(index, 1);
-      localStorage.setItem('qiski_pending', JSON.stringify(list));
-      updatePendingCount();
-      closeModal('pending-modal');
-    }
-
-    function deletePendingOrder(index) {
-      var list = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-      list.splice(index, 1);
-      localStorage.setItem('qiski_pending', JSON.stringify(list));
-      openPendingModal();
-      updatePendingCount();
     }
 
     function openPaymentModal() {
       if (currentCart.length === 0) return alert('Keranjang kosong!');
+      var custName = document.getElementById('cust-name').value;
+      if (!custName) return alert('Silakan isi nama/no pelanggan di bagian atas terlebih dahulu!');
+
       var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-      document.getElementById('pay-subtotal').value = 'Rp ' + subtotal.toLocaleString('id-ID');
-      document.getElementById('pay-discount').value = 0;
+      document.getElementById('pay-total-akhir').value = 'Rp ' + subtotal.toLocaleString('id-ID');
       document.getElementById('pay-cash-paid').value = '';
       document.getElementById('pay-change').value = 'Rp 0';
-      calculatePayment();
       document.getElementById('payment-modal').classList.remove('hidden');
     }
 
@@ -497,38 +427,34 @@
       var method = document.getElementById('pay-method').value;
       if (method === 'QRIS') document.getElementById('cash-group').classList.add('hidden');
       else document.getElementById('cash-group').classList.remove('hidden');
-      calculatePayment();
     }
 
     function calculatePayment() {
       var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-      var discount = Number(document.getElementById('pay-discount').value) || 0;
-      var totalAkhir = Math.max(0, subtotal - discount);
-      document.getElementById('pay-total-akhir').value = 'Rp ' + totalAkhir.toLocaleString('id-ID');
-
       var method = document.getElementById('pay-method').value;
       if (method === 'CASH') {
         var cashPaid = Number(document.getElementById('pay-cash-paid').value) || 0;
-        var change = cashPaid - totalAkhir;
+        var change = cashPaid - subtotal;
         document.getElementById('pay-change').value = change >= 0 ? 'Rp ' + change.toLocaleString('id-ID') : 'Uang Kurang!';
       }
     }
 
     function submitTransaction() {
       var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-      var discount = Number(document.getElementById('pay-discount').value) || 0;
-      var totalAkhir = Math.max(0, subtotal - discount);
       var method = document.getElementById('pay-method').value;
-      var cashPaid = method === 'CASH' ? Number(document.getElementById('pay-cash-paid').value) || 0 : totalAkhir;
+      var cashPaid = method === 'CASH' ? Number(document.getElementById('pay-cash-paid').value) || 0 : subtotal;
+      var custName = document.getElementById('cust-name').value;
 
-      if (method === 'CASH' && cashPaid < totalAkhir) return alert('Uang pembayaran masih kurang!');
-
-      var custType = document.getElementById('select-customer-type').value;
-      var memberId = custType === 'MEMBER' ? (document.getElementById('select-member-list').value || 'MEMBER_UNSPECIFIED') : 'REGULAR';
+      if (method === 'CASH' && cashPaid < subtotal) return alert('Uang pembayaran masih kurang!');
 
       var payload = {
-        kasirId: currentUser.id, customerId: memberId, subtotal: subtotal, diskon: discount,
-        totalAkhir: totalAkhir, metode: method, cashPaid: cashPaid, kembalian: Math.max(0, cashPaid - totalAkhir), items: currentCart
+        kasirId: currentUser.id,
+        customerName: custName,
+        subtotal: subtotal,
+        totalAkhir: subtotal,
+        metode: method,
+        cashPaid: cashPaid,
+        items: currentCart
       };
 
       fetch(API_URL, {
@@ -538,88 +464,18 @@
       .then(res => res.json())
       .then(res => {
         if (res.success) {
-          activeKitchenOrders.push({ transId: res.transId, items: currentCart.slice(), status: 'PROSES', time: new Date().toLocaleTimeString() });
-          shiftTransactions.push(payload);
-          
-          document.getElementById('bar-count').innerText = activeKitchenOrders.length;
-          alert('Transaksi Berhasil! Trans_ID: ' + res.transId);
+          alert('Transaksi a/n ' + custName + ' Berhasil! ID: ' + res.transId);
           closeModal('payment-modal');
+          document.getElementById('cust-name').value = '';
           clearCart();
         } else {
-          alert('Gagal simpan transaksi: ' + res.message);
-        }
-      })
-      .catch(err => alert("API error: " + err));
-    }
-
-    function refreshRekapData() {
-      var totalOmzet = shiftTransactions.reduce((a, b) => a + b.totalAkhir, 0);
-      var cashOmzet = shiftTransactions.filter(t => t.metode === 'CASH').reduce((a, b) => a + b.totalAkhir, 0);
-      var qrisOmzet = shiftTransactions.filter(t => t.metode === 'QRIS').reduce((a, b) => a + b.totalAkhir, 0);
-
-      document.getElementById('stat-total-omzet').innerText = 'Rp ' + totalOmzet.toLocaleString('id-ID');
-      document.getElementById('stat-cash-omzet').innerText = 'Rp ' + cashOmzet.toLocaleString('id-ID');
-      document.getElementById('stat-qris-omzet').innerText = 'Rp ' + qrisOmzet.toLocaleString('id-ID');
-      document.getElementById('stat-count-trans').innerText = shiftTransactions.length;
-    }
-
-    function handleCashFlowSubmit(e) {
-      e.preventDefault();
-      var type = document.getElementById('cf-type').value;
-      var amount = Number(document.getElementById('cf-amount').value) || 0;
-      var note = document.getElementById('cf-note').value;
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'saveCashFlow', payload: { type: type, amount: amount, note: note, kasirId: currentUser.id } })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if(res.success) {
-          alert('Pengeluaran/Kas berhasil dicatat!');
-          e.target.reset();
+          alert('Gagal simpan: ' + res.message);
         }
       });
     }
 
-    function openKitchenModal() {
-      var container = document.getElementById('kitchen-list-container');
-      if (activeKitchenOrders.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#888;">Tidak ada antrian di Bar saat ini.</p>';
-      } else {
-        container.innerHTML = activeKitchenOrders.map((ord, idx) => `
-          <div class="modal-list-item" style="flex-direction:column; align-items:flex-start;">
-            <div style="display:flex; justify-content:space-between; width:100%; font-weight:bold;">
-              <span>#${ord.transId.slice(-6)} (${ord.time})</span>
-              <span style="color:#f39c12;">${ord.status}</span>
-            </div>
-            <div style="font-size:13px; margin:5px 0;">
-              ${ord.items.map(i => `${i.nama} x ${i.qty}`).join(', ')}
-            </div>
-            <div style="display:flex; gap:5px; width:100%; margin-top:5px;">
-              <button onclick="updateKitchenStatus(${idx}, 'SELESAI')" class="btn btn-primary" style="font-size:11px; flex:1;">Selesai</button>
-            </div>
-          </div>
-        `).join('');
-      }
-      document.getElementById('kitchen-modal').classList.remove('hidden');
-    }
-
-    function updateKitchenStatus(idx, newStatus) {
-      var target = activeKitchenOrders[idx];
-      fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'updateOrderStatus', transId: target.transId, status: newStatus }) });
-      activeKitchenOrders.splice(idx, 1);
-      document.getElementById('bar-count').innerText = activeKitchenOrders.length;
-      openKitchenModal();
-    }
-
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-    function logout() {
-      if (confirm('Yakin ingin keluar?')) {
-        localStorage.removeItem('qiski_session');
-        location.reload();
-      }
-    }
+    function logout() { localStorage.removeItem('qiski_session'); location.reload(); }
   </script>
 </body>
 </html>
