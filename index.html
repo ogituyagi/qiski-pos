@@ -6,79 +6,57 @@
   <title>QisKi Juice POS</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    html, body { width: 100%; height: 100%; background-color: #e8f5e9; color: #333; overflow-x: hidden; }
+    html, body { width: 100%; height: 100%; background-color: #e8f5e9; color: #333; overflow: hidden; }
     
     .hidden { display: none !important; }
     .btn { border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px; }
     .btn-primary { background: #27ae60; color: white; }
     .btn-secondary { background: #e74c3c; color: white; }
     .btn-warning { background: #f39c12; color: white; }
-    .btn-info { background: #2980b9; color: white; }
 
     /* Login Page */
-    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 100%; padding: 20px; background-color: #e8f5e9; }
+    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: #e8f5e9; }
     .login-card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 360px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .login-card h2 { margin-bottom: 20px; text-align: center; color: #27ae60; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 600; }
     .form-group input, .form-group select { width: 100%; padding: 9px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
 
-    /* App Header & Layout */
-    #app-page { background: #f4f6f8; min-height: 100%; display: flex; flex-direction: column; }
-    header { background: #1e8449; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; }
+    /* Main App Container (FIX OVERLAP) */
+    #app-page { background: #f4f6f8; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    header { background: #1e8449; color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; height: 45px; flex-shrink: 0; }
     
-    .view-content { padding: 12px; flex: 1; overflow-y: auto; }
+    .view-content { padding: 10px; flex: 1; height: calc(100vh - 45px); overflow: hidden; }
     
-    .pos-layout { display: flex; flex-direction: column; gap: 12px; }
+    /* Layout POS Flex Fix */
+    .pos-layout { display: flex; flex-direction: column; gap: 10px; height: 100%; overflow: hidden; }
     @media (min-width: 768px) {
-      .pos-layout { flex-direction: row; height: calc(100vh - 70px); }
-      .menu-section { flex: 6; overflow-y: auto; padding-right: 10px; }
-      .cart-section { flex: 4; border-left: 1px solid #ddd; padding-left: 10px; }
+      .pos-layout { flex-direction: row; }
+      .menu-section { flex: 6; overflow-y: auto; height: 100%; padding-right: 5px; }
+      .cart-section { flex: 4; height: 100%; }
     }
 
-    /* Customer Input Header */
-    .customer-header { background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 12px; display: flex; gap: 8px; }
+    /* Customer Header */
+    .customer-header { background: #fff; padding: 8px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); margin-bottom: 8px; display: flex; gap: 8px; }
 
-    /* Menu Grid & Cards */
-    .category-title { font-size: 14px; font-weight: bold; color: #1e8449; margin: 12px 0 6px 0; border-bottom: 2px solid #27ae60; padding-bottom: 2px; }
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-    .menu-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px; text-align: center; background: #fff; cursor: pointer; border-left: 4px solid #27ae60; position: relative; }
+    /* Menu Grid */
+    .category-title { font-size: 13px; font-weight: bold; color: #1e8449; margin: 10px 0 6px 0; border-bottom: 2px solid #27ae60; padding-bottom: 2px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 8px; }
+    .menu-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 6px; text-align: center; background: #fff; cursor: pointer; border-left: 4px solid #27ae60; user-select: none; }
     .menu-card:active { transform: scale(0.96); background: #e8f5e9; }
-    .menu-card h4 { font-size: 13px; margin-bottom: 4px; color: #333; }
-    .menu-card .price { color: #27ae60; font-weight: bold; font-size: 12px; }
+    .menu-card h4 { font-size: 12px; margin-bottom: 4px; color: #333; }
+    .menu-card .price { color: #27ae60; font-weight: bold; font-size: 11px; }
 
-    /* Cart Section */
-/* Layout Keranjang Kanan */
-.cart-section { 
-  background: #fff; 
-  padding: 12px; 
-  border-radius: 8px; 
-  display: flex; 
-  flex-direction: column; 
-  height: 100%; /* Isi penuh tinggi layar */
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-/* List Item Pesanan */
-.cart-items { 
-  flex: 1; /* Ambil sisa ruang kosong di tengah */
-  overflow-y: auto; 
-  margin: 10px 0; 
-  max-height: none !important; /* Hapus batasan 350px */
-  padding-right: 4px;
-}
-
-/* Footer Keranjang (Total & Tombol) */
-.cart-footer {
-  border-top: 2px dashed #eee;
-  padding-top: 10px;
-  background: #fff;
-}
-    .cart-item { padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; flex-direction: column; gap: 4px; }
+    /* Cart Section (Tinggi Terkunci, No Overlap) */
+    .cart-section { background: #fff; padding: 12px; border-radius: 8px; display: flex; flex-direction: column; height: 100%; box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden; }
+    .cart-items { flex: 1; overflow-y: auto; margin: 8px 0; padding-right: 4px; }
+    .cart-item { padding: 8px 0; border-bottom: 1px dashed #eee; display: flex; flex-direction: column; gap: 3px; }
     .cart-item-header { display: flex; justify-content: space-between; align-items: center; }
     .cart-item-notes { font-size: 11px; color: #d35400; background: #fef5e7; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; }
     .btn-qty { width: 26px; height: 26px; border-radius: 50%; border: 1px solid #ccc; background: #fff; font-weight: bold; cursor: pointer; }
-    .cart-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 10px; color: #2c3e50; }
+    
+    .cart-footer { border-top: 2px dashed #eee; padding-top: 8px; background: #fff; flex-shrink: 0; }
+    .cart-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-bottom: 8px; color: #2c3e50; }
     .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
     /* Modals */
@@ -98,14 +76,8 @@
       <h2>🥤 QisKi Juice</h2>
       <p style="text-align: center; color: #666; margin-bottom: 15px; font-size: 12px;">Point of Sales System</p>
       <form onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>Username</label>
-          <input type="text" id="username" required>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="password" required>
-        </div>
+        <div class="form-group"><label>Username</label><input type="text" id="username" required></div>
+        <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
         <button type="submit" class="btn btn-primary" style="width: 100%;">LOGIN KASIR</button>
       </form>
     </div>
@@ -115,36 +87,29 @@
   <div id="app-page" class="hidden">
     <header>
       <div><b>🥤 QisKi Juice POS</b> | <span id="user-display">Kasir</span></div>
-      <div>
-        <button onclick="logout()" class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;">Logout</button>
-      </div>
+      <button onclick="logout()" class="btn btn-secondary" style="font-size: 11px; padding: 4px 8px;">Logout</button>
     </header>
 
     <div class="view-content">
       <div class="pos-layout">
         
-        <!-- LEFT: MENU CATALOG -->
+        <!-- LEFT: CATALOG -->
         <div class="menu-section">
-          <!-- STEP 1: INPUT NAMA PELANGGAN PERTAMA KALI -->
           <div class="customer-header">
             <input type="text" id="cust-name" placeholder="Nama Pelanggan / No. Pemesan..." style="flex:2; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:13px;">
-            <select id="select-customer-type" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:12px;" onchange="handleCustomerTypeChange()">
+            <select id="select-customer-type" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:6px; font-size:12px;">
               <option value="REGULAR">Umum</option>
               <option value="MEMBER">Member QSK</option>
             </select>
           </div>
-
-          <!-- KATALOG MENU DARI GAMBAR -->
           <div id="catalog-container"></div>
         </div>
 
-        <!-- RIGHT: CART SUMMARY -->
+        <!-- RIGHT: CART -->
         <div class="cart-section">
-          <div>
-            <h3 style="font-size:15px; border-bottom:1px solid #eee; padding-bottom:5px;">Keranjang Pesanan</h3>
-            <div class="cart-items" id="cart-items">
-              <p style="color: #888; text-align: center; margin-top: 30px; font-size:13px;">Keranjang kosong</p>
-            </div>
+          <h3 style="font-size:14px; border-bottom:1px solid #eee; padding-bottom:5px; flex-shrink: 0;">Keranjang Pesanan</h3>
+          <div class="cart-items" id="cart-items">
+            <p style="color: #888; text-align: center; margin-top: 30px; font-size:13px;">Keranjang kosong</p>
           </div>
 
           <div class="cart-footer">
@@ -164,7 +129,7 @@
     </div>
   </div>
 
-  <!-- MODAL CUSTOM MODIFIER (HYBRID OPSI A) -->
+  <!-- MODAL CUSTOM MODIFIER (DUAL MODE) -->
   <div id="custom-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -190,12 +155,23 @@
         </div>
       </div>
 
-      <div class="form-group" style="margin-top:12px;" id="apply-qty-group">
-        <label>Terapkan catatan ini ke berapa item?</label>
-        <select id="custom-apply-qty" style="padding:6px; font-size:13px;"></select>
+      <!-- CONTROLLER MODE 1: DARI HOLD TAP (TOMBOL + / -) -->
+      <div class="form-group hidden" style="margin-top:12px;" id="mode-hold-group">
+        <label>Jumlah Pesanan Custom (Pcs):</label>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
+          <button class="btn-qty" onclick="adjustHoldQty(-1)" style="width:36px; height:36px; font-size:16px;">-</button>
+          <span id="hold-qty-val" style="font-weight:bold; font-size:18px;">1</span>
+          <button class="btn-qty" onclick="adjustHoldQty(1)" style="width:36px; height:36px; font-size:16px;">+</button>
+        </div>
       </div>
 
-      <button onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 15px;">SIMPAN CATATAN</button>
+      <!-- CONTROLLER MODE 2: DARI KERANJANG (DROPDOWN SMART SPLIT) -->
+      <div class="form-group hidden" style="margin-top:12px;" id="mode-cart-group">
+        <label>Terapkan catatan ini ke berapa item?</label>
+        <select id="custom-apply-qty" style="padding:6px; font-size:13px; margin-top:4px;"></select>
+      </div>
+
+      <button onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 15px;">MASUKKAN KE KERANJANG</button>
     </div>
   </div>
 
@@ -225,7 +201,6 @@
   <script>
     var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_rJIxw0NilgbmxqSmgrTJWasiJ5_O_aGCT20QCnki1BjA/exec";
 
-    // MASTER DATA PRODUK DARI GAMBAR DOKUMEN A4
     var productsData = [
       { id: "JUS-001", nama: "Jus Apel", harga: 8000, kategori: "Jus Tunggal" },
       { id: "JUS-002", nama: "Jus Alpukat", harga: 8000, kategori: "Jus Tunggal" },
@@ -255,9 +230,18 @@
 
     var currentUser = null;
     var currentCart = [];
-    var activeCustomIndex = null;
+    
+    // State Modal Custom
+    var modalTriggerSource = null; // 'HOLD' atau 'CART'
+    var activeCartIndex = null;
+    var activeProductId = null;
+    var holdCustomQty = 1;
     var selectedIce = "Normal Ice";
     var selectedSugar = "Normal Sugar";
+
+    // Variables Hold Tap
+    var holdTimer = null;
+    var isLongPress = false;
 
     document.addEventListener("DOMContentLoaded", function() {
       checkExistingSession();
@@ -295,76 +279,55 @@
       });
     }
 
-// Variable Hold Tap
-var holdTimer = null;
-var isLongPress = false;
-
-// 1. Render Katalog dengan Event Hold Tap
-function renderCatalog() {
-  var container = document.getElementById('catalog-container');
-  var categories = ["Jus Tunggal", "Mix Buah", "Healthy Mix"];
-  
-  container.innerHTML = categories.map(cat => {
-    var items = productsData.filter(p => p.kategori === cat);
-    return `
-      <div class="category-title">${cat}</div>
-      <div class="menu-grid">
-        ${items.map(p => `
-          <div class="menu-card" 
-               onmousedown="startHold('${p.id}')" 
-               onmouseup="endHold('${p.id}')" 
-               onmouseleave="cancelHold()"
-               ontouchstart="startHold('${p.id}')" 
-               ontouchend="endHold('${p.id}')"
-               ontouchcancel="cancelHold()">
-            <h4>${p.nama}</h4>
-            <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
+    function renderCatalog() {
+      var container = document.getElementById('catalog-container');
+      var categories = ["Jus Tunggal", "Mix Buah", "Healthy Mix"];
+      
+      container.innerHTML = categories.map(cat => {
+        var items = productsData.filter(p => p.kategori === cat);
+        return `
+          <div class="category-title">${cat}</div>
+          <div class="menu-grid">
+            ${items.map(p => `
+              <div class="menu-card" 
+                   onmousedown="startHold('${p.id}')" 
+                   onmouseup="endHold('${p.id}')" 
+                   onmouseleave="cancelHold()"
+                   ontouchstart="startHold('${p.id}')" 
+                   ontouchend="endHold('${p.id}')"
+                   ontouchcancel="cancelHold()">
+                <h4>${p.nama}</h4>
+                <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
+              </div>
+            `).join('')}
           </div>
-        `).join('')}
-      </div>
-    `;
-  }).join('');
-}
+        `;
+      }).join('');
+    }
 
-// 2. Logic Handler Hold Tap
-function startHold(productId) {
-  isLongPress = false;
-  holdTimer = setTimeout(function() {
-    isLongPress = true;
-    openDirectCustomModal(productId);
-  }, 500); // 0.5 detik tahan
-}
+    // HOLD TAP HANDLER
+    function startHold(productId) {
+      isLongPress = false;
+      holdTimer = setTimeout(function() {
+        isLongPress = true;
+        openHoldCustomModal(productId);
+      }, 500);
+    }
 
-function endHold(productId) {
-  clearTimeout(holdTimer);
-  if (!isLongPress) {
-    directAddToCart(productId); // Tap cepat biasa
-  }
-}
+    function endHold(productId) {
+      clearTimeout(holdTimer);
+      if (!isLongPress) {
+        directAddToCart(productId);
+      }
+    }
 
-function cancelHold() {
-  clearTimeout(holdTimer);
-}
+    function cancelHold() {
+      clearTimeout(holdTimer);
+    }
 
-// 3. Buka Custom Modal Langsung dari Kartu Menu
-function openDirectCustomModal(productId) {
-  var prod = productsData.find(p => p.id === productId);
-  currentCart.push({
-    cartItemId: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-    id: prod.id,
-    nama: prod.nama,
-    harga: prod.harga,
-    qty: 1,
-    notes: "Normal"
-  });
-  updateCartUI();
-  openCustomModal(currentCart.length - 1);
-}
-
-    // Direct Tap (Opsi A: Tambah Cepat)
+    // Direct Add to Cart (Tap Cepat)
     function directAddToCart(productId) {
       var prod = productsData.find(p => p.id === productId);
-      // Cari item di keranjang yang belum punya custom note khusus
       var existing = currentCart.find(i => i.id === productId && (!i.notes || i.notes === "Normal"));
 
       if (existing) {
@@ -379,6 +342,103 @@ function openDirectCustomModal(productId) {
           notes: "Normal"
         });
       }
+      updateCartUI();
+    }
+
+    // MODAL MODE 1: TRIGGER DARI HOLD TAP
+    function openHoldCustomModal(productId) {
+      modalTriggerSource = 'HOLD';
+      activeProductId = productId;
+      holdCustomQty = 1;
+      resetChips();
+
+      var prod = productsData.find(p => p.id === productId);
+      document.getElementById('custom-modal-title').innerText = 'Custom: ' + prod.nama;
+      
+      document.getElementById('hold-qty-val').innerText = '1';
+      document.getElementById('mode-hold-group').classList.remove('hidden');
+      document.getElementById('mode-cart-group').classList.add('hidden');
+      
+      document.getElementById('custom-modal').classList.remove('hidden');
+    }
+
+    // MODAL MODE 2: TRIGGER DARI TOMBOL CUSTOM DI KERANJANG
+    function openCartCustomModal(index) {
+      modalTriggerSource = 'CART';
+      activeCartIndex = index;
+      resetChips();
+
+      var item = currentCart[index];
+      document.getElementById('custom-modal-title').innerText = 'Custom: ' + item.nama;
+      
+      var select = document.getElementById('custom-apply-qty');
+      select.innerHTML = '';
+      for (var i = 1; i <= item.qty; i++) {
+        select.innerHTML += `<option value="${i}">${i} Pcs ${i === item.qty ? '(Semua)' : ''}</option>`;
+      }
+      select.value = item.qty;
+
+      document.getElementById('mode-hold-group').classList.add('hidden');
+      document.getElementById('mode-cart-group').classList.remove('hidden');
+      
+      document.getElementById('custom-modal').classList.remove('hidden');
+    }
+
+    function adjustHoldQty(delta) {
+      holdCustomQty = Math.max(1, holdCustomQty + delta);
+      document.getElementById('hold-qty-val').innerText = holdCustomQty;
+    }
+
+    function resetChips() {
+      selectedIce = "Normal Ice";
+      selectedSugar = "Normal Sugar";
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.chip-group').forEach(grp => grp.children[0].classList.add('selected'));
+    }
+
+    function selectChip(el, type, val) {
+      var parent = el.parentElement;
+      parent.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      if (type === 'ice') selectedIce = val;
+      if (type === 'sugar') selectedSugar = val;
+    }
+
+    function saveCustomModifier() {
+      var newNote = `${selectedIce}, ${selectedSugar}`;
+
+      if (modalTriggerSource === 'HOLD') {
+        // SIMPAN DARI HOLD TAP
+        var prod = productsData.find(p => p.id === activeProductId);
+        currentCart.push({
+          cartItemId: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          id: prod.id,
+          nama: prod.nama,
+          harga: prod.harga,
+          qty: holdCustomQty,
+          notes: newNote
+        });
+      } else if (modalTriggerSource === 'CART') {
+        // SIMPAN DARI KERANJANG (SMART SPLIT)
+        var targetItem = currentCart[activeCartIndex];
+        var applyQty = Number(document.getElementById('custom-apply-qty').value);
+
+        if (applyQty === targetItem.qty) {
+          targetItem.notes = newNote;
+        } else {
+          targetItem.qty -= applyQty;
+          currentCart.push({
+            cartItemId: Date.now() + '_split',
+            id: targetItem.id,
+            nama: targetItem.nama,
+            harga: targetItem.harga,
+            qty: applyQty,
+            notes: newNote
+          });
+        }
+      }
+
+      closeModal('custom-modal');
       updateCartUI();
     }
 
@@ -402,7 +462,7 @@ function openDirectCustomModal(productId) {
             </div>
             ${item.notes !== "Normal" ? `<div class="cart-item-notes">📝 ${item.notes}</div>` : ''}
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-              <button onclick="openCustomModal(${idx})" class="btn btn-warning" style="font-size:10px; padding:3px 8px;">⚙️ Custom</button>
+              <button onclick="openCartCustomModal(${idx})" class="btn btn-warning" style="font-size:10px; padding:3px 8px;">⚙️ Custom</button>
               <div style="display:flex; align-items:center; gap:6px;">
                 <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
                 <span style="font-weight:bold; font-size:13px;">${item.qty}</span>
@@ -418,72 +478,16 @@ function openDirectCustomModal(productId) {
 
     function updateQty(index, delta) {
       currentCart[index].qty += delta;
-      if (currentCart[index].qty <= 0) {
-        currentCart.splice(index, 1);
-      }
+      if (currentCart[index].qty <= 0) currentCart.splice(index, 1);
       updateCartUI();
     }
 
     function clearCart() { currentCart = []; updateCartUI(); }
 
-    // Custom Order Modal Logic (Smart Split)
-    function openCustomModal(index) {
-      activeCustomIndex = index;
-      var item = currentCart[index];
-      document.getElementById('custom-modal-title').innerText = 'Custom: ' + item.nama;
-      
-      // Populate Dropdown Jumlah Item yang Kena Custom
-      var select = document.getElementById('custom-apply-qty');
-      select.innerHTML = '';
-      for (var i = 1; i <= item.qty; i++) {
-        select.innerHTML += `<option value="${i}">${i} Pcs ${i === item.qty ? '(Semua)' : ''}</option>`;
-      }
-      select.value = item.qty;
-
-      document.getElementById('custom-modal').classList.remove('hidden');
-    }
-
-    function selectChip(el, type, val) {
-      var parent = el.parentElement;
-      parent.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
-      if (type === 'ice') selectedIce = val;
-      if (type === 'sugar') selectedSugar = val;
-    }
-
-    function saveCustomModifier() {
-      if (activeCustomIndex === null) return;
-
-      var targetItem = currentCart[activeCustomIndex];
-      var applyQty = Number(document.getElementById('custom-apply-qty').value);
-      var newNote = `${selectedIce}, ${selectedSugar}`;
-
-      if (applyQty === targetItem.qty) {
-        // Jika diterapkan ke SEMUA pcs
-        targetItem.notes = newNote;
-      } else {
-        // Jika diterapkan sebagian (SMART SPLIT)
-        targetItem.qty -= applyQty; // Kurangi qty item lama
-        
-        // Push item baru hasil pecahan dengan catatan kustom
-        currentCart.push({
-          cartItemId: Date.now() + '_split',
-          id: targetItem.id,
-          nama: targetItem.nama,
-          harga: targetItem.harga,
-          qty: applyQty,
-          notes: newNote
-        });
-      }
-
-      closeModal('custom-modal');
-      updateCartUI();
-    }
-
     function openPaymentModal() {
       if (currentCart.length === 0) return alert('Keranjang kosong!');
       var custName = document.getElementById('cust-name').value;
-      if (!custName) return alert('Silakan isi nama/no pelanggan di bagian atas terlebih dahulu!');
+      if (!custName) return alert('Silakan isi nama/no pelanggan terlebih dahulu!');
 
       var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
       document.getElementById('pay-total-akhir').value = 'Rp ' + subtotal.toLocaleString('id-ID');
@@ -517,13 +521,8 @@ function openDirectCustomModal(productId) {
       if (method === 'CASH' && cashPaid < subtotal) return alert('Uang pembayaran masih kurang!');
 
       var payload = {
-        kasirId: currentUser.id,
-        customerName: custName,
-        subtotal: subtotal,
-        totalAkhir: subtotal,
-        metode: method,
-        cashPaid: cashPaid,
-        items: currentCart
+        kasirId: currentUser.id, customerName: custName, subtotal: subtotal, totalAkhir: subtotal,
+        metode: method, cashPaid: cashPaid, items: currentCart
       };
 
       fetch(API_URL, {
@@ -533,13 +532,11 @@ function openDirectCustomModal(productId) {
       .then(res => res.json())
       .then(res => {
         if (res.success) {
-          alert('Transaksi a/n ' + custName + ' Berhasil! ID: ' + res.transId);
+          alert('Transaksi a/n ' + custName + ' Berhasil!');
           closeModal('payment-modal');
           document.getElementById('cust-name').value = '';
           clearCart();
-        } else {
-          alert('Gagal simpan: ' + res.message);
-        }
+        } else { alert('Gagal simpan: ' + res.message); }
       });
     }
 
