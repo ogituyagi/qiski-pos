@@ -5,113 +5,115 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QisKi Juice POS</title>
 <style>
-    :root {
-      /* PALET WARNA SEIMBANG (SESUAI LOGO) */
-      --primary-orange: #ff8c00;
-      --primary-orange-dark: #e07b00;
-      --primary-pink: #e91e63;
-      --primary-pink-dark: #c2185b;
-      
-      --bg-cream: #fffaf5;
-      --card-bg: #ffffff;
-      --text-dark: #2c3e50;
-      --text-muted: #7f8c8d;
-      --border-color: #ffd8be;
-    }
+  /* Import Google Font Poppins */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    html, body { width: 100%; height: 100%; background-color: var(--bg-cream); color: var(--text-dark); overflow: hidden; }
+  :root {
+    --primary-orange: #ff8c00;
+    --primary-orange-dark: #e07b00;
+    --primary-pink: #e91e63;
+    --primary-pink-dark: #c2185b;
     
-    .hidden { display: none !important; }
-    
-    /* Buttons */
-    .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-    .btn-primary { background: var(--primary-orange); color: white; }
-    .btn-primary:hover { background: var(--primary-orange-dark); }
-    .btn-secondary { background: #e74c3c; color: white; }
-    .btn-warning { background: #f39c12; color: white; }
+    --bg-cream: #fffaf5;
+    --card-bg: #ffffff;
+    --text-dark: #2c3e50;
+    --text-muted: #7f8c8d;
+    --border-color: #ffd8be;
+  }
 
-    /* Login Page */
-    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
-    .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.12); border: 1.5px solid var(--border-color); }
-    .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 800; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
-    .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
-    .form-group input:focus { border-color: var(--primary-pink); }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', -apple-system, sans-serif; }
+  html, body { width: 100%; height: 100%; background-color: var(--bg-cream); color: var(--text-dark); overflow: hidden; }
+  
+  .hidden { display: none !important; }
+  
+  /* Buttons */
+  .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .btn-primary { background: var(--primary-orange); color: white; }
+  .btn-primary:hover { background: var(--primary-orange-dark); }
+  .btn-secondary { background: #e74c3c; color: white; }
+  .btn-warning { background: #f39c12; color: white; }
 
-    /* Main App Layout */
-    #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    
-    /* Header Pink Magenta (Sesuai Logo "Juice") */
-    header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(233, 30, 99, 0.2); }
-    .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; }
-    
-    .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
-    .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
-    
-    @media (min-width: 768px) {
-      .pos-layout { flex-direction: row; }
-      .menu-section { flex: 6.2; overflow-y: auto; height: 100%; padding-right: 4px; }
-      .cart-section { flex: 3.8; height: 100%; }
-    }
+  /* Login Page */
+  #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
+  .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.12); border: 1.5px solid var(--border-color); }
+  .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 800; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
+  .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
+  .form-group input:focus { border-color: var(--primary-pink); }
 
-    /* Customer Header */
-    .customer-header { background: #fff; padding: 10px; border-radius: 12px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; gap: 8px; }
+  /* Main App Layout */
+  #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  
+  header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(233, 30, 99, 0.2); }
+  .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; }
+  
+  .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow: hidden; }
+  .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
+  
+  @media (min-width: 768px) {
+    .pos-layout { flex-direction: row; }
+    .menu-section { flex: 6.2; overflow-y: auto; height: 100%; padding-right: 4px; }
+    .cart-section { flex: 3.8; height: 100%; }
+  }
 
-    /* Kategori Pink Magenta */
-    .category-title { font-size: 13px; font-weight: 800; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-    .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
-    
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-    .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; border-left: 4px solid var(--primary-orange); }
-    .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
-    .menu-card h4 { font-size: 12px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
-    .menu-card .price { color: var(--primary-orange); font-weight: 800; font-size: 12px; }
+  /* Customer Header */
+  .customer-header { background: #fff; padding: 10px; border-radius: 12px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; gap: 8px; }
 
-    /* Modern Cart Section */
-    .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
-    
-    .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1.5px solid var(--border-color); flex-shrink: 0; }
-    .cart-header h3 { font-size: 15px; font-weight: 800; color: var(--primary-pink); display: flex; align-items: center; gap: 8px; }
+  /* Menu Grid */
+  .category-title { font-size: 13px; font-weight: 800; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+  .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
+  
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+  .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; border-left: 4px solid var(--primary-orange); }
+  .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
+  .menu-card h4 { font-size: 12px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
+  .menu-card .price { color: var(--primary-orange); font-weight: 800; font-size: 12px; }
 
-    .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
-    
-    /* Modern Cart Item Card */
-    .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s ease; }
-    .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-    .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
-    .cart-item-price { font-size: 13px; font-weight: 800; color: var(--text-dark); }
-    
-    .cart-item-notes { font-size: 11px; color: var(--primary-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
-    
-    .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
-    
-    .btn-custom { background: #fff; border: 1px solid #ffccd5; color: var(--primary-pink); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-    .btn-custom:hover { background: #fff0f3; }
+  /* Modern Cart Section */
+  .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
+  
+  .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1.5px solid var(--border-color); flex-shrink: 0; }
+  .cart-header h3 { font-size: 15px; font-weight: 800; color: var(--primary-pink); display: flex; align-items: center; gap: 8px; }
 
-    .qty-control { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--border-color); border-radius: 20px; padding: 2px 6px; }
-    .btn-qty { width: 24px; height: 24px; border-radius: 50%; border: none; background: #f0f0f0; color: var(--text-dark); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; }
-    .btn-qty:hover { background: var(--primary-pink); color: white; }
-    .qty-num { font-weight: 800; font-size: 13px; min-width: 16px; text-align: center; }
+  .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
+  
+  /* Modern Cart Item Card */
+  .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; transition: all 0.2s ease; }
+  .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+  .cart-item-price { font-size: 13px; font-weight: 800; color: var(--text-dark); }
+  
+  .cart-item-notes { font-size: 11px; color: var(--primary-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; width: fit-content; }
+  
+  .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
+  
+  .btn-custom { background: #fff; border: 1px solid #ffccd5; color: var(--primary-pink); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .btn-custom:hover { background: #fff0f3; }
 
-    .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
-    .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .cart-total label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
-    .cart-total val { font-size: 20px; font-weight: 900; color: var(--text-dark); }
-    
-    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
+  /* FIX QTY CONTROL (CLEAN & NO DOUBLE BORDER) */
+  .qty-control { display: flex; align-items: center; gap: 6px; }
+  .btn-qty { width: 28px; height: 28px; border-radius: 8px; border: none; background: #f3e5db; color: var(--text-dark); font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: justify; justify-content: center; font-size: 15px; transition: all 0.2s ease; }
+  .btn-qty:hover { background: var(--primary-orange); color: white; }
+  .qty-num { font-weight: 800; font-size: 13px; min-width: 20px; text-align: center; color: var(--text-dark); }
 
-    /* Modals */
-    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
-    .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1.5px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-    .modal-header h3 { font-size: 16px; font-weight: 800; color: var(--primary-pink); }
-    
-    .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
-    .chip.selected { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
-  </style>
+  .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
+  .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .cart-total label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
+  .cart-total val { font-size: 20px; font-weight: 900; color: var(--text-dark); }
+  
+  .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
+
+  /* Modals */
+  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+  .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1.5px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+  .modal-header h3 { font-size: 16px; font-weight: 800; color: var(--primary-pink); }
+  
+  .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
+  .chip.selected { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
+</style>
 </head>
 <body>
 
