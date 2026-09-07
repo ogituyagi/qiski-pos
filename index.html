@@ -4,137 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QisKi Juice POS</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
-
-    :root {
-      --primary-orange: #ff8c00;
-      --primary-orange-dark: #e07b00;
-      --primary-pink: #e91e63;
-      --primary-pink-dark: #c2185b;
-      --bg-cream: #fffaf5;
-      --card-bg: #ffffff;
-      --text-dark: #2c3e50;
-      --text-muted: #7f8c8d;
-      --border-color: #ffd8be;
-      --primary-green: #27ae60;
-      --primary-green-dark: #219653;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', -apple-system, sans-serif; }
-    html, body { width: 100%; height: 100%; background-color: var(--bg-cream); color: var(--text-dark); overflow: hidden; }
-    
-    .hidden { display: none !important; }
-    
-    /* Buttons */
-    .btn { border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-    .btn-primary { background: var(--primary-orange); color: white; }
-    .btn-primary:hover { background: var(--primary-orange-dark); }
-    .btn-secondary { background: #e74c3c; color: white; }
-    .btn-warning { background: #f39c12; color: white; }
-    .btn-success { background: var(--primary-green); color: white; }
-    .btn-success:hover { background: var(--primary-green-dark); }
-
-    /* Login Page */
-    #login-page { display: flex; justify-content: center; align-items: center; width: 100%; height: 100vh; background-color: var(--bg-cream); }
-    .login-card { background: white; padding: 35px 30px; border-radius: 16px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(233, 30, 99, 0.12); border: 1.5px solid var(--border-color); }
-    .login-card h2 { margin-bottom: 20px; text-align: center; color: var(--primary-pink); font-size: 24px; font-weight: 900; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; color: var(--text-dark); }
-    .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
-
-    /* Main App Layout */
-    #app-page { background: var(--bg-cream); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    
-    /* Header with Integrated Navigation Tabs */
-    header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-pink-dark)); color: white; padding: 0 16px; height: 50px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(233, 30, 99, 0.2); }
-    .header-brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 16px; cursor: pointer; }
-    
-    /* Header Tabs */
-    .header-tabs { display: flex; gap: 6px; }
-    .tab-btn { background: rgba(255, 255, 255, 0.15); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px; }
-    .tab-btn:hover, .tab-btn.active { background: white; color: var(--primary-pink); }
-
-    .view-content { padding: 12px; flex: 1; height: calc(100vh - 50px); overflow-y: auto; }
-
-    /* Dashboard Grid */
-    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 900px; margin: 40px auto 0 auto; padding: 0 10px; }
-    .dash-card { background: white; border: 2px solid var(--border-color); border-radius: 18px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .dash-card:hover { transform: translateY(-4px); border-color: var(--primary-pink); box-shadow: 0 8px 25px rgba(233, 30, 99, 0.15); }
-    .dash-icon { width: 56px; height: 56px; border-radius: 50%; background: #fff0f3; color: var(--primary-pink); display: flex; align-items: center; justify-content: center; }
-    .dash-card:nth-child(2) .dash-icon { background: #fff5e6; color: var(--primary-orange); }
-    .dash-card:nth-child(3) .dash-icon { background: #e8f5e9; color: #27ae60; }
-    .dash-card h3 { font-size: 16px; font-weight: 900; color: var(--text-dark); }
-    .dash-card p { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-
-    /* POS Layout */
-    .pos-layout { display: flex; flex-direction: column; gap: 12px; height: 100%; overflow: hidden; }
-    @media (min-width: 768px) {
-      .pos-layout { flex-direction: row; }
-      .menu-section { flex: 6.2; overflow-y: auto; height: 100%; padding-right: 4px; }
-      .cart-section { flex: 3.8; height: 100%; }
-    }
-
-    /* Customer Gate Box */
-    .customer-gate-box { background: #fff; padding: 14px 16px; border-radius: 14px; border: 1.5px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.02); margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
-    .customer-gate-box h4 { font-size: 12px; font-weight: 900; color: var(--primary-pink); text-transform: uppercase; letter-spacing: 0.5px; }
-
-    /* Radio Chips Styling */
-    .radio-chip-group { display: flex; gap: 10px; }
-    .radio-chip { flex: 1; border: 1.5px solid var(--border-color); padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; background: #fff; color: var(--text-dark); transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .radio-chip.selected { background: #fff0f3; border-color: var(--primary-pink); color: var(--primary-pink); }
-
-    /* Menu Grid */
-    .category-title { font-size: 13px; font-weight: 900; color: var(--primary-pink); margin: 12px 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-    .category-title::after { content: ''; flex: 1; height: 2px; background: #fce4ec; border-radius: 2px; }
-    
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-    .menu-card { border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px 8px; text-align: center; background: #fff; cursor: pointer; user-select: none; transition: all 0.2s ease; border-left: 4px solid var(--primary-orange); }
-    .menu-card:active { transform: scale(0.95); background: #fff5f8; border-color: var(--primary-pink); }
-    .menu-card h4 { font-size: 13px; margin-bottom: 6px; color: var(--text-dark); font-weight: 700; line-height: 1.2; }
-    .menu-card .price { color: var(--primary-orange); font-weight: 900; font-size: 13px; }
-
-    /* Cart Section */
-    .cart-section { background: #fff; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; height: 100%; border: 1.5px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.03); overflow: hidden; }
-    .cart-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1.5px solid var(--border-color); flex-shrink: 0; }
-    .cart-header h3 { font-size: 15px; font-weight: 900; color: var(--primary-pink); display: flex; align-items: center; gap: 8px; }
-
-    .cart-items { flex: 1; overflow-y: auto; margin: 12px 0; padding-right: 2px; display: flex; flex-direction: column; gap: 10px; }
-    
-    .cart-item { background: #fffaf5; border: 1px solid #ffe8d6; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .cart-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-    .cart-item-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
-    .cart-item-price { font-size: 13px; font-weight: 900; color: var(--text-dark); }
-    
-    .cart-item-notes { font-size: 11px; color: var(--primary-pink-dark); background: #fce4ec; padding: 3px 8px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; width: fit-content; }
-    
-    .cart-item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
-    
-    .btn-custom { background: #fff; border: 1px solid #ffccd5; color: var(--primary-pink); font-size: 11px; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-    .btn-custom:hover { background: #fff0f3; }
-
-    .qty-control { display: flex; align-items: center; gap: 6px; }
-    .btn-qty { width: 28px; height: 28px; border-radius: 8px; border: none; background: #f3e5db; color: var(--text-dark); font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: all 0.2s ease; }
-    .btn-qty:hover { background: var(--primary-pink); color: white; }
-    .qty-num { font-weight: 900; font-size: 13px; min-width: 20px; text-align: center; color: var(--text-dark); }
-
-    .cart-footer { border-top: 1.5px solid var(--border-color); padding-top: 12px; background: #fff; flex-shrink: 0; }
-    .cart-total { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .cart-total label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
-    .cart-total val { font-size: 20px; font-weight: 900; color: var(--text-dark); }
-    
-    .cart-actions { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; }
-
-    /* Modals */
-    .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
-    .modal-content { background: white; padding: 20px; border-radius: 16px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; border: 1.5px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-    .modal-header h3 { font-size: 16px; font-weight: 900; color: var(--primary-pink); }
-    
-    .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .chip { border: 1.5px solid var(--border-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; background: #fff; color: var(--text-dark); transition: all 0.2s ease; }
-    .chip.selected { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -154,13 +24,11 @@
   <!-- PAGE 2: MAIN APP -->
   <div id="app-page" class="hidden">
     <header>
-      <!-- BRAND LOGO -->
       <div class="header-brand" onclick="showDashboard()">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span>QisKi Juice POS</span>
       </div>
 
-      <!-- HEADER NAVIGATION TABS -->
       <div class="header-tabs">
         <button class="tab-btn active" id="tab-home" onclick="showDashboard()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -176,7 +44,6 @@
         </button>
       </div>
 
-      <!-- USER PROFILE & LOGOUT -->
       <div style="display: flex; align-items: center; gap: 10px;">
         <span id="user-display" style="font-size: 12px; font-weight: 700;">Kasir</span>
         <button onclick="logout()" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 4px 10px; font-size: 11px;">Logout</button>
@@ -223,16 +90,9 @@
       <div id="new-order-view" class="hidden" style="height: 100%;">
         <div class="pos-layout">
           
-          <!-- LEFT: CATALOG & CUSTOMER GATE -->
+          <!-- LEFT: CATALOG -->
           <div class="menu-section">
-            
-            <div id="catalog-container" class="hidden"></div>
-            
-            <!-- EMPTY STATE BEFORE NAME IS FILLED -->
-            <div id="catalog-placeholder" style="text-align: center; padding: 50px 20px; background: #fff; border-radius: 14px; border: 1.5px dashed var(--border-color);">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <p style="color: var(--text-muted); font-size: 13px; font-weight: 700; margin-top: 10px;">Silakan isi Identitas Pelanggan di atas terlebih dahulu untuk membuka Katalog Menu Juice.</p>
-            </div>
+            <div id="catalog-container"></div>
           </div>
 
           <!-- RIGHT: MODERN CART -->
@@ -254,19 +114,16 @@
                 <val id="cart-total-val">Rp 0</val>
               </div>
               <div class="cart-actions">
-                <!-- Tombol Batal -->
                 <button onclick="clearCart()" class="btn btn-secondary">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                   Batal
                 </button>
               
-                <!-- Tombol Pending -->
                 <button onclick="savePendingOrder()" class="btn btn-warning">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   Pending
                 </button>
               
-                <!-- Tombol Bayar -->
                 <button onclick="openPaymentModal()" class="btn btn-success">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="6" y1="16" x2="12" y2="16"/><circle cx="16" cy="12" r="2"/></svg>
                   Bayar
@@ -307,7 +164,6 @@
         </div>
       </div>
 
-      <!-- MODE 1: HOLD TAP (+ / -) -->
       <div class="form-group hidden" style="margin-top:14px;" id="mode-hold-group">
         <label>Jumlah Pesanan Custom (Pcs):</label>
         <div style="display:flex; align-items:center; gap:14px; margin-top:8px;">
@@ -317,7 +173,6 @@
         </div>
       </div>
 
-      <!-- MODE 2: CARTS SMART SPLIT DROPDOWN -->
       <div class="form-group hidden" style="margin-top:14px;" id="mode-cart-group">
         <label>Terapkan catatan ini ke berapa item?</label>
         <select id="custom-apply-qty" style="padding:8px; font-size:13px; margin-top:6px; font-weight: 700;"></select>
@@ -350,604 +205,92 @@
     </div>
   </div>
 
-<!-- MODAL INITIAL CUSTOMER GATEWAY -->
-<div id="customer-gate-modal" class="modal-overlay hidden">
-  <div class="modal-content" style="max-width: 420px; padding: 24px;">
-    
-    <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 16px;">
-      <h3 style="font-size: 18px; font-weight: 800; color: var(--primary-pink); margin: 0;">
-        Pilih Identitas Pemesan
-      </h3>
-      <button onclick="closeModal('customer-gate-modal')" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✖</button>
-    </div>
-
-    <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 18px; font-weight: 600;">
-      Silakan tentukan tipe pelanggan sebelum memulai transaksi baru.
-    </p>
-
-    <!-- TOGGLE UMUM / MEMBER -->
-    <div class="radio-chip-group" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: none; padding: 0;">
-      <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; justify-content: center;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Pelanggan Umum
-      </div>
-      <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; justify-content: center;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 1 0 7.75"/></svg>
-        Member QSK
-      </div>
-    </div>
-
-    <!-- INPUT PELANGGAN UMUM -->
-    <div id="input-nama-container" style="margin-bottom: 20px;">
-      <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama Pelanggan / Meja:</label>
-      <input type="text" id="cust-name" placeholder="Contoh: Budi / Meja 04..." style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box;">
-    </div>
-
-    <!-- INPUT MEMBER QSK -->
-    <div id="select-member-container" class="hidden" style="position: relative; margin-bottom: 20px;">
-      <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Cari Member:</label>
-      <input type="text" id="member-search-input" placeholder="Ketik Nama Member / No. HP..." onfocus="showMemberDropdown()" oninput="filterMemberList()" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box; background: #fff;">
+  <!-- MODAL INITIAL CUSTOMER GATEWAY -->
+  <div id="customer-gate-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 420px; padding: 24px;">
       
-      <!-- DROPDOWN SEARCH RESULT -->
-      <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
-        <div onclick="openAddMemberModal()" style="padding: 10px 14px; cursor: pointer; font-weight: 800; font-size: 12px; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Tambah Member Baru
+      <!-- PULSING DOTS LOADING OVERLAY IN MODAL -->
+      <div id="gate-loading-overlay" class="modal-loading-overlay hidden">
+        <div class="pulsing-dots">
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
-        <div id="member-items-list"></div>
+        <div class="loading-text">Memuat Katalog Juice...</div>
       </div>
+
+      <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 16px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--primary-pink); margin: 0;">
+          Pilih Identitas Pemesan
+        </h3>
+        <button onclick="closeModal('customer-gate-modal')" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✖</button>
+      </div>
+
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 18px; font-weight: 600;">
+        Silakan tentukan tipe pelanggan sebelum memulai transaksi baru.
+      </p>
+
+      <div class="radio-chip-group" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: none; padding: 0;">
+        <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; justify-content: center;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Pelanggan Umum
+        </div>
+        <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; justify-content: center;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 1 0 7.75"/></svg>
+          Member QSK
+        </div>
+      </div>
+
+      <div id="input-nama-container" style="margin-bottom: 20px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama Pelanggan / Meja:</label>
+        <input type="text" id="cust-name" placeholder="Contoh: Budi / Meja 04..." style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box;">
+      </div>
+
+      <div id="select-member-container" class="hidden" style="position: relative; margin-bottom: 20px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Cari Member:</label>
+        <input type="text" id="member-search-input" placeholder="Ketik Nama Member / No. HP..." onfocus="showMemberDropdown()" oninput="filterMemberList()" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box; background: #fff;">
+        
+        <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
+          <div onclick="openAddMemberModal()" style="padding: 10px 14px; cursor: pointer; font-weight: 800; font-size: 12px; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tambah Member Baru
+          </div>
+          <div id="member-items-list"></div>
+        </div>
+      </div>
+
+      <button type="button" onclick="confirmCustomerAndProceed()" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800;">
+        LANJUTKAN KE KATALOG ➔
+      </button>
+
     </div>
-
-    <!-- TOMBOL LANJUTKAN -->
-    <button type="button" onclick="confirmCustomerAndProceed()" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800;">
-      LANJUTKAN KE KATALOG ➔
-    </button>
-
   </div>
-</div>
-</body>
 
-<script>
-    var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_rJIxw0NilgbmxqSmgrTJWasiJ5_O_aGCT20QCnki1BjA/exec";
-
-    // Data awal di-set kosong (akan di-load dari Google Sheets)
-    var productsData = [];
-    var membersData = [];
-
-    var currentUser = null;
-    var currentCart = [];
-    var selectedCustomerType = 'REGULAR';
-    var selectedMemberId = null;
-    
-    var modalTriggerSource = null; 
-    var activeCartIndex = null;
-    var activeProductId = null;
-    var holdCustomQty = 1;
-    var selectedIce = "Normal Ice";
-    var selectedSugar = "Normal Sugar";
-
-    var holdTimer = null;
-    var isLongPress = false;
-
-    document.addEventListener("DOMContentLoaded", function() {
-      checkExistingSession();
-      loadDataFromSheet();
-    });
-
-    function loadDataFromSheet() {
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'getInitialData' })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success && res.data) {
-          productsData = res.data.products || [];
-          membersData = res.data.members || [];
-          renderCatalog();
-        }
-      })
-      .catch(err => console.error("Gagal memuat data dari Sheet:", err));
-    }
-
-    function checkExistingSession() {
-      var savedSession = localStorage.getItem('qiski_session');
-      if (savedSession) {
-        currentUser = JSON.parse(savedSession);
-        document.getElementById('user-display').innerText = currentUser.nama;
-        document.getElementById('login-page').classList.add('hidden');
-        document.getElementById('app-page').classList.remove('hidden');
-        showDashboard();
-      }
-    }
-
-    function handleLogin(e) {
-      e.preventDefault();
-      var u = document.getElementById('username').value;
-      var p = document.getElementById('password').value;
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'checkLogin', username: u, password: p })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) {
-          currentUser = res.user;
-          localStorage.setItem('qiski_session', JSON.stringify(currentUser));
-          document.getElementById('user-display').innerText = currentUser.nama;
-          document.getElementById('login-page').classList.add('hidden');
-          document.getElementById('app-page').classList.remove('hidden');
-          showDashboard();
-        } else { alert(res.message); }
-      });
-    }
-
-    function setActiveHeaderTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      if(tabId) document.getElementById(tabId).classList.add('active');
-    }
-
-    function showDashboard() {
-      setActiveHeaderTab('tab-home');
-      document.getElementById('home-dashboard-view').classList.remove('hidden');
-      document.getElementById('new-order-view').classList.add('hidden');
-    }
-
-// 1. Saat klik 'Pesanan Baru' dari Dashboard, Buka Modal Dulu
-function openNewOrderFlow() {
-  // Reset form modal
-  selectCustomerType('REGULAR');
-  document.getElementById('cust-name').value = '';
-  document.getElementById('member-search-input').value = '';
-  selectedMemberId = null;
-
-  // Tampilkan Modal Identitas
-  document.getElementById('customer-gate-modal').classList.remove('hidden');
-}
-
-// 2. Fungsi Validasi & Lanjut ke Halaman POS
-function confirmCustomerAndProceed() {
-  var nameVal = '';
-
-  if (selectedCustomerType === 'REGULAR') {
-    nameVal = document.getElementById('cust-name').value.trim();
-    if (!nameVal) {
-      alert('Silakan masukkan nama pelanggan terlebih dahulu!');
-      document.getElementById('cust-name').focus();
-      return;
-    }
-  } else {
-    // Tipe Member
-    nameVal = document.getElementById('member-search-input').value.trim();
-    if (!nameVal || !selectedMemberId) {
-      alert('Silakan pilih member terdaftar dari daftar pencarian!');
-      document.getElementById('member-search-input').focus();
-      return;
-    }
-  }
-
-  // Tutup Modal Gateway
-  closeModal('customer-gate-modal');
-
-  // Pindah Tampilan ke POS App
-  setActiveHeaderTab(null);
-  document.getElementById('home-dashboard-view').classList.add('hidden');
-  document.getElementById('new-order-view').classList.remove('hidden');
-
-  // Buka Katalog & Clear Keranjang Lama
-  document.getElementById('catalog-container').classList.remove('hidden');
-  clearCart();
-}
-
-    function openDummyMenu(title) {
-      if (title === 'Kantung Pending') setActiveHeaderTab('tab-pending');
-      else if (title === 'Antrian Bar / Dapur') setActiveHeaderTab('tab-kitchen');
-      alert('Fitur "' + title + '" siap diintegrasikan dengan database backend.');
-    }
-
-    function selectCustomerType(type) {
-      selectedCustomerType = type;
-      var chipUmum = document.getElementById('chip-umum');
-      var chipMember = document.getElementById('chip-member');
-      var inputNama = document.getElementById('input-nama-container');
-      var selectMember = document.getElementById('select-member-container');
-
-      if (type === 'REGULAR') {
-        chipUmum.classList.add('selected');
-        chipMember.classList.remove('selected');
-        inputNama.classList.remove('hidden');
-        selectMember.classList.add('hidden');
-      } else {
-        chipMember.classList.add('selected');
-        chipUmum.classList.remove('selected');
-        inputNama.classList.add('hidden');
-        selectMember.classList.remove('hidden');
-      }
-      handleCustomerNameInput();
-    }
-
-    function renderMemberList(filterText = "") {
-      var container = document.getElementById('member-items-list');
-      var keyword = filterText.toLowerCase();
-
-      var filtered = membersData.filter(m => 
-        (m.nama && m.nama.toLowerCase().includes(keyword)) || 
-        (m.hp && String(m.hp).includes(keyword))
-      );
-
-      if (filtered.length === 0) {
-        container.innerHTML = `<div style="padding: 10px 12px; color: var(--text-muted); font-size: 12px; text-align: center;">Member tidak ditemukan</div>`;
-        return;
-      }
-
-      container.innerHTML = filtered.map(m => `
-        <div onclick="selectMember('${m.id}', '${m.nama}', '${m.hp}')" style="padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f9f9f9; transition: 0.15s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='#fff'">
-          ${m.nama} <span style="color: var(--text-muted); font-size: 11px; font-weight: 500;">(${m.hp})</span>
+  <!-- MODAL TAMBAH MEMBER BARU -->
+  <div id="add-member-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Pendaftaran Member Baru</h3>
+        <button onclick="closeModal('add-member-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
+      </div>
+      <form onsubmit="handleSaveNewMember(event)">
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="new-member-name" placeholder="Masukan nama lengkap..." required>
         </div>
-      `).join('');
-    }
+        <div class="form-group">
+          <label>Nomor HP (WhatsApp)</label>
+          <input type="tel" id="new-member-phone" placeholder="Contoh: 08123456789" required>
+        </div>
+        <div class="form-group">
+          <label>Tanggal Lahir</label>
+          <input type="date" id="new-member-dob" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">SIMPAN MEMBER</button>
+      </form>
+    </div>
+  </div>
 
-    function showMemberDropdown() {
-      document.getElementById('member-dropdown').classList.remove('hidden');
-      renderMemberList(document.getElementById('member-search-input').value);
-    }
-
-    function filterMemberList() {
-      var keyword = document.getElementById('member-search-input').value;
-      selectedMemberId = null;
-      renderMemberList(keyword);
-      document.getElementById('member-dropdown').classList.remove('hidden');
-      handleCustomerNameInput();
-    }
-
-    function selectMember(id, name, phone) {
-      selectedMemberId = id;
-      document.getElementById('member-search-input').value = `${name} (${phone})`;
-      document.getElementById('member-dropdown').classList.add('hidden');
-      handleCustomerNameInput();
-    }
-
-    function openAddMemberModal() {
-      document.getElementById('member-dropdown').classList.add('hidden');
-      document.getElementById('new-member-name').value = '';
-      document.getElementById('new-member-phone').value = '';
-      document.getElementById('new-member-dob').value = '';
-      document.getElementById('add-member-modal').classList.remove('hidden');
-    }
-
-    function handleSaveNewMember(e) {
-      e.preventDefault();
-      var name = document.getElementById('new-member-name').value.trim();
-      var phone = document.getElementById('new-member-phone').value.trim();
-
-      var newId = 'MEMBER-' + Date.now();
-      membersData.push({ id: newId, nama: name, hp: phone, poin: 0 });
-
-      selectMember(newId, name, phone);
-      closeModal('add-member-modal');
-      alert(`Member baru "${name}" berhasil didaftarkan!`);
-    }
-
-    document.addEventListener('click', function(e) {
-      var container = document.getElementById('select-member-container');
-      if (container && !container.contains(e.target)) {
-        var dropdown = document.getElementById('member-dropdown');
-        if (dropdown) dropdown.classList.add('hidden');
-      }
-    });
-
-    function handleCustomerNameInput() {
-      var isValid = false;
-      
-      if (selectedCustomerType === 'REGULAR') {
-        var nameVal = document.getElementById('cust-name').value.trim();
-        isValid = nameVal.length > 0;
-      } else {
-        isValid = selectedMemberId !== null && document.getElementById('member-search-input').value.trim() !== '';
-      }
-
-      var catalogContainer = document.getElementById('catalog-container');
-      var catalogPlaceholder = document.getElementById('catalog-placeholder');
-
-      if (isValid) {
-        catalogContainer.classList.remove('hidden');
-        catalogPlaceholder.classList.add('hidden');
-      } else {
-        catalogContainer.classList.add('hidden');
-        catalogPlaceholder.classList.remove('hidden');
-      }
-    }
-
-    function renderCatalog() {
-      var container = document.getElementById('catalog-container');
-      if (!productsData || productsData.length === 0) {
-        container.innerHTML = '<p style="text-align:center; padding: 20px; color: var(--text-muted);">Tidak ada produk aktif.</p>';
-        return;
-      }
-
-      // Ambil daftar kategori unik dari data produk
-      var categories = [...new Set(productsData.map(p => p.kategori))];
-      
-      container.innerHTML = categories.map(cat => {
-        var items = productsData.filter(p => p.kategori === cat);
-        return `
-          <div class="category-title">${cat}</div>
-          <div class="menu-grid">
-            ${items.map(p => `
-              <div class="menu-card" 
-                   onmousedown="startHold('${p.id}')" 
-                   onmouseup="endHold('${p.id}')" 
-                   onmouseleave="cancelHold()"
-                   ontouchstart="startHold('${p.id}')" 
-                   ontouchend="endHold('${p.id}')"
-                   ontouchcancel="cancelHold()">
-                <h4>${p.nama}</h4>
-                <div class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }).join('');
-    }
-
-    function startHold(productId) {
-      isLongPress = false;
-      holdTimer = setTimeout(function() {
-        isLongPress = true;
-        openHoldCustomModal(productId);
-      }, 500);
-    }
-
-    function endHold(productId) {
-      clearTimeout(holdTimer);
-      if (!isLongPress) { directAddToCart(productId); }
-    }
-
-    function cancelHold() { clearTimeout(holdTimer); }
-
-    function directAddToCart(productId) {
-      var prod = productsData.find(p => p.id === productId);
-      var existing = currentCart.find(i => i.id === productId && (!i.notes || i.notes === "Normal"));
-
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        currentCart.push({
-          cartItemId: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-          id: prod.id,
-          nama: prod.nama,
-          harga: prod.harga,
-          qty: 1,
-          notes: "Normal"
-        });
-      }
-      updateCartUI();
-    }
-
-    function openHoldCustomModal(productId) {
-      modalTriggerSource = 'HOLD';
-      activeProductId = productId;
-      holdCustomQty = 1;
-      resetChips();
-
-      var prod = productsData.find(p => p.id === productId);
-      document.getElementById('custom-modal-title').innerText = 'Custom: ' + prod.nama;
-      
-      document.getElementById('hold-qty-val').innerText = '1';
-      document.getElementById('mode-hold-group').classList.remove('hidden');
-      document.getElementById('mode-cart-group').classList.add('hidden');
-      
-      document.getElementById('custom-modal').classList.remove('hidden');
-    }
-
-    function openCartCustomModal(index) {
-      modalTriggerSource = 'CART';
-      activeCartIndex = index;
-      resetChips();
-
-      var item = currentCart[index];
-      document.getElementById('custom-modal-title').innerText = 'Custom: ' + item.nama;
-      
-      var select = document.getElementById('custom-apply-qty');
-      select.innerHTML = '';
-      for (var i = 1; i <= item.qty; i++) {
-        select.innerHTML += `<option value="${i}">${i} Pcs ${i === item.qty ? '(Semua)' : ''}</option>`;
-      }
-      select.value = item.qty;
-
-      document.getElementById('mode-hold-group').classList.add('hidden');
-      document.getElementById('mode-cart-group').classList.remove('hidden');
-      
-      document.getElementById('custom-modal').classList.remove('hidden');
-    }
-
-    function adjustHoldQty(delta) {
-      holdCustomQty = Math.max(1, holdCustomQty + delta);
-      document.getElementById('hold-qty-val').innerText = holdCustomQty;
-    }
-
-    function resetChips() {
-      selectedIce = "Normal Ice";
-      selectedSugar = "Normal Sugar";
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      document.querySelectorAll('.chip-group').forEach(grp => grp.children[0].classList.add('selected'));
-    }
-
-    function selectChip(el, type, val) {
-      var parent = el.parentElement;
-      parent.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
-      if (type === 'ice') selectedIce = val;
-      if (type === 'sugar') selectedSugar = val;
-    }
-
-    function saveCustomModifier() {
-      var newNote = `${selectedIce}, ${selectedSugar}`;
-
-      if (modalTriggerSource === 'HOLD') {
-        var prod = productsData.find(p => p.id === activeProductId);
-        currentCart.push({
-          cartItemId: Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-          id: prod.id,
-          nama: prod.nama,
-          harga: prod.harga,
-          qty: holdCustomQty,
-          notes: newNote
-        });
-      } else if (modalTriggerSource === 'CART') {
-        var targetItem = currentCart[activeCartIndex];
-        var applyQty = Number(document.getElementById('custom-apply-qty').value);
-
-        if (applyQty === targetItem.qty) {
-          targetItem.notes = newNote;
-        } else {
-          targetItem.qty -= applyQty;
-          currentCart.push({
-            cartItemId: Date.now() + '_split',
-            id: targetItem.id,
-            nama: targetItem.nama,
-            harga: targetItem.harga,
-            qty: applyQty,
-            notes: newNote
-          });
-        }
-      }
-
-      closeModal('custom-modal');
-      updateCartUI();
-    }
-
-    function updateCartUI() {
-      var container = document.getElementById('cart-items');
-      if (currentCart.length === 0) {
-        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 700;">Keranjang masih kosong</p>';
-        document.getElementById('cart-total-val').innerText = 'Rp 0';
-        return;
-      }
-
-      var total = 0;
-      container.innerHTML = currentCart.map((item, idx) => {
-        var subtotal = item.harga * item.qty;
-        total += subtotal;
-        return `
-          <div class="cart-item">
-            <div class="cart-item-header">
-              <span class="cart-item-title">${item.nama}</span>
-              <span class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</span>
-            </div>
-            
-            ${item.notes !== "Normal" ? `
-              <div class="cart-item-notes">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                <span>${item.notes}</span>
-              </div>
-            ` : ''}
-
-            <div class="cart-item-footer">
-              <button onclick="openCartCustomModal(${idx})" class="btn-custom">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                Custom
-              </button>
-              
-              <div class="qty-control">
-                <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
-                <span class="qty-num">${item.qty}</span>
-                <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-    }
-
-    function updateQty(index, delta) {
-      currentCart[index].qty += delta;
-      if (currentCart[index].qty <= 0) currentCart.splice(index, 1);
-      updateCartUI();
-    }
-
-    function clearCart() { currentCart = []; updateCartUI(); }
-
-    function getActiveCustomerName() {
-      if (selectedCustomerType === 'REGULAR') {
-        return document.getElementById('cust-name').value.trim();
-      } else {
-        return document.getElementById('member-search-input').value.trim();
-      }
-    }
-
-    function savePendingOrder() {
-      if (currentCart.length === 0) return alert('Keranjang masih kosong!');
-      var custName = getActiveCustomerName();
-
-      var pendingData = { id: 'PEND-' + Date.now(), customerName: custName, cart: currentCart, time: new Date().toLocaleTimeString() };
-      var pendingList = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-      pendingList.push(pendingData);
-      localStorage.setItem('qiski_pending', JSON.stringify(pendingList));
-
-      alert('Order a/n "' + custName + '" disimpan di Pending!');
-      showDashboard();
-    }
-
-    function openPaymentModal() {
-      if (currentCart.length === 0) return alert('Keranjang kosong!');
-      var custName = getActiveCustomerName();
-
-      var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-      document.getElementById('pay-total-akhir').value = 'Rp ' + subtotal.toLocaleString('id-ID');
-      document.getElementById('pay-cash-paid').value = '';
-      document.getElementById('pay-change').value = 'Rp 0';
-      document.getElementById('payment-modal').classList.remove('hidden');
-    }
-
-    function togglePayMethod() {
-      var method = document.getElementById('pay-method').value;
-      if (method === 'QRIS') document.getElementById('cash-group').classList.add('hidden');
-      else document.getElementById('cash-group').classList.remove('hidden');
-    }
-
-    function calculatePayment() {
-      var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-      var method = document.getElementById('pay-method').value;
-      if (method === 'CASH') {
-        var cashPaid = Number(document.getElementById('pay-cash-paid').value) || 0;
-        var change = cashPaid - subtotal;
-        document.getElementById('pay-change').value = change >= 0 ? 'Rp ' + change.toLocaleString('id-ID') : 'Uang Kurang!';
-      }
-    }
-
-    function submitTransaction() {
-      var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-      var method = document.getElementById('pay-method').value;
-      var cashPaid = method === 'CASH' ? Number(document.getElementById('pay-cash-paid').value) || 0 : subtotal;
-      var custName = getActiveCustomerName();
-
-      if (method === 'CASH' && cashPaid < subtotal) return alert('Uang pembayaran masih kurang!');
-
-      var payload = {
-        kasirId: currentUser ? currentUser.id : 'KASIR-01', customerName: custName, subtotal: subtotal, totalAkhir: subtotal,
-        metode: method, cashPaid: cashPaid, items: currentCart
-      };
-
-      fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'saveTransaction', payload: payload })
-      })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) {
-          alert('Transaksi a/n ' + custName + ' Berhasil!');
-          closeModal('payment-modal');
-          showDashboard();
-        } else { alert('Gagal simpan: ' + res.message); }
-      });
-    }
-
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-    function logout() { localStorage.removeItem('qiski_session'); location.reload(); }
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
