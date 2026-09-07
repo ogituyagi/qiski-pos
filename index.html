@@ -422,32 +422,8 @@
   <script>
     var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_rJIxw0NilgbmxqSmgrTJWasiJ5_O_aGCT20QCnki1BjA/exec";
 
-    var productsData = [
-      { id: "JUS-001", nama: "Jus Apel", harga: 8000, kategori: "Jus Tunggal" },
-      { id: "JUS-002", nama: "Jus Alpukat", harga: 8000, kategori: "Jus Tunggal" },
-      { id: "JUS-003", nama: "Jus Belimbing", harga: 8000, kategori: "Jus Tunggal" },
-      { id: "JUS-004", nama: "Jus Buah Naga", harga: 8000, kategori: "Jus Tunggal" },
-      { id: "JUS-005", nama: "Jus Jeruk", harga: 8000, kategori: "Jus Tunggal" },
-      { id: "JUS-006", nama: "Jus Melon", harga: 7000, kategori: "Jus Tunggal" },
-      { id: "JUS-007", nama: "Jus Nanas", harga: 7000, kategori: "Jus Tunggal" },
-      { id: "JUS-008", nama: "Jus Pepaya", harga: 7000, kategori: "Jus Tunggal" },
-      { id: "JUS-009", nama: "Jus Stroberi", harga: 7000, kategori: "Jus Tunggal" },
-      { id: "JUS-010", nama: "Jus Sirsak", harga: 7000, kategori: "Jus Tunggal" },
-
-      { id: "MIX-001", nama: "Mangga + Jeruk", harga: 10000, kategori: "Mix Buah" },
-      { id: "MIX-002", nama: "Pisang + Stroberi", harga: 10000, kategori: "Mix Buah" },
-      { id: "MIX-003", nama: "Stroberi + Belimbing", harga: 10000, kategori: "Mix Buah" },
-      { id: "MIX-004", nama: "Mangga + Buah Naga", harga: 10000, kategori: "Mix Buah" },
-      { id: "MIX-005", nama: "Nanas + Lemon", harga: 10000, kategori: "Mix Buah" },
-      { id: "MIX-006", nama: "Alpukat + Cokelat", harga: 10000, kategori: "Mix Buah" },
-
-      { id: "HLT-001", nama: "Wortel + Apel", harga: 13000, kategori: "Healthy Mix" },
-      { id: "HLT-002", nama: "Tomat + Wortel", harga: 13000, kategori: "Healthy Mix" },
-      { id: "HLT-003", nama: "Apel + Timun", harga: 12000, kategori: "Healthy Mix" },
-      { id: "HLT-004", nama: "Wortel + Pir", harga: 12000, kategori: "Healthy Mix" },
-      { id: "HLT-005", nama: "Timun + Apel", harga: 12000, kategori: "Healthy Mix" },
-      { id: "HLT-006", nama: "Wortel + Nanas", harga: 12000, kategori: "Healthy Mix" }
-    ];
+    var productsData = [];
+    var membersData = [];
 
     // Data Member awal
     var membersData = [
@@ -473,8 +449,28 @@
     document.addEventListener("DOMContentLoaded", function() {
       checkExistingSession();
       renderCatalog();
+      loadDataFromSheet();
     });
 
+    function loadDataFromSheet() {
+      fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'getInitialData' })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success && res.data) {
+          // Timpa data lokal dengan data live dari Google Sheets
+          productsData = res.data.products || [];
+          membersData = res.data.members || [];
+          
+          // Render ulang katalog produk di UI
+          renderCatalog();
+        }
+      })
+      .catch(err => console.error("Gagal load data Sheet:", err));
+    }
+        
     function checkExistingSession() {
       var savedSession = localStorage.getItem('qiski_session');
       if (savedSession) {
