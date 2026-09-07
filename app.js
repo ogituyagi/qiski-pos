@@ -5,6 +5,7 @@ var membersData = [];
 
 var currentUser = null;
 var currentCart = [];
+var cart = currentCart;
 var selectedCustomerType = 'REGULAR';
 var selectedMemberId = null;
 
