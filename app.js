@@ -519,5 +519,42 @@ document.getElementById('searchMenu').addEventListener('input', function(e) {
   });
 });
 
+function setCustomer(name, isMember = false) {
+  const nameEl = document.getElementById('customerName');
+  nameEl.textContent = name || 'Umum';
+  // Bisa ditambahkan badge khusus jika member
+}
+
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 function logout() { localStorage.removeItem('qiski_session'); location.reload(); }
+
+let cart = []; // Array data keranjang belanja
+
+function updateCartUI() {
+  const btnRed = document.getElementById('btnRed');
+  const btnRedText = document.getElementById('btnRedText');
+  
+  if (cart.length > 0) {
+    // Mode Clear / Kosongkan Keranjang
+    btnRedText.textContent = 'Clear';
+    btnRed.classList.remove('btn-secondary');
+    btnRed.classList.add('btn-danger');
+  } else {
+    // Mode Batal / Kembali ke Home
+    btnRedText.textContent = 'Batal';
+    btnRed.classList.remove('btn-danger');
+    btnRed.classList.add('btn-secondary'); // Opsional jika ingin ubah warna
+  }
+}
+
+function handleRedButton() {
+  if (cart.length > 0) {
+    // Aksi Clear
+    cart = [];
+    renderCart(); // Re-render tampilan keranjang
+    updateCartUI();
+  } else {
+    // Aksi Batal (Kembali ke Home)
+    window.location.href = '/home'; // Adjust route home Anda
+  }
+}
