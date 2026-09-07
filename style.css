@@ -165,3 +165,9 @@ header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-
   font-weight: 700;
   color: var(--primary-pink);
 }
+
+.main-container {
+  display: grid;
+  grid-template-columns: 75% 25%; /* Membagi katalog 75% dan keranjang 25% */
+  gap: 16px;
+}
