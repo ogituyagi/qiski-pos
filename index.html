@@ -220,52 +220,52 @@
       </div>
 
       <!-- VIEW 2: FLOW PESANAN BARU -->
-<!-- STEP 1: RE-ORDERED GATEWAY (COMPACT SINGLE-LINE) -->
-            <div class="customer-gate-box" style="padding: 8px 12px; margin-bottom: 10px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+      <div id="new-order-view" class="hidden" style="height: 100%;">
+        <div class="pos-layout">
+          
+          <!-- LEFT: CATALOG & CUSTOMER GATE -->
+          <div class="menu-section">
+            
+            <!-- STEP 1: RE-ORDERED GATEWAY (JENIS DULU BARU NAMA) -->
+            <div class="customer-gate-box">
+              <h4>1. Identitas Pemesan (Wajib Diisi)</h4>
+              
+              <!-- RADIO CHIPS DUA PILIHAN: UMUM & MEMBER -->
+              <div class="radio-chip-group">
+                <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  Pelanggan Umum
+                </div>
+                <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Member QSK
+                </div>
+              </div>
+
+              <!-- INPUT NAMA PELANGGAN (UNTUK UMUM) -->
+              <div id="input-nama-container">
+                <input type="text" id="cust-name" placeholder="Masukkan Nama Pelanggan..." oninput="handleCustomerNameInput()" style="width:100%; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700;">
+              </div>
+
+              <!-- CUSTOM SEARCH MEMBER CONTAINER (VANILLA AUTOCOMPLETE) -->
+              <div id="select-member-container" class="hidden" style="position: relative;">
+                <input type="text" id="member-search-input" placeholder="Cari Nama Member / No. HP..." 
+                       onfocus="showMemberDropdown()" 
+                       oninput="filterMemberList()" 
+                       style="width:100%; padding:10px 12px; border:1.5px solid var(--border-color); border-radius:8px; font-size:13px; outline:none; font-weight:700; background: #fff;">
                 
-                <!-- LABEL MINI -->
-                <div style="font-size: 11px; font-weight: 800; color: var(--primary-pink); text-transform: uppercase; white-space: nowrap;">
-                  1. Pemesan <span style="color: red;">*</span>
+                <!-- DROPDOWN LIST CUSTOM -->
+                <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
+                  
+                  <!-- OPSI UTAMA: TAMBAH MEMBER BARU (PINNED AT TOP) -->
+                  <div onclick="openAddMemberModal()" style="padding: 10px 12px; cursor: pointer; font-weight: 800; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Tambah Member Baru
+                  </div>
+
+                  <!-- LIST ITEM MEMBER -->
+                  <div id="member-items-list"></div>
                 </div>
-
-                <!-- RADIO CHIPS TOGGLE (UKURAN COMPACT) -->
-                <div class="radio-chip-group" style="margin-bottom: 0; width: auto; gap: 4px; background: #f5f5f5; padding: 3px; border-radius: 8px;">
-                  <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')" style="padding: 4px 10px; font-size: 11px; border: none;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Umum
-                  </div>
-                  <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')" style="padding: 4px 10px; font-size: 11px; border: none;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 1 0 7.75"/></svg>
-                    Member
-                  </div>
-                </div>
-
-                <!-- INPUT AREA (FLEKSIBEL MEMANJANG) -->
-                <div style="flex: 1; position: relative;">
-                  <!-- INPUT NAMA PELANGGAN (UNTUK UMUM) -->
-                  <div id="input-nama-container">
-                    <input type="text" id="cust-name" placeholder="Masukkan Nama Pelanggan..." oninput="handleCustomerNameInput()" style="width:100%; padding:6px 10px; border:1.5px solid var(--border-color); border-radius:8px; font-size:12px; outline:none; font-weight:700;">
-                  </div>
-
-                  <!-- CUSTOM SEARCH MEMBER CONTAINER -->
-                  <div id="select-member-container" class="hidden" style="position: relative;">
-                    <input type="text" id="member-search-input" placeholder="Cari Nama Member / No. HP..." 
-                           onfocus="showMemberDropdown()" 
-                           oninput="filterMemberList()" 
-                           style="width:100%; padding:6px 10px; border:1.5px solid var(--border-color); border-radius:8px; font-size:12px; outline:none; font-weight:700; background: #fff;">
-                    
-                    <!-- DROPDOWN LIST CUSTOM -->
-                    <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
-                      <div onclick="openAddMemberModal()" style="padding: 8px 10px; cursor: pointer; font-weight: 800; font-size: 11px; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                        Tambah Member Baru
-                      </div>
-                      <div id="member-items-list"></div>
-                    </div>
-                  </div>
-                </div>
-
               </div>
             </div>
 
