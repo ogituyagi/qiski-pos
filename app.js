@@ -509,5 +509,15 @@ function submitTransaction() {
   });
 }
 
+document.getElementById('searchMenu').addEventListener('input', function(e) {
+  const keyword = e.target.value.toLowerCase();
+  const menuCards = document.querySelectorAll('.menu-card'); // Sesuaikan selector kartu menu Anda
+
+  menuCards.forEach(card => {
+    const menuName = card.textContent.toLowerCase();
+    card.style.display = menuName.includes(keyword) ? 'block' : 'none';
+  });
+});
+
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 function logout() { localStorage.removeItem('qiski_session'); location.reload(); }
