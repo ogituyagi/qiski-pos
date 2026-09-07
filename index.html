@@ -419,21 +419,16 @@
     </div>
   </div>
 
-  <script>
+<script>
     var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_rJIxw0NilgbmxqSmgrTJWasiJ5_O_aGCT20QCnki1BjA/exec";
 
+    // Data awal di-set kosong (akan di-load dari Google Sheets)
     var productsData = [];
     var membersData = [];
 
-    // Data Member awal
-    var membersData = [
-      { id: "MEMBER-001", name: "Budi Santoso", phone: "08123456789" },
-      { id: "MEMBER-002", name: "Siti Aminah", phone: "08987654321" }
-    ];
-
     var currentUser = null;
     var currentCart = [];
-    var selectedCustomerType = 'REGULAR'; // 'REGULAR' atau 'MEMBER'
+    var selectedCustomerType = 'REGULAR';
     var selectedMemberId = null;
     
     var modalTriggerSource = null; 
@@ -448,7 +443,6 @@
 
     document.addEventListener("DOMContentLoaded", function() {
       checkExistingSession();
-      renderCatalog();
       loadDataFromSheet();
     });
 
@@ -460,17 +454,14 @@
       .then(res => res.json())
       .then(res => {
         if (res.success && res.data) {
-          // Timpa data lokal dengan data live dari Google Sheets
           productsData = res.data.products || [];
           membersData = res.data.members || [];
-          
-          // Render ulang katalog produk di UI
           renderCatalog();
         }
       })
-      .catch(err => console.error("Gagal load data Sheet:", err));
+      .catch(err => console.error("Gagal memuat data dari Sheet:", err));
     }
-        
+
     function checkExistingSession() {
       var savedSession = localStorage.getItem('qiski_session');
       if (savedSession) {
@@ -504,7 +495,6 @@
       });
     }
 
-    // NAVIGATION VIEWS & HEADER TABS
     function setActiveHeaderTab(tabId) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       if(tabId) document.getElementById(tabId).classList.add('active');
@@ -521,7 +511,6 @@
       document.getElementById('home-dashboard-view').classList.add('hidden');
       document.getElementById('new-order-view').classList.remove('hidden');
       
-      // Reset Input Identitas & Keranjang
       selectCustomerType('REGULAR');
       document.getElementById('cust-name').value = '';
       document.getElementById('member-search-input').value = '';
@@ -536,7 +525,6 @@
       alert('Fitur "' + title + '" siap diintegrasikan dengan database backend.');
     }
 
-    // GATEWAY LOGIC (JENIS PELANGGAN & INPUT NAMA)
     function selectCustomerType(type) {
       selectedCustomerType = type;
       var chipUmum = document.getElementById('chip-umum');
@@ -558,13 +546,13 @@
       handleCustomerNameInput();
     }
 
-    // CUSTOM AUTOCOMPLETE LOGIC UNTUK MEMBER
     function renderMemberList(filterText = "") {
       var container = document.getElementById('member-items-list');
       var keyword = filterText.toLowerCase();
 
       var filtered = membersData.filter(m => 
-        m.name.toLowerCase().includes(keyword) || m.phone.includes(keyword)
+        (m.nama && m.nama.toLowerCase().includes(keyword)) || 
+        (m.hp && String(m.hp).includes(keyword))
       );
 
       if (filtered.length === 0) {
@@ -573,8 +561,8 @@
       }
 
       container.innerHTML = filtered.map(m => `
-        <div onclick="selectMember('${m.id}', '${m.name}', '${m.phone}')" style="padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f9f9f9; transition: 0.15s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='#fff'">
-          ${m.name} <span style="color: var(--text-muted); font-size: 11px; font-weight: 500;">(${m.phone})</span>
+        <div onclick="selectMember('${m.id}', '${m.nama}', '${m.hp}')" style="padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f9f9f9; transition: 0.15s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='#fff'">
+          ${m.nama} <span style="color: var(--text-muted); font-size: 11px; font-weight: 500;">(${m.hp})</span>
         </div>
       `).join('');
     }
@@ -586,7 +574,7 @@
 
     function filterMemberList() {
       var keyword = document.getElementById('member-search-input').value;
-      selectedMemberId = null; // Reset id pilihan jika kasir mengetik ulang
+      selectedMemberId = null;
       renderMemberList(keyword);
       document.getElementById('member-dropdown').classList.remove('hidden');
       handleCustomerNameInput();
@@ -599,7 +587,6 @@
       handleCustomerNameInput();
     }
 
-    // Modal Tambah Member
     function openAddMemberModal() {
       document.getElementById('member-dropdown').classList.add('hidden');
       document.getElementById('new-member-name').value = '';
@@ -612,17 +599,15 @@
       e.preventDefault();
       var name = document.getElementById('new-member-name').value.trim();
       var phone = document.getElementById('new-member-phone').value.trim();
-      var dob = document.getElementById('new-member-dob').value;
 
       var newId = 'MEMBER-' + Date.now();
-      membersData.push({ id: newId, name: name, phone: phone });
+      membersData.push({ id: newId, nama: name, hp: phone, poin: 0 });
 
       selectMember(newId, name, phone);
       closeModal('add-member-modal');
       alert(`Member baru "${name}" berhasil didaftarkan!`);
     }
 
-    // Tutup dropdown jika klik di luar area
     document.addEventListener('click', function(e) {
       var container = document.getElementById('select-member-container');
       if (container && !container.contains(e.target)) {
@@ -655,7 +640,13 @@
 
     function renderCatalog() {
       var container = document.getElementById('catalog-container');
-      var categories = ["Jus Tunggal", "Mix Buah", "Healthy Mix"];
+      if (!productsData || productsData.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding: 20px; color: var(--text-muted);">Tidak ada produk aktif.</p>';
+        return;
+      }
+
+      // Ambil daftar kategori unik dari data produk
+      var categories = [...new Set(productsData.map(p => p.kategori))];
       
       container.innerHTML = categories.map(cat => {
         var items = productsData.filter(p => p.kategori === cat);
@@ -671,7 +662,7 @@
                    ontouchend="endHold('${p.id}')"
                    ontouchcancel="cancelHold()">
                 <h4>${p.nama}</h4>
-                <div class="price">Rp ${p.harga.toLocaleString('id-ID')}</div>
+                <div class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
               </div>
             `).join('')}
           </div>
@@ -916,7 +907,7 @@
       if (method === 'CASH' && cashPaid < subtotal) return alert('Uang pembayaran masih kurang!');
 
       var payload = {
-        kasirId: currentUser.id, customerName: custName, subtotal: subtotal, totalAkhir: subtotal,
+        kasirId: currentUser ? currentUser.id : 'KASIR-01', customerName: custName, subtotal: subtotal, totalAkhir: subtotal,
         metode: method, cashPaid: cashPaid, items: currentCart
       };
 
