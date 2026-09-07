@@ -512,13 +512,9 @@
       document.getElementById('new-order-view').classList.remove('hidden');
       
       selectCustomerType('REGULAR');
-      
-      // Set default ke 'Tamu' agar katalog langsung terbuka
-      document.getElementById('cust-name').value = 'Tamu';
+      document.getElementById('cust-name').value = '';
       document.getElementById('member-search-input').value = '';
       selectedMemberId = null;
-      
-      // Langsung tampilkan katalog produk
       handleCustomerNameInput();
       clearCart();
     }
@@ -621,19 +617,25 @@
     });
 
     function handleCustomerNameInput() {
-      var nameVal = document.getElementById('cust-name').value.trim();
+      var isValid = false;
       
-      // Jika field kosong, fallback otomatis ke 'Tamu'
-      if (selectedCustomerType === 'REGULAR' && nameVal === '') {
-        nameVal = 'Tamu';
+      if (selectedCustomerType === 'REGULAR') {
+        var nameVal = document.getElementById('cust-name').value.trim();
+        isValid = nameVal.length > 0;
+      } else {
+        isValid = selectedMemberId !== null && document.getElementById('member-search-input').value.trim() !== '';
       }
-    
+
       var catalogContainer = document.getElementById('catalog-container');
       var catalogPlaceholder = document.getElementById('catalog-placeholder');
-    
-      // Katalog akan selalu muncul
-      catalogContainer.classList.remove('hidden');
-      catalogPlaceholder.classList.add('hidden');
+
+      if (isValid) {
+        catalogContainer.classList.remove('hidden');
+        catalogPlaceholder.classList.add('hidden');
+      } else {
+        catalogContainer.classList.add('hidden');
+        catalogPlaceholder.classList.remove('hidden');
+      }
     }
 
     function renderCatalog() {
