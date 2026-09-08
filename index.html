@@ -324,6 +324,18 @@
     </div>
   </div>
 
+  <!-- GLOBAL MODAL LOADING -->
+<div id="global-loading-modal" class="modal-overlay hidden" style="z-index: 99999; background: rgba(0, 0, 0, 0.5);">
+  <div class="modal-content" style="max-width: 260px; text-align: center; padding: 24px; background: white; border-radius: 12px;">
+    <div class="pulsing-dots" style="display: flex; justify-content: center; gap: 6px; margin-bottom: 12px;">
+      <div style="width: 10px; height: 10px; background: var(--primary-pink); border-radius: 50%;"></div>
+      <div style="width: 10px; height: 10px; background: var(--primary-pink); border-radius: 50%;"></div>
+      <div style="width: 10px; height: 10px; background: var(--primary-pink); border-radius: 50%;"></div>
+    </div>
+    <div id="global-loading-text" style="font-size: 13px; font-weight: 700; color: var(--text-dark);">Memproses transaksi...</div>
+  </div>
+</div>
+  
   <script src="app.js"></script>
 </body>
 </html>
