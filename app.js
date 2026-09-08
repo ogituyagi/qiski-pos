@@ -1062,15 +1062,15 @@ function renderPendingListUI() {
     var itemsList = Array.isArray(t.items) ? t.items : [];
 
     return `
-      <div style="background:#fff; border:1px solid #e0e0e0; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+      <div style="background:#fff; border:1px solid #e0e0e0; border-radius:12px; padding:16px; box-shadow:0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
           <span style="font-weight:700; color:#333;">${t.transId}</span>
           <span style="background:#fff8e1; color:#f57c00; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PENDING</span>
         </div>
-        <div style="font-size:13px; color:#555; margin-bottom:4px;">Customer: <b>${t.customerName || 'Umum'}</b></div>
+        <div style="font-size:13px; color:#555; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
         <div style="font-size:12px; color:#888; margin-bottom:10px;">Waktu: ${t.waktu || '-'}</div>
 
-        <!-- RINCIAN PESANAN (RINCIAN ITEM) -->
+        <!-- RINCIAN PESANAN -->
         <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
           ${itemsList.length > 0 ? itemsList.map(function(i) {
             return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
@@ -1082,7 +1082,8 @@ function renderPendingListUI() {
         
         <div style="font-size:15px; font-weight:800; color:#2e7d32; margin-bottom:12px;">Rp ${Number(t.totalAkhir || 0).toLocaleString('id-ID')}</div>
         
-        <button onclick="restorePendingOrder('${t.transId}')" style="width:100%; background:var(--primary-pink, #d81b60); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">
+        <!-- TOMBOL MENTOK BAWAH -->
+        <button onclick="restorePendingOrder('${t.transId}')" style="width:100%; background:var(--primary-pink, #d81b60); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer; margin-top: auto;">
           Restore ke Keranjang
         </button>
       </div>
@@ -1116,7 +1117,7 @@ function renderKitchenListUI() {
     var itemsList = Array.isArray(t.items) ? t.items : [];
 
     return `
-      <div style="background:#fff; border:1px solid #c8e6c9; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+      <div style="background:#fff; border:1px solid #c8e6c9; border-radius:12px; padding:16px; box-shadow:0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
           <span style="font-weight:700; color:#333;">${t.transId}</span>
           <span style="background:#e8f5e9; color:#2e7d32; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PROSES</span>
@@ -1140,8 +1141,8 @@ function renderKitchenListUI() {
           Rp ${Number(t.totalAkhir || 0).toLocaleString('id-ID')}
         </div>
 
-        <!-- TOMBOL BERDAMPINGAN -->
-        <div style="display:flex; gap:8px;">
+        <!-- TOMBOL MENTOK BAWAH (margin-top: auto) -->
+        <div style="display:flex; gap:8px; margin-top: auto;">
           <button onclick="reprintReceipt('${t.transId}')" style="flex:1; background:#eee; color:#333; border:none; padding:10px 6px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
             Cetak Struk
           </button>
