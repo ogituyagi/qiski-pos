@@ -1015,27 +1015,63 @@ function renderPendingListUI() {
   var container = document.getElementById('pending-orders-list');
   if (!container) return;
 
-  var pendingItems = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PENDING');
+  var now = new Date();
+  var todayYear = now.getFullYear();
+  var todayMonth = now.getMonth();
+  var todayDate = now.getDate();
+
+  var isToday = function(waktuStr) {
+    if (!waktuStr) return true;
+    var d = new Date(waktuStr);
+    if (!isNaN(d.getTime())) {
+      return d.getFullYear() === todayYear && 
+             d.getMonth() === todayMonth && 
+             d.getDate() === todayDate;
+    }
+    var datePart = String(waktuStr).split(' ')[0].split('T')[0];
+    var todayStr = todayYear + '-' + String(todayMonth + 1).padStart(2, '0') + '-' + String(todayDate).padStart(2, '0');
+    return datePart === todayStr;
+  };
+
+  var pendingItems = activeTransactions.filter(function(t) {
+    return String(t.status).toUpperCase() === 'PENDING' && isToday(t.waktu);
+  });
 
   if (pendingItems.length === 0) {
     container.innerHTML = '<div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 60px 20px; color: #888; font-weight: 600;">Tidak ada pesanan pending saat ini.</div>';
     return;
   }
 
-  container.innerHTML = pendingItems.map(t => `
-    <div style="background:#fff; border:1px solid #e0e0e0; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-        <span style="font-weight:700; color:#333;">${t.transId}</span>
-        <span style="background:#fff8e1; color:#f57c00; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PENDING</span>
+  container.innerHTML = pendingItems.map(function(t) {
+    var itemsList = Array.isArray(t.items) ? t.items : [];
+
+    return `
+      <div style="background:#fff; border:1px solid #e0e0e0; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-weight:700; color:#333;">${t.transId}</span>
+          <span style="background:#fff8e1; color:#f57c00; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PENDING</span>
+        </div>
+        <div style="font-size:13px; color:#555; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
+        <div style="font-size:12px; color:#888; margin-bottom:10px;">Waktu: ${t.waktu || '-'}</div>
+
+        <!-- RINCIAN PESANAN (RINCIAN ITEM) -->
+        <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
+          ${itemsList.length > 0 ? itemsList.map(function(i) {
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span><b>${i.qty || 1}x</b> ${i.nama || 'Menu'}</span>
+              <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+            </div>`;
+          }).join('') : '<span style="color:#888; font-size:12px;">Detail item tidak tersedia</span>'}
+        </div>
+        
+        <div style="font-size:15px; font-weight:800; color:#2e7d32; margin-bottom:12px;">Rp ${Number(t.totalAkhir || 0).toLocaleString('id-ID')}</div>
+        
+        <button onclick="restorePendingOrder('${t.transId}')" style="width:100%; background:var(--primary-pink, #d81b60); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:700; cursor:pointer;">
+          Restore ke Keranjang
+        </button>
       </div>
-      <div style="font-size:13px; color:#555; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
-      <div style="font-size:12px; color:#888; margin-bottom:8px;">Waktu: ${t.waktu}</div>
-      <div style="font-size:14px; font-weight:700; color:#2e7d32; margin-bottom:12px;">Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</div>
-      <button onclick="restorePendingOrder('${t.transId}')" style="width:100%; background:var(--primary-pink, #d81b60); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;">
-        Restore ke Keranjang
-      </button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function openKitchenTab() {
