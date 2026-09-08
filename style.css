@@ -1074,3 +1074,9 @@ header h1, .brand-title, .header-brand {
 #login-page:not(.hidden) ~ .bottom-nav-bar {
   display: none !important;
 }
+
+
+/* Sembunyikan bottom nav secara mutlak saat ada class .login-active di body */
+body.login-active .bottom-nav-bar {
+  display: none !important;
+}
