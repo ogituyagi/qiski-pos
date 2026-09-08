@@ -770,6 +770,7 @@ function openPaymentModal() {
 }
 
 // PAYMENT FLOW (SUBMIT)
+// PAYMENT FLOW (SUBMIT)
 function submitTransaction() {
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   var method = document.getElementById('pay-method').value;
@@ -781,8 +782,11 @@ function submitTransaction() {
     return showAlert('Uang pembayaran masih kurang!', 'Gagal Transaksi', 'error');
   }
 
+  // 1. Munculkan loading overlay agar tidak bisa klik berkali-kali & tutup modal payment SEKARANG
   var loadingOverlay = document.getElementById('gate-loading-overlay');
   if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+  
+  closeModal('payment-modal'); // <-- Langsung tutup modal pembayaran di sini agar bersih!
 
   var now = new Date();
   var transId = currentRestoredTransId || generateTrxId();
@@ -824,33 +828,38 @@ function submitTransaction() {
   activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
-// Cukup fetch sekali untuk simpan data ke server
+  // Terbangkan data secara instan tanpa fetch beruntun yang bikin lambat
   fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'text/plain;charset=utf-8',
     },
     body: JSON.stringify({
-      action: 'holdTransaction', // atau 'saveTransaction'
+      action: 'saveTransaction',
       payload: payload
     })
   })
   .then(function(res) { return res.json(); })
   .then(function(result) {
-    console.log("Sync Berhasil:", result);
+    console.log("Sync Submit ke Sheet Berhasil:", result);
   })
   .catch(function(err) {
-    console.error("Gagal Sync ke Sheet, tersimpan di Local Storage:", err);
+    console.error("Gagal Sync Submit ke Sheet, tersimpan di Local Storage:", err);
   })
   .finally(function() {
-    // Loading langsung ditutup tanpa nunggu request kedua
+    // Matikan loading overlay
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
     
-    clearCart();
+    // Reset state keranjang
+    currentCart = [];
+    currentRestoredTransId = null;
+    unlockCartUI();
+    updateCartUI();
     updateBadges();
     showDashboard();
 
-    showAlert('Berhasil diproses!', 'Sukses', 'success');
+    // Munculkan alert sukses di atas layar yang sudah bersih
+    showAlert('Transaksi a/n ' + custName + ' Berhasil Diproses!', 'Sukses', 'success');
   });
 }
 
