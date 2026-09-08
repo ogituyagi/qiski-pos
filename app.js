@@ -1098,38 +1098,72 @@ function openKitchenTab() {
   renderKitchenListUI();
 }
 
+// 1. RENDER CARD PROSES DENGAN WAKTU, TOTAL, & TOMBOL BERDAMPINGAN
 function renderKitchenListUI() {
   var container = document.getElementById('kitchen-orders-list');
   if (!container) return;
 
-  var prosesItems = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PROSES');
+  var prosesItems = activeTransactions.filter(function(t) {
+    return String(t.status || '').toUpperCase() === 'PROSES';
+  });
 
   if (prosesItems.length === 0) {
     container.innerHTML = '<div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 60px 20px; color: #888; font-weight: 600;">Tidak ada antrian pesanan yang diproses.</div>';
     return;
   }
 
-  container.innerHTML = prosesItems.map(t => `
-    <div style="background:#fff; border:1px solid #c8e6c9; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-        <span style="font-weight:700; color:#333;">${t.transId}</span>
-        <span style="background:#e8f5e9; color:#2e7d32; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PROSES</span>
-      </div>
-      <div style="font-size:13px; color:#333; margin-bottom:4px;">Customer: <b>${t.customerName || 'Umum'}</b></div>
-      <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: ${t.metode || 'CASH'}</div>
-      
-      <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
-        ${(t.items || []).map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span><b>${i.qty}x</b> ${i.nama}</span>
-          <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
-        </div>`).join('')}
-      </div>
+  container.innerHTML = prosesItems.map(function(t) {
+    var itemsList = Array.isArray(t.items) ? t.items : [];
 
-      <button onclick="finishOrder('${t.transId}')" style="width:100%; background:#2e7d32; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;">
-        ✓ Tandai Selesai
-      </button>
-    </div>
-  `).join('');
+    return `
+      <div style="background:#fff; border:1px solid #c8e6c9; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-weight:700; color:#333;">${t.transId}</span>
+          <span style="background:#e8f5e9; color:#2e7d32; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PROSES</span>
+        </div>
+        <div style="font-size:13px; color:#333; margin-bottom:4px;">Customer: <b>${t.customerName || 'Umum'}</b></div>
+        <div style="font-size:12px; color:#666; margin-bottom:4px;">Metode: <b>${t.metode || 'CASH'}</b></div>
+        <div style="font-size:12px; color:#888; margin-bottom:10px;">Waktu: ${t.waktu || '-'}</div>
+        
+        <!-- DETAIL ITEMS -->
+        <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
+          ${itemsList.length > 0 ? itemsList.map(function(i) {
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span><b>${i.qty || 1}x</b> ${i.nama || 'Menu'}</span>
+              <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+            </div>`;
+          }).join('') : '<span style="color:#888; font-size:12px;">Detail item tidak tersedia</span>'}
+        </div>
+
+        <!-- TOTAL HARGA -->
+        <div style="font-size:15px; font-weight:800; color:#2e7d32; margin-bottom:12px;">
+          Rp ${Number(t.totalAkhir || 0).toLocaleString('id-ID')}
+        </div>
+
+        <!-- TOMBOL BERDAMPINGAN -->
+        <div style="display:flex; gap:8px;">
+          <button onclick="reprintReceipt('${t.transId}')" style="flex:1; background:#eee; color:#333; border:none; padding:10px 6px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
+            Cetak Struk
+          </button>
+          <button onclick="finishOrder('${t.transId}')" style="flex:1; background:#2e7d32; color:#fff; border:none; padding:10px 6px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
+            Pesanan Selesai
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// 2. FUNGSI CETAK ULANG STRUK DARI CARD
+function reprintReceipt(transId) {
+  var target = activeTransactions.find(function(t) { return t.transId === transId; });
+  if (!target) {
+    showAlert('Data transaksi tidak ditemukan!', 'Error', 'error');
+    return;
+  }
+
+  lastSuccessfulTransaction = target;
+  printReceipt();
 }
 
 function openCompletedOrdersTab() {
