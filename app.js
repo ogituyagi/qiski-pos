@@ -962,7 +962,7 @@ function renderPendingListUI() {
         <span style="font-weight:700; color:#333;">${t.transId}</span>
         <span style="background:#fff8e1; color:#f57c00; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PENDING</span>
       </div>
-      <div style="font-size:13px; color:#555; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b> (${t.jenisPelanggan || 'REGULAR'})</div>
+      <div style="font-size:13px; color:#555; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
       <div style="font-size:12px; color:#888; margin-bottom:8px;">Waktu: ${t.waktu}</div>
       <div style="font-size:14px; font-weight:700; color:#2e7d32; margin-bottom:12px;">Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</div>
       <button onclick="restorePendingOrder('${t.transId}')" style="width:100%; background:var(--primary-pink, #d81b60); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;">
@@ -1174,7 +1174,7 @@ function printReceipt() {
   var metaHTML = `
     <div>ID Pesanan: <b>${t.transId}</b></div>
     <div>Tanggal: ${t.waktu}</div>
-    <div>Customer: ${t.customerName} (${t.jenisPelanggan})</div>
+    <div>Customer: ${t.customerName}</div>
   `;
   document.getElementById('receipt-meta').innerHTML = metaHTML;
 
