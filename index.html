@@ -314,15 +314,44 @@
     </div>
   </div>
 
-  <!-- GLOBAL MODAL ALERT -->
-  <div id="custom-alert-modal" class="modal-overlay hidden" style="z-index: 9999;">
-    <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
-      <div id="alert-icon-container" style="margin-bottom: 12px;"></div>
-      <h3 id="alert-modal-title" style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Notifikasi</h3>
-      <p id="alert-modal-message" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4;"></p>
+<!-- MODAL ALERT YANG DIMODIFIKASI AGAR ADA TOMBOL CETAK -->
+<div id="custom-alert-modal" class="modal-overlay hidden" style="z-index: 9999;">
+  <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
+    <div id="alert-icon-container" style="margin-bottom: 12px;"></div>
+    <h3 id="alert-modal-title" style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Notifikasi</h3>
+    <p id="alert-modal-message" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4;"></p>
+    
+    <!-- Tombol Dinamis (OK / Cetak Struk) -->
+    <div id="alert-action-buttons" style="display: flex; gap: 8px;">
       <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
     </div>
   </div>
+</div>
+
+<!-- TEMPLATE CETAK STRUK THERMAL 57mm (Hidden secara default) -->
+<div id="receipt-print-area" class="hidden-print">
+  <div class="receipt-header" style="text-align: center; margin-bottom: 8px;">
+    <h3 style="font-size: 14px; font-weight: 900; margin: 0;">QisKi Juice</h3>
+    <p style="font-size: 10px; margin: 2px 0;">Jl. Raya Kasir No. 01, Bandung</p>
+    <p style="font-size: 10px; margin: 2px 0;">--------------------------------</p>
+  </div>
+  <div id="receipt-meta" style="font-size: 10px; margin-bottom: 6px;">
+    <!-- Diisi via JS: No Transaksi, Kasir, Waktu, Pelanggan -->
+  </div>
+  <div style="font-size: 10px; margin: 4px 0;">--------------------------------</div>
+  <div id="receipt-items" style="font-size: 10px; margin-bottom: 6px;">
+    <!-- Diisi via JS: Daftar item pesanan -->
+  </div>
+  <div style="font-size: 10px; margin: 4px 0;">--------------------------------</div>
+  <div id="receipt-totals" style="font-size: 10px; margin-bottom: 10px;">
+    <!-- Diisi via JS: Subtotal, Metode, Total, Bayar, Kembalian -->
+  </div>
+  <div class="receipt-footer" style="text-align: center; font-size: 10px;">
+    <p style="margin: 2px 0;">Terima Kasih!</p>
+    <p style="margin: 2px 0;">Silakan Datang Kembali</p>
+    <p style="margin: 4px 0;">=== Layanan Kasir QisKi ===</p>
+  </div>
+</div>
 
   <!-- GLOBAL MODAL LOADING -->
 <div id="global-loading-modal" class="modal-overlay hidden" style="z-index: 99999; background: rgba(0, 0, 0, 0.5);">
