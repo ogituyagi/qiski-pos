@@ -869,11 +869,11 @@ function submitTransaction() {
 function finishOrder(transId) {
   var target = activeTransactions.find(t => t.transId === transId);
   if (target) {
-    target.status = 'SELESAI';
-    activeTransactions = activeTransactions.filter(t => t.transId !== transId);
+    target.status = 'SELESAI'; // Ubah status jadi SELESAI
+    // Jangan filter/hapus dari activeTransactions supaya masuk ke kantung Selesai
     localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
     updateBadges();
-    renderKitchenListUI();
+    renderKitchenListUI(); // Refresh daftar proses di dapur
   }
 
   queueForSync('updateOrderStatus', { transId: transId, status: 'SELESAI' });
