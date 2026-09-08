@@ -1092,3 +1092,93 @@ function hideLoading() {
     loadingModal.classList.add('hidden');
   }
 }
+
+var lastSuccessfulTransaction = null;
+
+// Modifikasi fungsi submitTransaction bagian sukses/payload untuk menyimpan data terakhir
+// Di dalam .finally() atau saat sukses submit:
+lastSuccessfulTransaction = orderData; // orderData adalah objek payload transaksi yang diproses
+
+// Fungsi menampilkan alert sukses dengan opsi Cetak Struk
+function showSuccessAlertWithPrint(message) {
+  var modal = document.getElementById('custom-alert-modal');
+  var title = document.getElementById('alert-modal-title');
+  var msg = document.getElementById('alert-modal-message');
+  var iconContainer = document.getElementById('alert-icon-container');
+  var btnContainer = document.getElementById('alert-action-buttons');
+
+  if (title) title.innerText = 'Sukses';
+  if (msg) msg.innerText = message;
+  
+  if (iconContainer) {
+    iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
+  }
+
+  // Render tombol OK dan Cetak Struk berdampingan
+  if (btnContainer) {
+    btnContainer.innerHTML = `
+      <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; background: #eee; color: #333; border: none; border-radius: 6px; cursor: pointer;">Cetak Struk</button>
+      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800;">OK</button>
+    `;
+  }
+
+  if (modal) modal.classList.remove('hidden');
+}
+
+// Fungsi Eksekusi Cetak Struk Thermal
+function printReceipt() {
+  if (!lastSuccessfulTransaction) {
+    alert('Data transaksi tidak ditemukan.');
+    return;
+  }
+
+  var t = lastSuccessfulTransaction;
+  
+  // 1. Masukkan data ke elemen cetak
+  var metaHTML = `
+    <div>No: <b>${t.transId}</b></div>
+    <div>Waktu: ${t.waktu}</div>
+    <div>Kasir: ${t.kasirId}</div>
+    <div>Pelanggan: ${t.customerName} (${t.jenisPelanggan})</div>
+  `;
+  document.getElementById('receipt-meta').innerHTML = metaHTML;
+
+  var itemsHTML = '';
+  if (t.items && t.items.length > 0) {
+    t.items.forEach(function(item) {
+      var itemTotal = item.harga * item.qty;
+      var notesText = (item.ice || item.sugar) ? `<br><small style="font-size:9px;">(${item.ice || ''} ${item.sugar || ''})</small>` : '';
+      itemsHTML += `
+        <div style="margin-bottom: 4px;">
+          <div><b>${item.nama}</b></div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>${item.qty}x @${item.harga.toLocaleString()}</span>
+            <span><b>Rp ${itemTotal.toLocaleString()}</b></span>
+          </div>
+          ${notesText}
+        </div>
+      `;
+    });
+  }
+  document.getElementById('receipt-items').innerHTML = itemsHTML;
+
+  var totalsHTML = `
+    <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span>Rp ${t.subtotal.toLocaleString()}</span></div>
+    <div style="display: flex; justify-content: space-between;"><span>Metode:</span><span><b>${t.metode}</b></span></div>
+    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 2px;"><span>Total Akhir:</span><span>Rp ${t.totalAkhir.toLocaleString()}</span></div>
+  `;
+  
+  if (t.metode === 'CASH') {
+    totalsHTML += `
+      <div style="display: flex; justify-content: space-between;"><span>Tunai:</span><span>Rp ${(t.cashPaid || 0).toLocaleString()}</span></div>
+      <div style="display: flex; justify-content: space-between;"><span>Kembalian:</span><span>Rp ${(t.kembalian || 0).toLocaleString()}</span></div>
+    `;
+  }
+  document.getElementById('receipt-totals').innerHTML = totalsHTML;
+
+  // 2. Tutup modal lalu cetak via browser print (otomatis terkirim ke thermal printer default)
+  closeCustomAlert();
+  setTimeout(function() {
+    window.print();
+  }, 300);
+}
