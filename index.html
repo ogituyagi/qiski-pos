@@ -371,25 +371,30 @@
 <!-- TEMPLATE CETAK STRUK THERMAL 57mm (Hidden secara default) -->
 <div id="receipt-print-area" class="hidden-print">
   <div class="receipt-header" style="text-align: center; margin-bottom: 6px;">
-    <!-- Logo dari GitHub -->
     <img src="https://raw.githubusercontent.com/ogituyagi/qiski-pos/e31712f4f4773293656cef9230b5f2592473eca8/Qiski%20Black.png" alt="Logo QisKi" style="width: 36mm; max-width: 100%; height: auto; margin-bottom: 2px; filter: grayscale(100%);">
-    <p style="font-size: 9px; margin: 2px 0;">Jl. Parakan Saat, Cisaranten Endah, Arcamanik, Kota Bandung</p>
-    <p style="font-size: 9px; margin: 2px 0;">--------------------------------</p>
+    <p style="font-size: 9px; margin: 2px 0;">Jl. Parakan Saat, Cisaranten Endah, Kec. Arcamanik, Kota Bandung</p>
+    <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
   </div>
-  <div id="receipt-meta" style="font-size: 9px; margin-bottom: 6px; line-height: 1.3;">
-    <!-- Diisi via JS: No Transaksi, Waktu (dd/mm/yyyy hh:mm), Pelanggan -->
+
+  <div id="receipt-meta" style="font-size: 9px; margin-bottom: 6px; line-height: 1.4;">
+    <!-- Diisi via JS: ID Pesanan, Tanggal, Kasir, Customer -->
   </div>
-  <div style="font-size: 9px; margin: 2px 0;">--------------------------------</div>
+
+  <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
+
   <div id="receipt-items" style="font-size: 9px; margin-bottom: 6px; line-height: 1.3;">
     <!-- Diisi via JS: Daftar item pesanan -->
   </div>
-  <div style="font-size: 9px; margin: 2px 0;">--------------------------------</div>
+
+  <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
+
   <div id="receipt-totals" style="font-size: 9px; margin-bottom: 8px; line-height: 1.3;">
-    <!-- Diisi via JS: Subtotal, Metode, Total, Bayar, Kembalian -->
+    <!-- Diisi via JS: Metode, Total, Tunai, Kembalian -->
   </div>
+
+  <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
   <div class="receipt-footer" style="text-align: center; font-size: 8px; line-height: 1.3; margin-top: 6px;">
     <p style="margin: 2px 0; font-weight: bold;">Terima Kasih!</p>
-    <p style="margin: 2px 0;">Silakan Datang Kembali</p>
     <p style="margin: 4px 0 0 0; color: #555;">WA: 081234567890</p>
   </div>
 </div>
