@@ -1061,3 +1061,9 @@ header h1, .brand-title, .header-brand {
     height: 62px !important;
   }
 }
+
+/* Sembunyikan Bottom Nav Bar jika #app-page memiliki class .hidden (saat di Login Page) */
+#app-page.hidden ~ .bottom-nav-bar,
+.login-page-active .bottom-nav-bar {
+  display: none !important;
+}
