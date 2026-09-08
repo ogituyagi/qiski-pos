@@ -328,6 +328,28 @@
     </div>
   </div>
 
+  <!-- VIEW KANTUNG PENDING -->
+<div id="pending-orders-view" class="view-section hidden">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <h2 style="font-size: 18px; font-weight: 700; color: #333;">Kantung Pending</h2>
+    <button onclick="showDashboard()" style="background: none; border: none; color: #666; font-weight: 600; cursor: pointer;">← Kembali</button>
+  </div>
+  <div id="pending-orders-list" class="orders-grid">
+    <!-- Card transaksi pending di-render otomatis lewat JS -->
+  </div>
+</div>
+
+<!-- VIEW ANTRIAN PROSES (DAPUR / BAR) -->
+<div id="kitchen-orders-view" class="view-section hidden">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <h2 style="font-size: 18px; font-weight: 700; color: #333;">Antrian Proses (Dapur/Bar)</h2>
+    <button onclick="showDashboard()" style="background: none; border: none; color: #666; font-weight: 600; cursor: pointer;">← Kembali</button>
+  </div>
+  <div id="kitchen-orders-list" class="orders-grid">
+    <!-- Card transaksi proses di-render otomatis lewat JS -->
+  </div>
+</div>
+  
   <!-- GLOBAL MODAL ALERT -->
 <div id="custom-alert-modal" class="modal-overlay hidden" style="z-index: 9999;">
   <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
