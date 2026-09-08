@@ -105,6 +105,13 @@ function handleLogin(e) {
       document.getElementById('user-display').innerText = currentUser.nama;
       document.getElementById('login-page').classList.add('hidden');
       document.getElementById('app-page').classList.remove('hidden');
+
+      // TAMPILKAN BOTTOM NAV JIKA BUKA DI MOBILE (HP)
+      if (window.innerWidth <= 768) {
+        var bottomNav = document.querySelector('.bottom-nav-bar');
+        if (bottomNav) bottomNav.style.display = 'flex';
+      }
+
       showDashboard();
     } else { 
       showAlert(res.message, 'Gagal Login', 'error'); 
@@ -118,6 +125,11 @@ function handleLogin(e) {
 
 function logout() { 
   localStorage.removeItem('qiski_session'); 
+  
+  // Sembunyikan Bottom Nav sebelum reload
+  var bottomNav = document.querySelector('.bottom-nav-bar');
+  if (bottomNav) bottomNav.style.display = 'none';
+
   location.reload(); 
 }
 
