@@ -24,6 +24,12 @@ var isLongPress = false;
 
 // INITIALIZATION & SESSION MANAGEMENT
 document.addEventListener("DOMContentLoaded", function() {
+  // Pasang logo header dari assets.js
+  var headerLogo = document.getElementById('header-brand-logo');
+  if (headerLogo && typeof APP_ASSETS !== 'undefined') {
+    headerLogo.src = APP_ASSETS.logoHeader;
+  }
+
   checkExistingSession();
   loadDataFromSheet();
   
