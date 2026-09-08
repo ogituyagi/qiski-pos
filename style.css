@@ -893,17 +893,19 @@ header h1, .brand-title, .header-brand {
   /* 4. FLOATING BAR KERANJANG (MODE TERTUTUP) */
   .cart-section {
     position: fixed !important;
-    bottom: 60px !important;
+    bottom: 60px !important; /* TETAP DI ATAS BOTTOM NAV BAR */
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
     height: auto !important;
+    max-height: 140px !important;
     z-index: 990 !important;
     background: #fff !important;
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.15) !important;
-    border-radius: 16px 16px 0 0 !important;
-    padding: 6px 14px 12px 14px !important;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.12) !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding: 6px 16px 12px 16px !important;
     box-sizing: border-box !important;
+    transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important; /* Animasi Smooth */
   }
 
   .cart-section .cart-header,
@@ -918,10 +920,9 @@ header h1, .brand-title, .header-brand {
 
   /* 5. FLOATING BAR KERANJANG (MODE TERBUKA / EXPANDED) */
   .cart-section.mobile-expanded {
-    bottom: 0 !important;
-    height: 80vh !important;
-    border-radius: 20px 20px 0 0 !important;
-    z-index: 10001 !important;
+    bottom: 60px !important; /* TETAP MENJAGA TAMPILAN BOTTOM NAV */
+    max-height: 75vh !important; /* HANYA CONTAINER NAIK KE ATAS */
+    z-index: 995 !important;
     display: flex !important;
     flex-direction: column !important;
     padding: 10px 16px 16px 16px !important;
@@ -938,7 +939,6 @@ header h1, .brand-title, .header-brand {
   .cart-section.mobile-expanded .cart-items {
     display: block !important;
     flex: 1 !important;
-    max-height: none !important;
     overflow-y: auto !important;
     padding: 10px 0 !important;
   }
