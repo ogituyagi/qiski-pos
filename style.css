@@ -808,12 +808,55 @@ header h1, .brand-title, .header-brand {
   }
 }
 
-
 /* ==========================================
    RESPONSIVE DESIGN FOR MOBILE (MAX-WIDTH: 768px)
    ========================================== */
 @media screen and (max-width: 768px) {
-  /* 1. LAYOUT POS (KELOLA KATALOG & KERANJANG) */
+  
+  /* 1. HEADER LAYOUT (KIRI: STATUS, TENGAH: LOGO, KANAN: USER) */
+  header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    position: relative !important;
+  }
+
+  /* Status Online di Ujung Kiri (Order 1) */
+  #connection-status-indicator {
+    order: 1 !important;
+    padding: 3px 8px !important;
+    font-size: 9px !important;
+  }
+
+  #status-text {
+    font-size: 9px !important;
+  }
+
+  /* Logo Brand Presisi di Tengah Layar (Order 2) */
+  .header-brand {
+    order: 2 !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .header-brand img {
+    width: 45px !important;
+    height: 45px !important;
+  }
+
+  /* User & Logout di Ujung Kanan (Order 3) */
+  .header-user-section {
+    order: 3 !important;
+  }
+
+  /* Sembunyikan Tab Atas Desktop (Pindah ke Bottom Nav) */
+  header .header-tabs {
+    display: none !important; 
+  }
+
+  /* 2. LAYOUT POS (KELOLA KATALOG & KERANJANG) */
   .pos-layout {
     display: flex;
     flex-direction: column;
@@ -864,21 +907,6 @@ header h1, .brand-title, .header-brand {
 
   .cart-section.mobile-expanded .cart-items {
     display: block !important;
-  }
-
-  /* 2. HEADER COMPACT DI MOBILE */
-  header {
-    padding: 8px 12px !important;
-  }
-
-  .header-brand img {
-    width: 50px !important;
-    height: 50px !important;
-  }
-
-  /* Hide Tab Atas, ganti ke Bottom Nav */
-  header .header-tabs {
-    display: none !important; 
   }
 
   /* 3. BOTTOM NAVIGATION BAR */
@@ -973,42 +1001,4 @@ header h1, .brand-title, .header-brand {
 /* Sembunyikan Bottom Nav secara default di Desktop */
 .bottom-nav-bar {
   display: none;
-}
-
-@media screen and (max-width: 768px) {
-  /* 1. LAYOUT HEADER COMPACT 3 BARIS/AREA DI MOBILE */
-  header {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 8px 12px !important;
-    position: relative !important;
-  }
-
-  /* Logo Geser Tepat ke Tengah Layar */
-  .header-brand {
-    position: absolute !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-  }
-
-  .header-brand img {
-    width: 45px !important;
-    height: 45px !important;
-  }
-
-  /* Status Online di Ujung Kiri */
-  #connection-status-indicator {
-    padding: 3px 6px !important;
-    font-size: 9px !important;
-  }
-  
-  #status-text {
-    font-size: 9px !important;
-  }
-
-  /* Sembunyikan Tab Atas (Pindah ke Bottom Nav) */
-  header .header-tabs {
-    display: none !important; 
-  }
 }
