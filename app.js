@@ -1018,7 +1018,7 @@ function renderPendingListUI() {
   var pendingItems = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PENDING');
 
   if (pendingItems.length === 0) {
-    container.innerHTML = '<div style="text-align:center; padding: 40px; color: #888;">Tidak ada pesanan pending saat ini.</div>';
+    container.innerHTML = '<div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 60px 20px; color: #888; font-weight: 600;">Tidak ada pesanan pending saat ini.</div>';
     return;
   }
 
@@ -1053,7 +1053,7 @@ function renderKitchenListUI() {
   var prosesItems = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PROSES');
 
   if (prosesItems.length === 0) {
-    container.innerHTML = '<div style="text-align:center; padding: 40px; color: #888;">Tidak ada antrian pesanan yang diproses.</div>';
+    container.innerHTML = '<div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 60px 20px; color: #888; font-weight: 600;">Tidak ada antrian pesanan yang diproses.</div>';
     return;
   }
 
@@ -1118,7 +1118,7 @@ function renderCompletedOrdersUI() {
   });
 
   if (completedItems.length === 0) {
-    container.innerHTML = '<div style="text-align:center; padding: 40px; color: #888; font-weight: 600;">Belum ada pesanan yang selesai hari ini.</div>';
+    container.innerHTML = '<div style="grid-column: 1 / -1; width: 100%; text-align: center; padding: 60px 20px; color: #888; font-weight: 600;">Belum ada pesanan yang selesai hari ini.</div>';
     return;
   }
 
