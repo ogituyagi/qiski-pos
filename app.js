@@ -1,14 +1,18 @@
 var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_rJIxw0NilgbmxqSmgrTJWasiJ5_O_aGCT20QCnki1BjA/exec";
 
+// Global State Data
 var productsData = [];
 var membersData = [];
+var activeTransactions = []; // Menyimpan data pending & proses
 
 var currentUser = null;
 var currentCart = [];
 var cart = currentCart;
 var selectedCustomerType = 'REGULAR';
 var selectedMemberId = null;
+var currentRestoredTransId = null; // Stays NOT NULL if order is restored from Pending
 
+// Modal & Customization State
 var modalTriggerSource = null; 
 var activeCartIndex = null;
 var activeProductId = null;
@@ -19,26 +23,17 @@ var selectedSugar = "Normal Sugar";
 var holdTimer = null;
 var isLongPress = false;
 
+// INITIALIZATION & SESSION MANAGEMENT
 document.addEventListener("DOMContentLoaded", function() {
   checkExistingSession();
   loadDataFromSheet();
+  
+  // Auto sync when coming back online
+  window.addEventListener('online', function() {
+    showAlert('Koneksi internet kembali! Mengirim data antrean...', 'Online', 'info');
+    processSyncQueue();
+  });
 });
-
-function loadDataFromSheet() {
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getInitialData' })
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.success && res.data) {
-      productsData = res.data.products || [];
-      membersData = res.data.members || [];
-      renderCatalog();
-    }
-  })
-  .catch(err => console.error("Gagal memuat data dari Sheet:", err));
-}
 
 function checkExistingSession() {
   var savedSession = localStorage.getItem('qiski_session');
@@ -69,13 +64,135 @@ function handleLogin(e) {
       document.getElementById('login-page').classList.add('hidden');
       document.getElementById('app-page').classList.remove('hidden');
       showDashboard();
-    } else { alert(res.message); }
+    } else { 
+      showAlert(res.message, 'Gagal Login', 'error'); 
+    }
+  })
+  .catch(err => {
+    showAlert('Gagal terhubung ke server: ' + err.toString(), 'Error', 'error');
   });
 }
 
+function logout() { 
+  localStorage.removeItem('qiski_session'); 
+  location.reload(); 
+}
+
+// DATA FETCHING & LOCALSTORAGE SYNC ENGINE
+function loadDataFromSheet() {
+  // 1. Load Local Active Orders First (Instant UI)
+  var localActive = localStorage.getItem('pos_active_orders');
+  if (localActive) {
+    activeTransactions = JSON.parse(localActive);
+    updateBadges();
+  }
+
+  // 2. Sync From Spreadsheet Backend
+  fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'getInitialData' })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.success && res.data) {
+      productsData = res.data.products || [];
+      membersData = res.data.members || [];
+      if (res.data.activeTransactions) {
+        activeTransactions = res.data.activeTransactions;
+        localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+      }
+      renderCatalog();
+      updateBadges();
+      processSyncQueue(); // Trigger background sync check
+    }
+  })
+  .catch(err => console.warn("Menggunakan data lokal (Offline Mode):", err));
+}
+
+function isOnline() {
+  return navigator.onLine;
+}
+
+function queueForSync(action, payload) {
+  var queue = JSON.parse(localStorage.getItem('pos_sync_queue') || '[]');
+  queue.push({
+    id: 'SYNC-' + Date.now(),
+    action: action,
+    payload: payload,
+    timestamp: new Date().toISOString()
+  });
+  localStorage.setItem('pos_sync_queue', JSON.stringify(queue));
+  processSyncQueue();
+}
+
+function processSyncQueue() {
+  if (!isOnline()) return;
+
+  var queue = JSON.parse(localStorage.getItem('pos_sync_queue') || '[]');
+  if (queue.length === 0) return;
+
+  var item = queue[0];
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: item.action, payload: item.payload })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.success) {
+      var currentQueue = JSON.parse(localStorage.getItem('pos_sync_queue') || '[]');
+      currentQueue.shift();
+      localStorage.setItem('pos_sync_queue', JSON.stringify(currentQueue));
+
+      if (currentQueue.length > 0) {
+        processSyncQueue();
+      } else {
+        // Sync full state when queue is cleared
+        fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'getInitialData' })
+        })
+        .then(r => r.json())
+        .then(r => {
+          if (r.success && r.data.activeTransactions) {
+            activeTransactions = r.data.activeTransactions;
+            localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+            updateBadges();
+          }
+        });
+      }
+    }
+  })
+  .catch(err => console.warn('Background sync deferred:', err));
+}
+
+function updateBadges() {
+  var todayStr = new Date().toLocaleDateString('sv-SE'); // format YYYY-MM-DD
+  
+  var pendingCount = activeTransactions.filter(t => {
+    var transDate = (t.waktu || '').substring(0, 10);
+    return t.status === 'PENDING' && (transDate === todayStr || !transDate);
+  }).length;
+
+  var prosesCount = activeTransactions.filter(t => t.status === 'PROSES').length;
+
+  var pendingBadge = document.getElementById('badge-pending');
+  var prosesBadge = document.getElementById('badge-proses');
+
+  if (pendingBadge) {
+    pendingBadge.innerText = pendingCount;
+    pendingBadge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+  }
+  if (prosesBadge) {
+    prosesBadge.innerText = prosesCount;
+    prosesBadge.style.display = prosesCount > 0 ? 'inline-block' : 'none';
+  }
+}
+
+// HEADER TAB & ROUTING MANAGEMENT
 function setActiveHeaderTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  if(tabId) document.getElementById(tabId).classList.add('active');
+  if (tabId) document.getElementById(tabId).classList.add('active');
 }
 
 function showDashboard() {
@@ -100,14 +217,14 @@ function confirmCustomerAndProceed() {
   if (selectedCustomerType === 'REGULAR') {
     nameVal = document.getElementById('cust-name').value.trim();
     if (!nameVal) {
-      alert('Silakan masukkan nama pelanggan terlebih dahulu!');
+      showAlert('Silakan masukkan nama pelanggan terlebih dahulu!', 'Peringatan', 'error');
       document.getElementById('cust-name').focus();
       return;
     }
   } else {
     nameVal = document.getElementById('member-search-input').value.trim();
     if (!nameVal || !selectedMemberId) {
-      alert('Silakan pilih member terdaftar dari daftar pencarian!');
+      showAlert('Silakan pilih member terdaftar dari daftar pencarian!', 'Peringatan', 'error');
       document.getElementById('member-search-input').focus();
       return;
     }
@@ -133,12 +250,7 @@ function confirmCustomerAndProceed() {
   }, 400);
 }
 
-function openDummyMenu(title) {
-  if (title === 'Kantung Pending') setActiveHeaderTab('tab-pending');
-  else if (title === 'Antrian Bar / Dapur') setActiveHeaderTab('tab-kitchen');
-  alert('Fitur "' + title + '" siap diintegrasikan dengan database backend.');
-}
-
+// CUSTOMER & MEMBER MANAGEMENT
 function selectCustomerType(type) {
   selectedCustomerType = type;
   var chipUmum = document.getElementById('chip-umum');
@@ -216,7 +328,7 @@ function handleSaveNewMember(e) {
 
   selectMember(newId, name, phone);
   closeModal('add-member-modal');
-  alert(`Member baru "${name}" berhasil didaftarkan!`);
+  showAlert(`Member baru "${name}" berhasil didaftarkan!`, 'Sukses', 'success');
 }
 
 document.addEventListener('click', function(e) {
@@ -227,6 +339,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// CATALOG & MENU RENDERING
 function renderCatalog(itemsToRender) {
   var container = document.getElementById('catalog-container');
   var list = itemsToRender || productsData;
@@ -273,7 +386,9 @@ function filterCatalogMenu() {
   }
 }
 
+// CART CUSTOMIZATION & MODIFIER
 function startHold(productId) {
+  if (currentRestoredTransId) return; // Block adding items if cart is locked from pending restore
   isLongPress = false;
   holdTimer = setTimeout(function() {
     isLongPress = true;
@@ -283,6 +398,9 @@ function startHold(productId) {
 
 function endHold(productId) {
   clearTimeout(holdTimer);
+  if (currentRestoredTransId) {
+    return showAlert('Pesanan dari Hold/Pending di-kunci. Tidak bisa menambah menu baru!', 'Peringatan', 'error');
+  }
   if (!isLongPress) { directAddToCart(productId); }
 }
 
@@ -326,6 +444,9 @@ function openHoldCustomModal(productId) {
 }
 
 function openCartCustomModal(index) {
+  if (currentRestoredTransId) {
+    return showAlert('Pesanan di-kunci. Modifikasi menu di-nonaktifkan!', 'Peringatan', 'error');
+  }
   modalTriggerSource = 'CART';
   activeCartIndex = index;
   resetChips();
@@ -402,10 +523,10 @@ function saveCustomModifier() {
   updateCartUI();
 }
 
+// CART UI & LOCKING MECHANISM
 function updateCartUI() {
   var container = document.getElementById('cart-items');
   var btnRedText = document.getElementById('btnRedText');
-  var btnRed = document.getElementById('btnRed');
 
   if (currentCart.length === 0) {
     container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:13px; font-weight: 700;">Keranjang masih kosong</p>';
@@ -420,6 +541,10 @@ function updateCartUI() {
   container.innerHTML = currentCart.map((item, idx) => {
     var subtotal = item.harga * item.qty;
     total += subtotal;
+    
+    // Hide controls if cart is locked from pending restore
+    var isLocked = currentRestoredTransId !== null;
+
     return `
       <div class="cart-item">
         <div class="cart-item-left">
@@ -429,20 +554,22 @@ function updateCartUI() {
               <span>${item.notes}</span>
             </div>
           ` : ''}
-          <button onclick="openCartCustomModal(${idx})" class="btn-custom">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-            </svg>
-            Custom
-          </button>
+          ${!isLocked ? `
+            <button onclick="openCartCustomModal(${idx})" class="btn-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              Custom
+            </button>
+          ` : ''}
         </div>
 
         <div class="cart-item-right">
           <div class="qty-control">
-            <button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>
+            ${!isLocked ? `<button class="btn-qty" onclick="updateQty(${idx}, -1)">-</button>` : ''}
             <span class="qty-num">${item.qty}</span>
-            <button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>
+            ${!isLocked ? `<button class="btn-qty" onclick="updateQty(${idx}, 1)">+</button>` : ''}
           </div>
           <span class="cart-item-price">Rp ${subtotal.toLocaleString('id-ID')}</span>
         </div>
@@ -451,6 +578,16 @@ function updateCartUI() {
   }).join('');
 
   document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+}
+
+function lockCartUI() {
+  var btnHold = document.getElementById('btn-hold-cart');
+  if (btnHold) btnHold.style.display = 'none';
+}
+
+function unlockCartUI() {
+  var btnHold = document.getElementById('btn-hold-cart');
+  if (btnHold) btnHold.style.display = 'inline-block';
 }
 
 function handleRedButton() {
@@ -462,12 +599,18 @@ function handleRedButton() {
 }
 
 function updateQty(index, delta) {
+  if (currentRestoredTransId) return;
   currentCart[index].qty += delta;
   if (currentCart[index].qty <= 0) currentCart.splice(index, 1);
   updateCartUI();
 }
 
-function clearCart() { currentCart = []; updateCartUI(); }
+function clearCart() { 
+  currentCart = []; 
+  currentRestoredTransId = null;
+  unlockCartUI();
+  updateCartUI(); 
+}
 
 function getActiveCustomerName() {
   if (selectedCustomerType === 'REGULAR') {
@@ -477,19 +620,86 @@ function getActiveCustomerName() {
   }
 }
 
+// HOLD & PENDING FLOW (OFFLINE-FIRST)
 function savePendingOrder() {
-  if (currentCart.length === 0) return alert('Keranjang masih kosong!');
+  if (currentCart.length === 0) {
+    return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
+  }
+
+  if (currentRestoredTransId) {
+    return showAlert('Pesanan ini sudah tersimpan di kantung Pending!', 'Informasi', 'info');
+  }
+
   var custName = getActiveCustomerName();
+  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
+  
+  var now = new Date();
+  var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+  var transId = 'TRX-' + dateStr + '-' + Math.floor(1000 + Math.random() * 9000);
+  var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
-  var pendingData = { id: 'PEND-' + Date.now(), customerName: custName, cart: currentCart, time: new Date().toLocaleTimeString() };
-  var pendingList = JSON.parse(localStorage.getItem('qiski_pending') || '[]');
-  pendingList.push(pendingData);
-  localStorage.setItem('qiski_pending', JSON.stringify(pendingList));
+  var payload = {
+    transId: transId,
+    kasirId: currentUser ? currentUser.id : 'KASIR-01',
+    customerName: custName,
+    jenisPelanggan: selectedCustomerType,
+    subtotal: subtotal,
+    totalAkhir: subtotal,
+    items: JSON.parse(JSON.stringify(currentCart))
+  };
 
-  alert('Order a/n "' + custName + '" disimpan di Pending!');
+  // 1. Instant Local Update
+  activeTransactions.push({
+    transId: transId,
+    waktu: timeStr,
+    kasirId: payload.kasirId,
+    customerName: custName,
+    jenisPelanggan: selectedCustomerType,
+    subtotal: subtotal,
+    totalAkhir: subtotal,
+    metode: '-',
+    cashPaid: 0,
+    kembalian: 0,
+    status: 'PENDING',
+    items: payload.items
+  });
+
+  localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+
+  // 2. Clear UI & Update Badges
+  clearCart();
+  updateBadges();
   showDashboard();
+  showAlert('Pesanan a/n "' + custName + '" berhasil di-Hold!', 'Sukses', 'success');
+
+  // 3. Queue Background Sync
+  queueForSync('holdTransaction', payload);
 }
 
+function restorePendingOrder(transId) {
+  var target = activeTransactions.find(t => t.transId === transId);
+  if (!target) return;
+
+  if (currentCart.length > 0) {
+    return showAlert('Selesaikan atau bersihkan keranjang aktif terlebih dahulu!', 'Peringatan', 'error');
+  }
+
+  currentCart = JSON.parse(JSON.stringify(target.items));
+  currentRestoredTransId = target.transId;
+
+  lockCartUI();
+  
+  // Navigate back to cart view
+  setActiveHeaderTab(null);
+  document.getElementById('home-dashboard-view').classList.add('hidden');
+  document.getElementById('new-order-view').classList.remove('hidden');
+  document.getElementById('cart-customer-name').innerText = target.customerName;
+
+  updateCartUI();
+  showAlert('Pesanan ' + transId + ' dipulihkan ke keranjang (Di-kunci).', 'Informasi', 'info');
+}
+
+// PAYMENT FLOW (WITH LOADING OVERLAY & OFFLINE-FIRST)
 function openPaymentModal() {
   if (currentCart.length === 0) {
     return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
@@ -518,7 +728,6 @@ function openPaymentModal() {
 function submitTransaction() {
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   var method = document.getElementById('pay-method').value;
-  
   var rawPaid = document.getElementById('pay-cash-paid').value.replace(/[^0-9]/g, '');
   var cashPaid = method === 'CASH' ? (Number(rawPaid) || 0) : subtotal;
   var custName = getActiveCustomerName();
@@ -527,35 +736,84 @@ function submitTransaction() {
     return showAlert('Uang pembayaran masih kurang!', 'Gagal Transaksi', 'error');
   }
 
+  // TAMPILKAN LOADING OVERLAY
+  var loadingOverlay = document.getElementById('gate-loading-overlay');
+  if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
+  var now = new Date();
+  var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+  var transId = currentRestoredTransId || ('TRX-' + dateStr + '-' + Math.floor(1000 + Math.random() * 9000));
+  var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+
   var payload = {
-    kasirId: currentUser ? currentUser.id : 'KASIR-01', 
-    customerName: custName, 
-    subtotal: subtotal, 
+    transId: transId,
+    kasirId: currentUser ? currentUser.id : 'KASIR-01',
+    customerName: custName,
+    jenisPelanggan: selectedCustomerType,
+    subtotal: subtotal,
     totalAkhir: subtotal,
-    metode: method, 
-    cashPaid: cashPaid, 
-    items: currentCart
+    metode: method,
+    cashPaid: cashPaid,
+    items: JSON.parse(JSON.stringify(currentCart))
   };
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'saveTransaction', payload: payload })
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.success) {
-      closeModal('payment-modal');
-      showAlert('Transaksi a/n ' + custName + ' Berhasil Disimpan!', 'Sukses', 'success');
-      showDashboard();
-    } else { 
-      showAlert('Gagal simpan: ' + res.message, 'Kesalahan Backend', 'error'); 
-    }
-  })
-  .catch(err => {
-    showAlert('Koneksi terputus/error: ' + err.toString(), 'Error', 'error');
-  });
+  // 1. Instant Local State Update
+  var existingIdx = activeTransactions.findIndex(t => t.transId === transId);
+
+  var orderData = {
+    transId: transId,
+    waktu: timeStr,
+    kasirId: payload.kasirId,
+    customerName: custName,
+    jenisPelanggan: selectedCustomerType,
+    subtotal: subtotal,
+    totalAkhir: subtotal,
+    metode: method,
+    cashPaid: cashPaid,
+    kembalian: cashPaid - subtotal,
+    status: 'PROSES',
+    items: payload.items
+  };
+
+  if (existingIdx >= 0) {
+    activeTransactions[existingIdx] = orderData; // Update PENDING -> PROSES
+  } else {
+    activeTransactions.push(orderData);
+  }
+
+  localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+
+  // 2. Queue Background Sync & Delay Sedikit Biar Loading Mulus
+  queueForSync('saveTransaction', payload);
+
+  setTimeout(function() {
+    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+    closeModal('payment-modal');
+    
+    currentCart = [];
+    currentRestoredTransId = null;
+    unlockCartUI();
+    updateCartUI();
+    updateBadges();
+    showDashboard();
+
+    showAlert('Transaksi a/n ' + custName + ' Berhasil Diproses!', 'Sukses', 'success');
+  }, 400);
 }
 
+function finishOrder(transId) {
+  var target = activeTransactions.find(t => t.transId === transId);
+  if (target) {
+    target.status = 'SELESAI';
+    localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+    updateBadges();
+  }
+
+  queueForSync('updateOrderStatus', { transId: transId, status: 'SELESAI' });
+  showAlert('Pesanan ' + transId + ' telah Selesai!', 'Sukses', 'success');
+}
+
+// CALCULATION & PAYMENT HELPERS
 function togglePayMethod() {
   var method = document.getElementById('pay-method').value;
   var cashGroup = document.getElementById('cash-group');
@@ -564,65 +822,10 @@ function togglePayMethod() {
     cashGroup.classList.add('hidden');
   } else {
     cashGroup.classList.remove('hidden');
-    // Re-kalkulasi saat switch kembali ke CASH
     calculatePayment();
   }
 }
 
-function calculatePayment() {
-  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-  var method = document.getElementById('pay-method').value;
-  
-  if (method === 'CASH') {
-    // Ambil nilai mentah & buang format string 'Rp' dan titik
-    var rawPaid = document.getElementById('pay-cash-paid').value.replace(/[^0-9]/g, '');
-    var cashPaid = Number(rawPaid) || 0;
-    var change = cashPaid - subtotal;
-    var changeElem = document.getElementById('pay-change');
-
-    if (cashPaid === 0) {
-      changeElem.value = 'Rp 0';
-      changeElem.style.color = 'var(--text-dark)';
-    } else if (change < 0) {
-      changeElem.value = 'Uang Kurang!';
-      changeElem.style.color = '#e53935'; // Merah jika kurang
-    } else {
-      changeElem.value = 'Rp ' + change.toLocaleString('id-ID');
-      changeElem.style.color = '#2e7d32'; // Hijau jika pas/ada kembalian
-    }
-  }
-}
-
-// Format Rupiah saat diketik manual
-function formatCashInput(input) {
-  var rawVal = input.value.replace(/[^0-9]/g, '');
-  var numericVal = Number(rawVal) || 0;
-
-  if (numericVal === 0) {
-    input.value = '';
-  } else {
-    input.value = 'Rp ' + numericVal.toLocaleString('id-ID');
-  }
-
-  calculatePayment();
-}
-
-// Klik Chip Nominal
-function selectCashChip(amount) {
-  var input = document.getElementById('pay-cash-paid');
-  if (input) {
-    input.value = 'Rp ' + amount.toLocaleString('id-ID');
-    calculatePayment();
-  }
-}
-
-// Klik Chip Uang Pas
-function selectExactCash() {
-  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-  selectCashChip(subtotal);
-}
-
-// Hitung Kembalian
 function calculatePayment() {
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   var method = document.getElementById('pay-method').value;
@@ -646,17 +849,47 @@ function calculatePayment() {
   }
 }
 
-// Function pengganti alert() bawaan browser
+function formatCashInput(input) {
+  var rawVal = input.value.replace(/[^0-9]/g, '');
+  var numericVal = Number(rawVal) || 0;
+
+  if (numericVal === 0) {
+    input.value = '';
+  } else {
+    input.value = 'Rp ' + numericVal.toLocaleString('id-ID');
+  }
+
+  calculatePayment();
+}
+
+function selectCashChip(amount) {
+  var input = document.getElementById('pay-cash-paid');
+  if (input) {
+    input.value = 'Rp ' + amount.toLocaleString('id-ID');
+    calculatePayment();
+  }
+}
+
+function selectExactCash() {
+  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
+  selectCashChip(subtotal);
+}
+
+// CUSTOM ALERT MODAL HELPERS
 function showAlert(message, title = 'Informasi', type = 'info') {
   var modal = document.getElementById('custom-alert-modal');
   var titleElem = document.getElementById('alert-modal-title');
   var msgElem = document.getElementById('alert-modal-message');
   var iconContainer = document.getElementById('alert-icon-container');
 
+  if (!modal || !titleElem || !msgElem || !iconContainer) {
+    alert(title + ": " + message);
+    return;
+  }
+
   titleElem.innerText = title;
   msgElem.innerText = message;
 
-  // Set Icon berdasarkan tipe
   if (type === 'success') {
     iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
   } else if (type === 'error') {
@@ -672,6 +905,15 @@ function closeCustomAlert() {
   document.getElementById('custom-alert-modal').classList.add('hidden');
 }
 
-function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-function logout() { localStorage.removeItem('qiski_session'); location.reload(); }
+function closeModal(id) { 
+  document.getElementById(id).classList.add('hidden'); 
+}
 
+// PREVENT CLOSE/REFRESH ACCIDENTAL LOSS
+window.addEventListener('beforeunload', function (e) {
+  if (currentCart && currentCart.length > 0) {
+    e.preventDefault();
+    e.returnValue = 'Masih ada transaksi di keranjang! Yakin ingin keluar?';
+    return e.returnValue;
+  }
+});
