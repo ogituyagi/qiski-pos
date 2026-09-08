@@ -491,12 +491,13 @@ function savePendingOrder() {
 }
 
 function openPaymentModal() {
-  if (currentCart.length === 0) return alert('Keranjang kosong!');
+  if (currentCart.length === 0) {
+    return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
+  }
   
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   document.getElementById('pay-total-akhir').value = 'Rp ' + subtotal.toLocaleString('id-ID');
   
-  // Reset input uang diterima & kembalian
   var cashInput = document.getElementById('pay-cash-paid');
   var changeInput = document.getElementById('pay-change');
   if (cashInput) cashInput.value = '';
@@ -505,7 +506,6 @@ function openPaymentModal() {
     changeInput.style.color = 'var(--text-dark)';
   }
 
-  // Set default metode ke CASH & tampilkan grup inputnya
   var methodSelect = document.getElementById('pay-method');
   if (methodSelect) {
     methodSelect.value = 'CASH';
@@ -513,6 +513,47 @@ function openPaymentModal() {
   }
 
   document.getElementById('payment-modal').classList.remove('hidden');
+}
+
+function submitTransaction() {
+  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
+  var method = document.getElementById('pay-method').value;
+  
+  var rawPaid = document.getElementById('pay-cash-paid').value.replace(/[^0-9]/g, '');
+  var cashPaid = method === 'CASH' ? (Number(rawPaid) || 0) : subtotal;
+  var custName = getActiveCustomerName();
+
+  if (method === 'CASH' && cashPaid < subtotal) {
+    return showAlert('Uang pembayaran masih kurang!', 'Gagal Transaksi', 'error');
+  }
+
+  var payload = {
+    kasirId: currentUser ? currentUser.id : 'KASIR-01', 
+    customerName: custName, 
+    subtotal: subtotal, 
+    totalAkhir: subtotal,
+    metode: method, 
+    cashPaid: cashPaid, 
+    items: currentCart
+  };
+
+  fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'saveTransaction', payload: payload })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.success) {
+      closeModal('payment-modal');
+      showAlert('Transaksi a/n ' + custName + ' Berhasil Disimpan!', 'Sukses', 'success');
+      showDashboard();
+    } else { 
+      showAlert('Gagal simpan: ' + res.message, 'Kesalahan Backend', 'error'); 
+    }
+  })
+  .catch(err => {
+    showAlert('Koneksi terputus/error: ' + err.toString(), 'Error', 'error');
+  });
 }
 
 function togglePayMethod() {
@@ -644,5 +685,32 @@ function submitTransaction() {
   });
 }
 
+// Function pengganti alert() bawaan browser
+function showAlert(message, title = 'Informasi', type = 'info') {
+  var modal = document.getElementById('custom-alert-modal');
+  var titleElem = document.getElementById('alert-modal-title');
+  var msgElem = document.getElementById('alert-modal-message');
+  var iconContainer = document.getElementById('alert-icon-container');
+
+  titleElem.innerText = title;
+  msgElem.innerText = message;
+
+  // Set Icon berdasarkan tipe
+  if (type === 'success') {
+    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
+  } else if (type === 'error') {
+    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+  } else {
+    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+  }
+
+  modal.classList.remove('hidden');
+}
+
+function closeCustomAlert() {
+  document.getElementById('custom-alert-modal').classList.add('hidden');
+}
+
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 function logout() { localStorage.removeItem('qiski_session'); location.reload(); }
+
