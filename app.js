@@ -769,8 +769,6 @@ function openPaymentModal() {
   document.getElementById('payment-modal').classList.remove('hidden');
 }
 
-// PAYMENT FLOW (SUBMIT)
-// PAYMENT FLOW (SUBMIT)
 function submitTransaction() {
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   var method = document.getElementById('pay-method').value;
@@ -782,11 +780,9 @@ function submitTransaction() {
     return showAlert('Uang pembayaran masih kurang!', 'Gagal Transaksi', 'error');
   }
 
-  // 1. Munculkan loading overlay agar tidak bisa klik berkali-kali & tutup modal payment SEKARANG
-  var loadingOverlay = document.getElementById('gate-loading-overlay');
-  if (loadingOverlay) loadingOverlay.classList.remove('hidden');
-  
-  closeModal('payment-modal'); // <-- Langsung tutup modal pembayaran di sini agar bersih!
+  // 1. Tutup modal payment & tampilkan global loading universal
+  closeModal('payment-modal');
+  showLoading('Memproses Pembayaran...');
 
   var now = new Date();
   var transId = currentRestoredTransId || generateTrxId();
@@ -828,7 +824,6 @@ function submitTransaction() {
   activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
-  // Terbangkan data secara instan tanpa fetch beruntun yang bikin lambat
   fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -841,16 +836,15 @@ function submitTransaction() {
   })
   .then(function(res) { return res.json(); })
   .then(function(result) {
-    console.log("Sync Submit ke Sheet Berhasil:", result);
+    console.log("Sync Berhasil:", result);
   })
   .catch(function(err) {
-    console.error("Gagal Sync Submit ke Sheet, tersimpan di Local Storage:", err);
+    console.error("Gagal Sync ke Sheet:", err);
   })
   .finally(function() {
-    // Matikan loading overlay
-    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+    // 2. Matikan loading universal
+    hideLoading();
     
-    // Reset state keranjang
     currentCart = [];
     currentRestoredTransId = null;
     unlockCartUI();
@@ -858,7 +852,6 @@ function submitTransaction() {
     updateBadges();
     showDashboard();
 
-    // Munculkan alert sukses di atas layar yang sudah bersih
     showAlert('Transaksi a/n ' + custName + ' Berhasil Diproses!', 'Sukses', 'success');
   });
 }
@@ -1080,4 +1073,22 @@ function generateTrxId() {
   localStorage.setItem('pos_trx_counter', counter);
 
   return 'QSK-' + todayStr + '-' + String(counter).padStart(3, '0');
+}
+
+function showLoading(text) {
+  var loadingText = document.getElementById('global-loading-text');
+  if (loadingText && text) {
+    loadingText.innerText = text;
+  }
+  var loadingModal = document.getElementById('global-loading-modal');
+  if (loadingModal) {
+    loadingModal.classList.remove('hidden');
+  }
+}
+
+function hideLoading() {
+  var loadingModal = document.getElementById('global-loading-modal');
+  if (loadingModal) {
+    loadingModal.classList.add('hidden');
+  }
 }
