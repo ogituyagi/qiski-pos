@@ -1075,7 +1075,9 @@ function renderPendingListUI() {
           ${itemsList.length > 0 ? itemsList.map(function(i) {
             return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
               <span><b>${i.qty || 1}x</b> ${i.nama || 'Menu'}</span>
-              <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+              <span style="font-size:11px; color:#333; font-weight: 800;">
+                ${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}
+              </span>
             </div>`;
           }).join('') : '<span style="color:#888; font-size:12px;">Detail item tidak tersedia</span>'}
         </div>
@@ -1131,7 +1133,9 @@ function renderKitchenListUI() {
           ${itemsList.length > 0 ? itemsList.map(function(i) {
             return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
               <span><b>${i.qty || 1}x</b> ${i.nama || 'Menu'}</span>
-              <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+              <span style="font-size:11px; color:#333; font-weight: 800;">
+                ${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}
+              </span>
             </div>`;
           }).join('') : '<span style="color:#888; font-size:12px;">Detail item tidak tersedia</span>'}
         </div>
@@ -1225,7 +1229,9 @@ function renderCompletedOrdersUI() {
           ${itemsList.length > 0 ? itemsList.map(function(i) {
             return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
               <span><b>${i.qty || 1}x</b> ${i.nama || 'Menu'}</span>
-              <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+              <span style="font-size:11px; color:#333; font-weight: 800;">
+                ${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}
+              </span>
             </div>`;
           }).join('') : '<span style="color:#888; font-size:12px;">Detail item tidak tersedia</span>'}
         </div>
