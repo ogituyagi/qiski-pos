@@ -1067,3 +1067,10 @@ header h1, .brand-title, .header-brand {
 .login-page-active .bottom-nav-bar {
   display: none !important;
 }
+
+/* PAKSA SEMBUNYIKAN BOTTOM NAV JIKA USER BELUM LOGIN / APP-PAGE MASIH HIDDEN */
+#app-page.hidden ~ .bottom-nav-bar,
+#app-page.hidden + .bottom-nav-bar,
+#login-page:not(.hidden) ~ .bottom-nav-bar {
+  display: none !important;
+}
