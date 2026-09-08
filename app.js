@@ -219,10 +219,16 @@ function hideAllViews() {
 }
 
 function showDashboard() {
-  setActiveHeaderTab('tab-home');
-  hideAllViews();
-  var homeView = document.getElementById('home-dashboard-view');
-  if (homeView) homeView.classList.remove('hidden');
+  var newOrderView = document.getElementById('new-order-view');
+  if (newOrderView && !newOrderView.classList.contains('hidden') && currentCart && currentCart.length > 0) {
+    showAlert('Selesaikan atau kosongkan keranjang terlebih dahulu sebelum meninggalkan halaman transaksi!', 'Peringatan', 'warning');
+    return;
+  }
+  document.getElementById('home-dashboard-view').classList.remove('hidden');
+  document.getElementById('new-order-view').classList.add('hidden');
+  document.getElementById('pending-orders-view').classList.add('hidden');
+  document.getElementById('kitchen-orders-view').classList.add('hidden');
+  setActiveTab('tab-home');
 }
 
 function openNewOrderFlow() {
@@ -938,11 +944,18 @@ function selectExactCash() {
 
 // TAB VIEW NAVIGATION (PENDING & KITCHEN)
 function openPendingTab() {
-  setActiveHeaderTab('tab-pending');
-  hideAllViews();
-  var view = document.getElementById('pending-orders-view');
-  if (view) view.classList.remove('hidden');
-  renderPendingListUI();
+  var newOrderView = document.getElementById('new-order-view');
+  // Cek apakah kasir sedang berada di halaman Pesanan Baru dan keranjang ada isinya
+  if (newOrderView && !newOrderView.classList.contains('hidden') && currentCart && currentCart.length > 0) {
+    showAlert('Selesaikan atau kosongkan keranjang terlebih dahulu sebelum membuka Daftar Pesanan!', 'Peringatan', 'warning');
+    return;
+  }
+  renderPendingOrders();
+  document.getElementById('home-dashboard-view').classList.add('hidden');
+  document.getElementById('new-order-view').classList.add('hidden');
+  document.getElementById('pending-orders-view').classList.remove('hidden');
+  document.getElementById('kitchen-orders-view').classList.add('hidden');
+  setActiveTab('tab-pending');
 }
 
 function renderPendingListUI() {
@@ -973,11 +986,17 @@ function renderPendingListUI() {
 }
 
 function openKitchenTab() {
-  setActiveHeaderTab('tab-kitchen');
-  hideAllViews();
-  var view = document.getElementById('kitchen-orders-view');
-  if (view) view.classList.remove('hidden');
-  renderKitchenListUI();
+  var newOrderView = document.getElementById('new-order-view');
+  if (newOrderView && !newOrderView.classList.contains('hidden') && currentCart && currentCart.length > 0) {
+    showAlert('Selesaikan atau kosongkan keranjang terlebih dahulu sebelum membuka Antrian Proses!', 'Peringatan', 'warning');
+    return;
+  }
+  renderKitchenOrders();
+  document.getElementById('home-dashboard-view').classList.add('hidden');
+  document.getElementById('new-order-view').classList.add('hidden');
+  document.getElementById('pending-orders-view').classList.add('hidden');
+  document.getElementById('kitchen-orders-view').classList.remove('hidden');
+  setActiveTab('tab-kitchen');
 }
 
 function renderKitchenListUI() {
