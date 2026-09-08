@@ -1409,3 +1409,71 @@ window.addEventListener('beforeunload', function (e) {
     return e.returnValue;
   }
 });
+
+// SINKRONISASI TAB ACTIVE (DESKTOP & MOBILE)
+function setActiveHeaderTab(tabId) {
+  // Reset Desktop Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  if (tabId) {
+    var target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+  }
+
+  // Reset Mobile Bottom Nav Tabs
+  document.querySelectorAll('.bottom-nav-item').forEach(btn => btn.classList.remove('active'));
+  var mobileTabId = tabId ? 'mobile-' + tabId : 'mobile-tab-home';
+  var mobileTarget = document.getElementById(mobileTabId);
+  if (mobileTarget) mobileTarget.classList.add('active');
+}
+
+// SINKRONISASI BADGE COUNT (DESKTOP & MOBILE)
+function updateBadges() {
+  var now = new Date();
+  var todayYear = now.getFullYear();
+  var todayMonth = now.getMonth();
+  var todayDate = now.getDate();
+
+  var isToday = function(waktuStr) {
+    if (!waktuStr) return false;
+    var d = new Date(waktuStr);
+    if (!isNaN(d.getTime())) {
+      return d.getFullYear() === todayYear && 
+             d.getMonth() === todayMonth && 
+             d.getDate() === todayDate;
+    }
+    var datePart = String(waktuStr).split(' ')[0].split('T')[0];
+    var todayStr = todayYear + '-' + String(todayMonth + 1).padStart(2, '0') + '-' + String(todayDate).padStart(2, '0');
+    return datePart === todayStr;
+  };
+
+  var pendingCount = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PENDING' && isToday(t.waktu)).length;
+  var prosesCount = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PROSES').length;
+  var selesaiCount = activeTransactions.filter(t => String(t.status).toUpperCase() === 'SELESAI' && isToday(t.waktu)).length;
+
+  // Render Badges Desktop & Mobile
+  var updateBadgeUI = function(desktopId, mobileId, count) {
+    var deskEl = document.getElementById(desktopId);
+    var mobEl = document.getElementById(mobileId);
+
+    if (deskEl) {
+      deskEl.innerText = count;
+      deskEl.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+    if (mobEl) {
+      mobEl.innerText = count;
+      mobEl.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+  };
+
+  updateBadgeUI('badge-pending', 'mobile-badge-pending', pendingCount);
+  updateBadgeUI('badge-proses', 'mobile-badge-proses', prosesCount);
+  updateBadgeUI('badge-selesai', 'mobile-badge-selesai', selesaiCount);
+}
+
+// TOGGLE SLIDE-UP CART DI MOBILE (DI-CLICK DARI HEADER CARI KERANJANG)
+function toggleMobileCart() {
+  var cartSec = document.querySelector('.cart-section');
+  if (cartSec) {
+    cartSec.classList.toggle('mobile-expanded');
+  }
+}
