@@ -3,13 +3,14 @@ var API_URL = "https://script.google.com/macros/s/AKfycbwHA9QpcBwA-4vtFANUYDkUp_
 // Global State Data
 var productsData = [];
 var membersData = [];
-var activeTransactions = []; // Menyimpan data pending & proses
+var activeTransactions = []; 
 
 var currentUser = null;
-var currentCart = []; // KUNCI: Hanya menggunakan 1 variabel tunggal ini
+var currentCart = []; 
 var selectedCustomerType = 'REGULAR';
 var selectedMemberId = null;
-var currentRestoredTransId = null; // Stays NOT NULL jika order direstore dari Pending
+var currentRestoredTransId = null; 
+var lastSuccessfulTransaction = null;
 
 // Modal & Customization State
 var modalTriggerSource = null; 
@@ -24,16 +25,15 @@ var isLongPress = false;
 
 // INITIALIZATION & SESSION MANAGEMENT
 document.addEventListener("DOMContentLoaded", function() {
-  // Pasang logo header dari assets.js
   var headerLogo = document.getElementById('header-brand-logo');
-  if (headerLogo && typeof APP_ASSETS !== 'undefined') {
+  if (headerLogo && typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoHeader) {
     headerLogo.src = APP_ASSETS.logoHeader;
   }
 
   checkExistingSession();
   loadDataFromSheet();
   
-  // Auto sync saat koneksi kembali online
+  // Event Sync Saat Online Kembali
   window.addEventListener('online', function() {
     showAlert('Koneksi internet kembali! Mengirim data antrean...', 'Online', 'info');
     processSyncQueue();
@@ -56,12 +56,16 @@ function handleLogin(e) {
   var u = document.getElementById('username').value;
   var p = document.getElementById('password').value;
 
+  showLoading('Memverifikasi Login...');
+
   fetch(API_URL, {
     method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ action: 'checkLogin', username: u, password: p })
   })
   .then(res => res.json())
   .then(res => {
+    hideLoading();
     if (res.success) {
       currentUser = res.user;
       localStorage.setItem('qiski_session', JSON.stringify(currentUser));
@@ -74,6 +78,7 @@ function handleLogin(e) {
     }
   })
   .catch(err => {
+    hideLoading();
     showAlert('Gagal terhubung ke server: ' + err.toString(), 'Error', 'error');
   });
 }
@@ -83,33 +88,50 @@ function logout() {
   location.reload(); 
 }
 
-// DATA FETCHING & LOCALSTORAGE SYNC ENGINE
+// DATA FETCHING & SYNC ENGINE (ONLINE FIRST WITH OFFLINE FALLBACK)
 function loadDataFromSheet() {
+  // 1. Ambil data lokal terlebih dahulu agar UI cepat tampil
   var localActive = localStorage.getItem('pos_active_orders');
   if (localActive) {
-    activeTransactions = JSON.parse(localActive);
+    try { activeTransactions = JSON.parse(localActive); } catch(e) { activeTransactions = []; }
     updateBadges();
   }
 
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getInitialData' })
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.success && res.data) {
-      productsData = res.data.products || [];
-      membersData = res.data.members || [];
-      if (res.data.activeTransactions) {
-        activeTransactions = res.data.activeTransactions;
-        localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-      }
+  var localProducts = localStorage.getItem('pos_products');
+  if (localProducts) {
+    try { 
+      productsData = JSON.parse(localProducts); 
       renderCatalog();
-      updateBadges();
-      processSyncQueue();
-    }
-  })
-  .catch(err => console.warn("Menggunakan data lokal (Offline Mode):", err));
+    } catch(e) {}
+  }
+
+  // 2. Jika online, langsung perbarui data terbaru dari Apps Script
+  if (isOnline()) {
+    fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'getInitialData' })
+    })
+    .then(res => res.json())
+    .then(res => {
+      if (res.success && res.data) {
+        productsData = res.data.products || [];
+        membersData = res.data.members || [];
+        
+        localStorage.setItem('pos_products', JSON.stringify(productsData));
+        localStorage.setItem('pos_members', JSON.stringify(membersData));
+
+        if (res.data.activeTransactions) {
+          activeTransactions = res.data.activeTransactions;
+          localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+        }
+        renderCatalog();
+        updateBadges();
+        processSyncQueue();
+      }
+    })
+    .catch(err => console.warn("Koneksi gagal, menggunakan data lokal:", err));
+  }
 }
 
 function isOnline() {
@@ -125,7 +147,10 @@ function queueForSync(action, payload) {
     timestamp: new Date().toISOString()
   });
   localStorage.setItem('pos_sync_queue', JSON.stringify(queue));
-  processSyncQueue();
+  
+  if (isOnline()) {
+    processSyncQueue();
+  }
 }
 
 function processSyncQueue() {
@@ -138,6 +163,7 @@ function processSyncQueue() {
 
   fetch(API_URL, {
     method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ action: item.action, payload: item.payload })
   })
   .then(res => res.json())
@@ -149,23 +175,10 @@ function processSyncQueue() {
 
       if (currentQueue.length > 0) {
         processSyncQueue();
-      } else {
-        fetch(API_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'getInitialData' })
-        })
-        .then(r => r.json())
-        .then(r => {
-          if (r.success && r.data.activeTransactions) {
-            activeTransactions = r.data.activeTransactions;
-            localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-            updateBadges();
-          }
-        });
       }
     }
   })
-  .catch(err => console.warn('Background sync deferred:', err));
+  .catch(err => console.warn('Sync tertunda karena gangguan koneksi:', err));
 }
 
 function updateBadges() {
@@ -175,7 +188,7 @@ function updateBadges() {
   var todayDate = now.getDate();
 
   var pendingCount = activeTransactions.filter(function(t) {
-    if (t.status !== 'PENDING') return false;
+    if (String(t.status).toUpperCase() !== 'PENDING') return false;
     if (!t.waktu) return true;
 
     var d = new Date(t.waktu);
@@ -191,7 +204,7 @@ function updateBadges() {
   }).length;
 
   var prosesCount = activeTransactions.filter(function(t) {
-    return t.status === 'PROSES';
+    return String(t.status).toUpperCase() === 'PROSES';
   }).length;
 
   var pendingBadge = document.getElementById('badge-pending');
@@ -207,7 +220,7 @@ function updateBadges() {
   }
 }
 
-// HEADER TAB & ROUTING MANAGEMENT
+// ROUTING & HEADER NAVIGATION
 function setActiveHeaderTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   if (tabId) {
@@ -260,24 +273,17 @@ function confirmCustomerAndProceed() {
     }
   }
 
-  var loadingOverlay = document.getElementById('gate-loading-overlay');
-  loadingOverlay.classList.remove('hidden');
+  closeModal('customer-gate-modal');
+  setActiveHeaderTab(null);
+  hideAllViews();
+  document.getElementById('new-order-view').classList.remove('hidden');
 
-  setTimeout(function() {
-    loadingOverlay.classList.add('hidden');
-    closeModal('customer-gate-modal');
+  document.getElementById('cart-customer-name').innerText = getActiveCustomerName();
+  
+  var searchInp = document.getElementById('menu-search-input');
+  if (searchInp) searchInp.value = '';
 
-    setActiveHeaderTab(null);
-    hideAllViews();
-    document.getElementById('new-order-view').classList.remove('hidden');
-
-    document.getElementById('cart-customer-name').innerText = getActiveCustomerName();
-    
-    var searchInp = document.getElementById('menu-search-input');
-    if (searchInp) searchInp.value = '';
-
-    clearCart();
-  }, 400);
+  clearCart();
 }
 
 // CUSTOMER & MEMBER MANAGEMENT
@@ -301,9 +307,9 @@ function selectCustomerType(type) {
   }
 }
 
-function renderMemberList(filterText = "") {
+function renderMemberList(filterText) {
   var container = document.getElementById('member-items-list');
-  var keyword = filterText.toLowerCase();
+  var keyword = (filterText || "").toLowerCase();
 
   var filtered = membersData.filter(m => 
     (m.nama && m.nama.toLowerCase().includes(keyword)) || 
@@ -316,7 +322,7 @@ function renderMemberList(filterText = "") {
   }
 
   container.innerHTML = filtered.map(m => `
-    <div onclick="selectMember('${m.id}', '${m.nama}', '${m.hp}')" style="padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f9f9f9; transition: 0.15s;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='#fff'">
+    <div onclick="selectMember('${m.id}', '${m.nama}', '${m.hp}')" style="padding: 10px 12px; cursor: pointer; font-size: 13px; font-weight: 600; border-bottom: 1px solid #f9f9f9;" onmouseover="this.style.background='#fffaf5'" onmouseout="this.style.background='#fff'">
       ${m.nama} <span style="color: var(--text-muted); font-size: 11px; font-weight: 500;">(${m.hp})</span>
     </div>
   `).join('');
@@ -354,7 +360,9 @@ function handleSaveNewMember(e) {
   var phone = document.getElementById('new-member-phone').value.trim();
 
   var newId = 'MEMBER-' + Date.now();
-  membersData.push({ id: newId, nama: name, hp: phone, poin: 0 });
+  var newMember = { id: newId, nama: name, hp: phone, poin: 0 };
+  membersData.push(newMember);
+  localStorage.setItem('pos_members', JSON.stringify(membersData));
 
   selectMember(newId, name, phone);
   closeModal('add-member-modal');
@@ -369,7 +377,7 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// CATALOG & MENU RENDERING
+// CATALOG RENDERING
 function renderCatalog(itemsToRender) {
   var container = document.getElementById('catalog-container');
   var list = itemsToRender || productsData;
@@ -416,7 +424,7 @@ function filterCatalogMenu() {
   }
 }
 
-// CART CUSTOMIZATION & MODIFIER
+// CART & MODIFIER CONTROL
 function startHold(productId) {
   if (currentRestoredTransId) return;
   isLongPress = false;
@@ -553,7 +561,6 @@ function saveCustomModifier() {
   updateCartUI();
 }
 
-// CART UI & LOCKING MECHANISM
 function updateCartUI() {
   var container = document.getElementById('cart-items');
   var btnRedText = document.getElementById('btnRedText');
@@ -571,7 +578,6 @@ function updateCartUI() {
   container.innerHTML = currentCart.map((item, idx) => {
     var subtotal = item.harga * item.qty;
     total += subtotal;
-    
     var isLocked = currentRestoredTransId !== null;
 
     return `
@@ -609,16 +615,6 @@ function updateCartUI() {
   document.getElementById('cart-total-val').innerText = `Rp ${total.toLocaleString('id-ID')}`;
 }
 
-function lockCartUI() {
-  var btnHold = document.getElementById('btn-hold-cart');
-  if (btnHold) btnHold.style.display = 'none';
-}
-
-function unlockCartUI() {
-  var btnHold = document.getElementById('btn-hold-cart');
-  if (btnHold) btnHold.style.display = 'inline-block';
-}
-
 function handleRedButton() {
   if (currentCart.length > 0) {
     clearCart();
@@ -637,7 +633,6 @@ function updateQty(index, delta) {
 function clearCart() { 
   currentCart = []; 
   currentRestoredTransId = null;
-  unlockCartUI();
   updateCartUI(); 
 }
 
@@ -649,7 +644,7 @@ function getActiveCustomerName() {
   }
 }
 
-// HOLD & PENDING FLOW
+// HOLD & PENDING FLOW (ONLINE FIRST)
 function savePendingOrder() {
   if (currentCart.length === 0) {
     return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
@@ -659,12 +654,10 @@ function savePendingOrder() {
     return showAlert('Pesanan ini sudah tersimpan di kantung Pending!', 'Informasi', 'info');
   }
 
+  showLoading('Menyimpan Pesanan Pending...');
+
   var custName = getActiveCustomerName();
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-
-  var loadingOverlay = document.getElementById('gate-loading-overlay');
-  if (loadingOverlay) loadingOverlay.classList.remove('hidden');
-
   var now = new Date();
   var transId = generateTrxId(); 
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
@@ -694,37 +687,37 @@ function savePendingOrder() {
     items: payload.items
   };
 
+  // 1. Simpan ke LocalStorage agar UI langsung ter-update
   activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
-// Cukup fetch sekali untuk simpan data ke server
-  fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8',
-    },
-    body: JSON.stringify({
-      action: 'holdTransaction', // atau 'saveTransaction'
-      payload: payload
+  // 2. Kirim ke Server (Online First)
+  if (isOnline()) {
+    fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'holdTransaction', payload: payload })
     })
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(result) {
-    console.log("Sync Berhasil:", result);
-  })
-  .catch(function(err) {
-    console.error("Gagal Sync ke Sheet, tersimpan di Local Storage:", err);
-  })
-  .finally(function() {
-    // Loading langsung ditutup tanpa nunggu request kedua
-    if (loadingOverlay) loadingOverlay.classList.add('hidden');
-    
+    .then(res => res.json())
+    .catch(err => {
+      console.warn("Gagal terhubung ke Sheet, ditambahkan ke antrean sync offline:", err);
+      queueForSync('holdTransaction', payload);
+    })
+    .finally(() => {
+      hideLoading();
+      clearCart();
+      updateBadges();
+      showDashboard();
+      showAlert('Pesanan dipindahkan ke kantung Pending!', 'Sukses', 'success');
+    });
+  } else {
+    queueForSync('holdTransaction', payload);
+    hideLoading();
     clearCart();
     updateBadges();
     showDashboard();
-
-    showAlert('Berhasil diproses!', 'Sukses', 'success');
-  });
+    showAlert('Pesanan disimpan secara lokal (Offline Mode)!', 'Sukses', 'success');
+  }
 }
 
 function restorePendingOrder(transId) {
@@ -738,18 +731,16 @@ function restorePendingOrder(transId) {
   currentCart = JSON.parse(JSON.stringify(target.items));
   currentRestoredTransId = target.transId;
 
-  lockCartUI();
-  
   setActiveHeaderTab(null);
   hideAllViews();
   document.getElementById('new-order-view').classList.remove('hidden');
   document.getElementById('cart-customer-name').innerText = target.customerName;
 
   updateCartUI();
-  showAlert('Pesanan ' + transId + ' dipulihkan ke keranjang (Di-kunci).', 'Informasi', 'info');
+  showAlert('Pesanan ' + transId + ' dipulihkan ke keranjang.', 'Informasi', 'info');
 }
 
-// PAYMENT FLOW
+// PAYMENT FLOW (ONLINE FIRST)
 function openPaymentModal() {
   if (currentCart.length === 0) {
     return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
@@ -786,7 +777,6 @@ function submitTransaction() {
     return showAlert('Uang pembayaran masih kurang!', 'Gagal Transaksi', 'error');
   }
 
-  // 1. Tutup modal payment & tampilkan global loading universal
   closeModal('payment-modal');
   showLoading('Memproses Pembayaran...');
 
@@ -827,56 +817,67 @@ function submitTransaction() {
     items: payload.items
   };
 
+  // 1. Simpan ke Local Storage untuk UI
   activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+  lastSuccessfulTransaction = orderData;
 
-  fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain;charset=utf-8',
-    },
-    body: JSON.stringify({
-      action: 'saveTransaction',
-      payload: payload
+  // 2. Eksekusi Online First
+  if (isOnline()) {
+    fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'saveTransaction', payload: payload })
     })
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(result) {
-    console.log("Sync Berhasil:", result);
-  })
-  .catch(function(err) {
-    console.error("Gagal Sync ke Sheet:", err);
-  })
-  .finally(function() {
-      // 2. Matikan loading universal
+    .then(res => res.json())
+    .catch(err => {
+      console.warn("Gagal Sync ke Sheet saat ini, dimasukkan ke antrean sync offline:", err);
+      queueForSync('saveTransaction', payload);
+    })
+    .finally(() => {
       hideLoading();
-      
-      // Simpan objek transaksi ke variabel global agar bisa ditarik saat cetak struk
-      lastSuccessfulTransaction = orderData;
-      
       currentCart = [];
       currentRestoredTransId = null;
-      unlockCartUI();
       updateCartUI();
       updateBadges();
       showDashboard();
-  
-      // Panggil fungsi sukses khusus cetak struk
       showSuccessAlertWithPrint('Transaksi a/n ' + custName + ' Berhasil Diproses!');
     });
+  } else {
+    queueForSync('saveTransaction', payload);
+    hideLoading();
+    currentCart = [];
+    currentRestoredTransId = null;
+    updateCartUI();
+    updateBadges();
+    showDashboard();
+    showSuccessAlertWithPrint('Transaksi a/n ' + custName + ' Berhasil (Offline Mode)!');
+  }
 }
 
 function finishOrder(transId) {
   var target = activeTransactions.find(t => t.transId === transId);
   if (target) {
-    target.status = 'SELESAI'; // Ubah status jadi SELESAI
-    // Jangan filter/hapus dari activeTransactions supaya masuk ke kantung Selesai
+    target.status = 'SELESAI';
     localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
     updateBadges();
-    renderKitchenListUI(); // Refresh daftar proses di dapur
+    renderKitchenListUI();
   }
 
-  queueForSync('updateOrderStatus', { transId: transId, status: 'SELESAI' });
+  var payload = { transId: transId, status: 'SELESAI' };
+
+  if (isOnline()) {
+    fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'updateOrderStatus', payload: payload })
+    })
+    .then(res => res.json())
+    .catch(err => queueForSync('updateOrderStatus', payload));
+  } else {
+    queueForSync('updateOrderStatus', payload);
+  }
+
   showAlert('Pesanan ' + transId + ' telah Selesai!', 'Sukses', 'success');
 }
 
@@ -942,7 +943,7 @@ function selectExactCash() {
   selectCashChip(subtotal);
 }
 
-// TAB VIEW NAVIGATION (PENDING & KITCHEN)
+// TAB VIEW NAVIGATION
 function openPendingTab() {
   setActiveHeaderTab('tab-pending');
   hideAllViews();
@@ -1007,9 +1008,9 @@ function renderKitchenListUI() {
       <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: ${t.metode || 'CASH'}</div>
       
       <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
-        ${t.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+        ${(t.items || []).map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
           <span><b>${i.qty}x</b> ${i.nama}</span>
-          <span style="font-size:11px; color:#777;">${i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+          <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
         </div>`).join('')}
       </div>
 
@@ -1020,211 +1021,6 @@ function renderKitchenListUI() {
   `).join('');
 }
 
-// Fungsi Alert Standar (Bawaan untuk Error, Info, Warning) -> TANPA Tombol Cetak Struk
-function showAlert(message, title, type) {
-  var modal = document.getElementById('custom-alert-modal');
-  var titleEl = document.getElementById('alert-modal-title');
-  var msgEl = document.getElementById('alert-modal-message');
-  var iconContainer = document.getElementById('alert-icon-container');
-  var btnContainer = document.getElementById('alert-action-buttons');
-
-  if (titleEl) titleEl.innerText = title || 'Notifikasi';
-  if (msgEl) msgEl.innerText = message;
-
-  // Ikon dinamis berdasarkan tipe
-  if (iconContainer) {
-    if (type === 'error') {
-      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #ffebee; color: #c62828; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✕</div>';
-    } else if (type === 'success') {
-      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
-    } else {
-      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e3f2fd; color: #1565c0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">i</div>';
-    }
-  }
-
-  // RESET TOMBOL: Hanya tombol OK standar untuk alert biasa
-  if (btnContainer) {
-    btnContainer.innerHTML = `
-      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
-    `;
-  }
-
-  if (modal) modal.classList.remove('hidden');
-}
-
-// Fungsi Khusus Sukses Pembayaran -> ADA Tombol Cetak Struk
-function showSuccessAlertWithPrint(message) {
-  var modal = document.getElementById('custom-alert-modal');
-  var titleEl = document.getElementById('alert-modal-title');
-  var msgEl = document.getElementById('alert-modal-message');
-  var iconContainer = document.getElementById('alert-icon-container');
-  var btnContainer = document.getElementById('alert-action-buttons');
-
-  if (titleEl) titleEl.innerText = 'Sukses';
-  if (msgEl) msgEl.innerText = message;
-  
-  if (iconContainer) {
-    iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
-  }
-
-  // Pasang dua tombol: Cetak Struk dan OK
-  if (btnContainer) {
-    btnContainer.innerHTML = `
-      <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; background: #eee; color: #333; border: none; border-radius: 6px; cursor: pointer;">Cetak Struk</button>
-      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800;">OK</button>
-    `;
-  }
-
-  if (modal) modal.classList.remove('hidden');
-}
-
-function closeCustomAlert() {
-  document.getElementById('custom-alert-modal').classList.add('hidden');
-}
-
-function closeModal(id) { 
-  document.getElementById(id).classList.add('hidden'); 
-}
-
-window.addEventListener('beforeunload', function (e) {
-  if (currentCart && currentCart.length > 0) {
-    e.preventDefault();
-    e.returnValue = 'Masih ada transaksi di keranjang! Yakin ingin keluar?';
-    return e.returnValue;
-  }
-});
-
-function generateTrxId() {
-  var now = new Date();
-  var yy = String(now.getFullYear()).slice(-2);
-  var mm = String(now.getMonth() + 1).padStart(2, '0');
-  var dd = String(now.getDate()).padStart(2, '0');
-  var todayStr = yy + mm + dd;
-
-  var lastDate = localStorage.getItem('pos_last_date');
-  var counter = parseInt(localStorage.getItem('pos_trx_counter') || '0', 10);
-
-  if (lastDate !== todayStr) {
-    lastDate = todayStr;
-    counter = 1;
-  } else {
-    counter += 1;
-  }
-
-  localStorage.setItem('pos_last_date', lastDate);
-  localStorage.setItem('pos_trx_counter', counter);
-
-  return 'QSK-' + todayStr + '-' + String(counter).padStart(3, '0');
-}
-
-function showLoading(text) {
-  var loadingText = document.getElementById('global-loading-text');
-  if (loadingText && text) {
-    loadingText.innerText = text;
-  }
-  var loadingModal = document.getElementById('global-loading-modal');
-  if (loadingModal) {
-    loadingModal.classList.remove('hidden');
-  }
-}
-
-function hideLoading() {
-  var loadingModal = document.getElementById('global-loading-modal');
-  if (loadingModal) {
-    loadingModal.classList.add('hidden');
-  }
-}
-
-var lastSuccessfulTransaction = null;
-
-// Modifikasi fungsi submitTransaction bagian sukses/payload untuk menyimpan data terakhir
-// Di dalam .finally() atau saat sukses submit:
-lastSuccessfulTransaction = orderData; // orderData adalah objek payload transaksi yang diproses
-
-// Fungsi menampilkan alert sukses dengan opsi Cetak Struk
-function showSuccessAlertWithPrint(message) {
-  var modal = document.getElementById('custom-alert-modal');
-  var title = document.getElementById('alert-modal-title');
-  var msg = document.getElementById('alert-modal-message');
-  var iconContainer = document.getElementById('alert-icon-container');
-  var btnContainer = document.getElementById('alert-action-buttons');
-
-  if (title) title.innerText = 'Sukses';
-  if (msg) msg.innerText = message;
-  
-  if (iconContainer) {
-    iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
-  }
-
-  // Render tombol OK dan Cetak Struk berdampingan
-  if (btnContainer) {
-    btnContainer.innerHTML = `
-      <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; background: #eee; color: #333; border: none; border-radius: 6px; cursor: pointer;">Cetak Struk</button>
-      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800;">OK</button>
-    `;
-  }
-
-  if (modal) modal.classList.remove('hidden');
-}
-
-// Fungsi Eksekusi Cetak Struk Thermal
-function printReceipt() {
-  if (!lastSuccessfulTransaction) {
-    alert('Data transaksi tidak ditemukan.');
-    return;
-  }
-
-  var t = lastSuccessfulTransaction;
-  
-  // 1. Masukkan data ke elemen cetak (Baris Kasir sudah dihapus)
-  var metaHTML = `
-    <div>ID Pesanan: <b>${t.transId}</b></div>
-    <div>Tanggal: ${t.waktu}</div>
-    <div>Customer: ${t.customerName}</div>
-  `;
-  document.getElementById('receipt-meta').innerHTML = metaHTML;
-
-  var itemsHTML = '';
-  if (t.items && t.items.length > 0) {
-    t.items.forEach(function(item) {
-      var itemTotal = item.harga * item.qty;
-      var notesText = (item.ice || item.sugar) ? `<br><small style="font-size:9px;">(${item.ice || ''} ${item.sugar || ''})</small>` : '';
-      itemsHTML += `
-        <div style="margin-bottom: 4px;">
-          <div><b>${item.nama}</b></div>
-          <div style="display: flex; justify-content: space-between;">
-            <span>${item.qty}x @${item.harga.toLocaleString()}</span>
-            <span><b>Rp ${itemTotal.toLocaleString()}</b></span>
-          </div>
-          ${notesText}
-        </div>
-      `;
-    });
-  }
-  document.getElementById('receipt-items').innerHTML = itemsHTML;
-
-  var totalsHTML = `
-    <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span>Rp ${t.subtotal.toLocaleString()}</span></div>
-    <div style="display: flex; justify-content: space-between;"><span>Metode:</span><span><b>${t.metode}</b></span></div>
-    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 2px;"><span>Total Akhir:</span><span>Rp ${t.totalAkhir.toLocaleString()}</span></div>
-  `;
-  
-  if (t.metode === 'CASH') {
-    totalsHTML += `
-      <div style="display: flex; justify-content: space-between;"><span>Tunai:</span><span>Rp ${(t.cashPaid || 0).toLocaleString()}</span></div>
-      <div style="display: flex; justify-content: space-between;"><span>Kembalian:</span><span>Rp ${(t.kembalian || 0).toLocaleString()}</span></div>
-    `;
-  }
-  document.getElementById('receipt-totals').innerHTML = totalsHTML;
-
-  // 2. Tutup modal lalu cetak via browser print
-  closeCustomAlert();
-  setTimeout(function() {
-    window.print();
-  }, 300);
-}
-
-// TAB VIEW NAVIGATION (COMPLETED / SELESAI)
 function openCompletedOrdersTab() {
   setActiveHeaderTab('tab-completed');
   hideAllViews();
@@ -1237,10 +1033,8 @@ function renderCompletedOrdersUI() {
   var container = document.getElementById('completed-orders-list');
   if (!container) return;
 
-  // Gunakan .trim() dan .toUpperCase() untuk menghindari masalah spasi atau huruf kecil dari Sheet
   var completedItems = activeTransactions.filter(function(t) {
-    var statusClean = String(t.status || '').trim().toUpperCase();
-    return statusClean === 'SELESAI';
+    return String(t.status || '').trim().toUpperCase() === 'SELESAI';
   });
 
   if (completedItems.length === 0) {
@@ -1275,3 +1069,162 @@ function renderCompletedOrdersUI() {
     `;
   }).join('');
 }
+
+// ALERT & NOTIFICATION UTILS
+function showAlert(message, title, type) {
+  var modal = document.getElementById('custom-alert-modal');
+  var titleEl = document.getElementById('alert-modal-title');
+  var msgEl = document.getElementById('alert-modal-message');
+  var iconContainer = document.getElementById('alert-icon-container');
+  var btnContainer = document.getElementById('alert-action-buttons');
+
+  if (titleEl) titleEl.innerText = title || 'Notifikasi';
+  if (msgEl) msgEl.innerText = message;
+
+  if (iconContainer) {
+    if (type === 'error') {
+      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #ffebee; color: #c62828; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✕</div>';
+    } else if (type === 'success') {
+      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
+    } else {
+      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e3f2fd; color: #1565c0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">i</div>';
+    }
+  }
+
+  if (btnContainer) {
+    btnContainer.innerHTML = `
+      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
+    `;
+  }
+
+  if (modal) modal.classList.remove('hidden');
+}
+
+function showSuccessAlertWithPrint(message) {
+  var modal = document.getElementById('custom-alert-modal');
+  var titleEl = document.getElementById('alert-modal-title');
+  var msgEl = document.getElementById('alert-modal-message');
+  var iconContainer = document.getElementById('alert-icon-container');
+  var btnContainer = document.getElementById('alert-action-buttons');
+
+  if (titleEl) titleEl.innerText = 'Sukses';
+  if (msgEl) msgEl.innerText = message;
+  
+  if (iconContainer) {
+    iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
+  }
+
+  if (btnContainer) {
+    btnContainer.innerHTML = `
+      <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; background: #eee; color: #333; border: none; border-radius: 6px; cursor: pointer;">Cetak Struk</button>
+      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800;">OK</button>
+    `;
+  }
+
+  if (modal) modal.classList.remove('hidden');
+}
+
+function printReceipt() {
+  if (!lastSuccessfulTransaction) {
+    alert('Data transaksi tidak ditemukan.');
+    return;
+  }
+
+  var t = lastSuccessfulTransaction;
+  
+  var metaHTML = `
+    <div>ID Pesanan: <b>${t.transId}</b></div>
+    <div>Tanggal: ${t.waktu}</div>
+    <div>Customer: ${t.customerName}</div>
+  `;
+  document.getElementById('receipt-meta').innerHTML = metaHTML;
+
+  var itemsHTML = '';
+  if (t.items && t.items.length > 0) {
+    t.items.forEach(function(item) {
+      var itemTotal = item.harga * item.qty;
+      var notesText = item.notes && item.notes !== 'Normal' ? `<br><small style="font-size:9px;">(${item.notes})</small>` : '';
+      itemsHTML += `
+        <div style="margin-bottom: 4px;">
+          <div><b>${item.nama}</b></div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>${item.qty}x @${item.harga.toLocaleString('id-ID')}</span>
+            <span><b>Rp ${itemTotal.toLocaleString('id-ID')}</b></span>
+          </div>
+          ${notesText}
+        </div>
+      `;
+    });
+  }
+  document.getElementById('receipt-items').innerHTML = itemsHTML;
+
+  var totalsHTML = `
+    <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span>Rp ${t.subtotal.toLocaleString('id-ID')}</span></div>
+    <div style="display: flex; justify-content: space-between;"><span>Metode:</span><span><b>${t.metode}</b></span></div>
+    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 2px;"><span>Total Akhir:</span><span>Rp ${t.totalAkhir.toLocaleString('id-ID')}</span></div>
+  `;
+  
+  if (t.metode === 'CASH') {
+    totalsHTML += `
+      <div style="display: flex; justify-content: space-between;"><span>Tunai:</span><span>Rp ${(t.cashPaid || 0).toLocaleString('id-ID')}</span></div>
+      <div style="display: flex; justify-content: space-between;"><span>Kembalian:</span><span>Rp ${(t.kembalian || 0).toLocaleString('id-ID')}</span></div>
+    `;
+  }
+  document.getElementById('receipt-totals').innerHTML = totalsHTML;
+
+  closeCustomAlert();
+  setTimeout(function() {
+    window.print();
+  }, 300);
+}
+
+function closeCustomAlert() {
+  document.getElementById('custom-alert-modal').classList.add('hidden');
+}
+
+function closeModal(id) { 
+  document.getElementById(id).classList.add('hidden'); 
+}
+
+function showLoading(text) {
+  var loadingText = document.getElementById('global-loading-text');
+  if (loadingText && text) loadingText.innerText = text;
+  var loadingModal = document.getElementById('global-loading-modal');
+  if (loadingModal) loadingModal.classList.remove('hidden');
+}
+
+function hideLoading() {
+  var loadingModal = document.getElementById('global-loading-modal');
+  if (loadingModal) loadingModal.classList.add('hidden');
+}
+
+function generateTrxId() {
+  var now = new Date();
+  var yy = String(now.getFullYear()).slice(-2);
+  var mm = String(now.getMonth() + 1).padStart(2, '0');
+  var dd = String(now.getDate()).padStart(2, '0');
+  var todayStr = yy + mm + dd;
+
+  var lastDate = localStorage.getItem('pos_last_date');
+  var counter = parseInt(localStorage.getItem('pos_trx_counter') || '0', 10);
+
+  if (lastDate !== todayStr) {
+    lastDate = todayStr;
+    counter = 1;
+  } else {
+    counter += 1;
+  }
+
+  localStorage.setItem('pos_last_date', lastDate);
+  localStorage.setItem('pos_trx_counter', counter);
+
+  return 'QSK-' + todayStr + '-' + String(counter).padStart(3, '0');
+}
+
+window.addEventListener('beforeunload', function (e) {
+  if (currentCart && currentCart.length > 0) {
+    e.preventDefault();
+    e.returnValue = 'Masih ada transaksi di keranjang! Yakin ingin keluar?';
+    return e.returnValue;
+  }
+});
