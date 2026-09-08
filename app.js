@@ -1172,9 +1172,9 @@ function printReceipt() {
   
   // 1. Masukkan data ke elemen cetak (Baris Kasir sudah dihapus)
   var metaHTML = `
-    <div>No: <b>${t.transId}</b></div>
-    <div>Waktu: ${t.waktu}</div>
-    <div>Pelanggan: ${t.customerName} (${t.jenisPelanggan})</div>
+    <div>ID Pesanan: <b>${t.transId}</b></div>
+    <div>Tanggal: ${t.waktu}</div>
+    <div>Customer: ${t.customerName} (${t.jenisPelanggan})</div>
   `;
   document.getElementById('receipt-meta').innerHTML = metaHTML;
 
