@@ -1033,3 +1033,23 @@ header h1, .brand-title, .header-brand {
     box-sizing: border-box !important;
   }
 }
+
+@media screen and (max-width: 768px) {
+  /* PASTIIN KONTINER TOMBOL PENUHIN LAYAR */
+  .cart-actions {
+    display: flex !important;
+    width: 100% !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* BIKIN KETIGA TOMBOL BAGI LAPANGAN SAMA RATA */
+  .cart-actions .btn {
+    flex: 1 !important;
+    width: 100% !important;
+    padding: 10px 4px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
