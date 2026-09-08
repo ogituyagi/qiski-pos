@@ -792,16 +792,34 @@ function submitTransaction() {
     items: payload.items
   };
 
+  // Update UI lokal
   if (existingIdx >= 0) {
     activeTransactions[existingIdx] = orderData;
   } else {
     activeTransactions.push(orderData);
   }
-
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-  queueForSync('saveTransaction', payload);
 
-  setTimeout(function() {
+  // TERBANGKAN LANGSUNG KE GOOGLE SHEET
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8', // Bypass CORS preflight browser
+    },
+    body: JSON.stringify({
+      action: 'saveTransaction',
+      payload: payload
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(result) {
+    console.log("Sync Sheet Berhasil:", result);
+  })
+  .catch(function(err) {
+    console.error("Gagal Sync ke Sheet, data tersimpan di Local Storage:", err);
+  })
+  .finally(function() {
+    // Tutup overlay & reset cart setelah fetch dipicu
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
     closeModal('payment-modal');
     
@@ -813,7 +831,7 @@ function submitTransaction() {
     showDashboard();
 
     showAlert('Transaksi a/n ' + custName + ' Berhasil Diproses!', 'Sukses', 'success');
-  }, 400);
+  });
 }
 
 function finishOrder(transId) {
