@@ -33,12 +33,38 @@ document.addEventListener("DOMContentLoaded", function() {
   checkExistingSession();
   loadDataFromSheet();
   
-  // Event Sync Saat Online Kembali
+  // Set status indikator awal saat aplikasi dimuat
+  updateOnlineStatusUI();
+
+  // Event saat koneksi internet terhubung kembali
   window.addEventListener('online', function() {
+    updateOnlineStatusUI();
     showAlert('Koneksi internet kembali! Mengirim data antrean...', 'Online', 'info');
     processSyncQueue();
   });
+
+  // Event saat koneksi internet terputus
+  window.addEventListener('offline', function() {
+    updateOnlineStatusUI();
+    showAlert('Koneksi terputus! Menggunakan mode offline (Local Storage).', 'Offline', 'warning');
+  });
 });
+
+// Helper untuk memperbarui tampilan indikator di header HTML
+function updateOnlineStatusUI() {
+  var dot = document.getElementById('status-dot');
+  var text = document.getElementById('status-text');
+  
+  if (!dot || !text) return;
+
+  if (navigator.onLine) {
+    dot.style.background = '#4caf50'; // Warna Hijau
+    text.innerText = 'Online First';
+  } else {
+    dot.style.background = '#f44336'; // Warna Merah
+    text.innerText = 'Offline (Local)';
+  }
+}
 
 function checkExistingSession() {
   var savedSession = localStorage.getItem('qiski_session');
