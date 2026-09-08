@@ -1053,3 +1053,11 @@ header h1, .brand-title, .header-brand {
     text-align: center !important;
   }
 }
+
+@media screen and (max-width: 768px) {
+  /* PERBESAR LOGO DI HEADER MOBILE */
+  .header-brand img {
+    width: 62px !important;  /* Naik dari 45px */
+    height: 62px !important;
+  }
+}
