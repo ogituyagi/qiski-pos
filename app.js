@@ -842,18 +842,22 @@ function submitTransaction() {
     console.error("Gagal Sync ke Sheet:", err);
   })
   .finally(function() {
-    // 2. Matikan loading universal
-    hideLoading();
-    
-    currentCart = [];
-    currentRestoredTransId = null;
-    unlockCartUI();
-    updateCartUI();
-    updateBadges();
-    showDashboard();
-
-    showAlert('Transaksi a/n ' + custName + ' Berhasil Diproses!', 'Sukses', 'success');
-  });
+      // 2. Matikan loading universal
+      hideLoading();
+      
+      // Simpan objek transaksi ke variabel global agar bisa ditarik saat cetak struk
+      lastSuccessfulTransaction = orderData;
+      
+      currentCart = [];
+      currentRestoredTransId = null;
+      unlockCartUI();
+      updateCartUI();
+      updateBadges();
+      showDashboard();
+  
+      // Panggil fungsi sukses khusus cetak struk
+      showSuccessAlertWithPrint('Transaksi a/n ' + custName + ' Berhasil Diproses!');
+    });
 }
 
 function finishOrder(transId) {
