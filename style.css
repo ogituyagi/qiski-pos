@@ -809,11 +809,11 @@ header h1, .brand-title, .header-brand {
 }
 
 /* ==========================================
-   RESPONSIVE DESIGN FOR MOBILE (MAX-WIDTH: 768px)
+   RESPONSIVE DESIGN FOR MOBILE (FIXED & OPTIMIZED)
    ========================================== */
 @media screen and (max-width: 768px) {
   
-  /* 1. HEADER LAYOUT (KIRI: STATUS, TENGAH: LOGO, KANAN: USER) */
+  /* 1. HEADER LAYOUT MOBILE */
   header {
     display: flex !important;
     justify-content: space-between !important;
@@ -822,18 +822,12 @@ header h1, .brand-title, .header-brand {
     position: relative !important;
   }
 
-  /* Status Online di Ujung Kiri (Order 1) */
   #connection-status-indicator {
     order: 1 !important;
     padding: 3px 8px !important;
     font-size: 9px !important;
   }
 
-  #status-text {
-    font-size: 9px !important;
-  }
-
-  /* Logo Brand Presisi di Tengah Layar (Order 2) */
   .header-brand {
     order: 2 !important;
     position: absolute !important;
@@ -846,65 +840,67 @@ header h1, .brand-title, .header-brand {
     height: 45px !important;
   }
 
-  /* User & Logout di Ujung Kanan (Order 3) */
   .header-user-section {
     order: 3 !important;
   }
 
-  /* Sembunyikan Tab Atas Desktop (Pindah ke Bottom Nav) */
   header .header-tabs {
     display: none !important; 
   }
 
-  /* 2. LAYOUT POS (KELOLA KATALOG & KERANJANG) */
+  /* 2. LAYOUT POS & KATALOG (FIXED HALAMAN KETUTUP) */
   .pos-layout {
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
     height: auto !important;
-    padding-bottom: 80px; /* Space agar tidak tertutup bottom bar */
+    padding-bottom: 110px !important; /* Biar catalog ga ketutup floating bar */
   }
 
-  /* Section Katalog Penuhi Layar */
   .menu-section {
     width: 100% !important;
     max-height: none !important;
     overflow-y: visible !important;
   }
 
-  /* Grid Katalog 2 Kolom di HP */
   .menu-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
   }
 
-  /* Floating Bar Keranjang di Paling Bawah */
+  /* FIX FLOATING BAR KERANJANG (TIDAK LAGI NUTUPIN KATALOG) */
   .cart-section {
-    position: fixed;
-    bottom: 60px; /* Di atas Bottom Navigation Bar */
-    left: 0;
-    right: 0;
+    position: fixed !important;
+    bottom: 60px !important; /* Pas di atas Bottom Navigation Bar */
+    left: 0 !important;
+    right: 0 !important;
     width: 100% !important;
-    z-index: 990;
-    background: #fff;
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
-    border-radius: 16px 16px 0 0;
-    transition: all 0.3s ease;
+    height: auto !important; /* PENTING: Bikin tinggi menyesuaikan isi bar saja */
+    z-index: 990 !important;
+    background: #fff !important;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.15) !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 10px 14px !important;
+    box-sizing: border-box !important;
   }
 
-  /* Sembunyikan item keranjang di floating mode standar */
+  .cart-section .cart-header,
   .cart-section .cart-items {
-    display: none;
-    max-height: 50vh;
-    overflow-y: auto;
+    display: none !important; /* Sembunyikan item keranjang di mode ringkas */
   }
 
-  /* Saat Keranjang Di-expand di Mobile */
+  .cart-footer {
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Mode Keranjang Di-expand/Buka Penuh */
   .cart-section.mobile-expanded {
     bottom: 0 !important;
     height: 80vh !important;
-    border-radius: 20px 20px 0 0;
+    border-radius: 20px 20px 0 0 !important;
   }
 
+  .cart-section.mobile-expanded .cart-header,
   .cart-section.mobile-expanded .cart-items {
     display: block !important;
   }
@@ -912,17 +908,17 @@ header h1, .brand-title, .header-brand {
   /* 3. BOTTOM NAVIGATION BAR */
   .bottom-nav-bar {
     display: flex !important;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px;
-    background: #ffffff;
-    border-top: 1px solid #eee;
-    z-index: 1000;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 60px !important;
+    background: #ffffff !important;
+    border-top: 1px solid #eee !important;
+    z-index: 1000 !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
   }
 
   .bottom-nav-item {
@@ -951,7 +947,6 @@ header h1, .brand-title, .header-brand {
     margin-bottom: 2px;
   }
 
-  /* Badge angka di bottom nav */
   .bottom-nav-item .badge-count {
     position: absolute;
     top: 4px;
@@ -963,42 +958,34 @@ header h1, .brand-title, .header-brand {
     border-radius: 10px;
   }
 
-  /* 4. GRID KANTUNG JADI 1 KOLOM */
+  /* 4. GRID KANTUNG 1 KOLOM */
   .orders-grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* 5. FIX OVERLAY & MODAL BOTTOM SHEET DI MOBILE */
+  /* 5. FIX MODAL AMAN DARI KEYBOARD HP */
   .modal-overlay {
-    z-index: 99999 !important; /* Di atas Bottom Nav */
-    align-items: flex-end !important; /* Posisi nempel bawah */
-    padding: 0 !important;
+    z-index: 99999 !important;
+    align-items: center !important; /* Ubah ke center agar modal terdorong ke tengah */
+    padding: 15px !important;
+    box-sizing: border-box !important;
   }
 
   .modal-content {
     width: 100% !important;
     max-width: 100% !important;
-    border-radius: 20px 20px 0 0 !important;
+    border-radius: 16px !important;
     position: relative !important;
-    bottom: 0 !important;
-    margin: 0 !important;
+    margin: auto !important;
     
-    /* Mencegah modal terpotong & mempermudah scroll */
-    max-height: 85vh !important;
+    /* Mencegah modal terpotong saat keyboard aktif */
+    max-height: 80vh !important;
     overflow-y: auto !important;
-    padding: 20px 20px 40px 20px !important;
+    padding: 20px !important;
     box-sizing: border-box !important;
-    
-    animation: slideUp 0.25s ease-out;
-  }
-
-  @keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
   }
 }
 
-/* Sembunyikan Bottom Nav secara default di Desktop */
 .bottom-nav-bar {
   display: none;
 }
