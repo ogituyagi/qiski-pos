@@ -492,40 +492,87 @@ function savePendingOrder() {
 
 function openPaymentModal() {
   if (currentCart.length === 0) return alert('Keranjang kosong!');
+  
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   document.getElementById('pay-total-akhir').value = 'Rp ' + subtotal.toLocaleString('id-ID');
-  document.getElementById('pay-cash-paid').value = '';
-  document.getElementById('pay-change').value = 'Rp 0';
+  
+  // Reset input uang diterima & kembalian
+  var cashInput = document.getElementById('pay-cash-paid');
+  var changeInput = document.getElementById('pay-change');
+  if (cashInput) cashInput.value = '';
+  if (changeInput) {
+    changeInput.value = 'Rp 0';
+    changeInput.style.color = 'var(--text-dark)';
+  }
+
+  // Set default metode ke CASH & tampilkan grup inputnya
+  var methodSelect = document.getElementById('pay-method');
+  if (methodSelect) {
+    methodSelect.value = 'CASH';
+    togglePayMethod();
+  }
+
   document.getElementById('payment-modal').classList.remove('hidden');
 }
 
 function togglePayMethod() {
   var method = document.getElementById('pay-method').value;
-  if (method === 'QRIS') document.getElementById('cash-group').classList.add('hidden');
-  else document.getElementById('cash-group').classList.remove('hidden');
+  var cashGroup = document.getElementById('cash-group');
+  
+  if (method === 'QRIS') {
+    cashGroup.classList.add('hidden');
+  } else {
+    cashGroup.classList.remove('hidden');
+    // Re-kalkulasi saat switch kembali ke CASH
+    calculatePayment();
+  }
 }
 
 function calculatePayment() {
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   var method = document.getElementById('pay-method').value;
+  
   if (method === 'CASH') {
-    var cashPaid = Number(document.getElementById('pay-cash-paid').value) || 0;
+    // Ambil nilai mentah & buang format string 'Rp' dan titik
+    var rawPaid = document.getElementById('pay-cash-paid').value.replace(/[^0-9]/g, '');
+    var cashPaid = Number(rawPaid) || 0;
     var change = cashPaid - subtotal;
-    document.getElementById('pay-change').value = change >= 0 ? 'Rp ' + change.toLocaleString('id-ID') : 'Uang Kurang!';
+    var changeElem = document.getElementById('pay-change');
+
+    if (cashPaid === 0) {
+      changeElem.value = 'Rp 0';
+      changeElem.style.color = 'var(--text-dark)';
+    } else if (change < 0) {
+      changeElem.value = 'Uang Kurang!';
+      changeElem.style.color = '#e53935'; // Merah jika kurang
+    } else {
+      changeElem.value = 'Rp ' + change.toLocaleString('id-ID');
+      changeElem.style.color = '#2e7d32'; // Hijau jika pas/ada kembalian
+    }
   }
 }
 
 function submitTransaction() {
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   var method = document.getElementById('pay-method').value;
-  var cashPaid = method === 'CASH' ? Number(document.getElementById('pay-cash-paid').value) || 0 : subtotal;
+  
+  // Bersihkan format Rp sebelum dijadikan Angka untuk dikirim ke backend
+  var rawPaid = document.getElementById('pay-cash-paid').value.replace(/[^0-9]/g, '');
+  var cashPaid = method === 'CASH' ? (Number(rawPaid) || 0) : subtotal;
   var custName = getActiveCustomerName();
 
-  if (method === 'CASH' && cashPaid < subtotal) return alert('Uang pembayaran masih kurang!');
+  if (method === 'CASH' && cashPaid < subtotal) {
+    return alert('Uang pembayaran masih kurang!');
+  }
 
   var payload = {
-    kasirId: currentUser ? currentUser.id : 'KASIR-01', customerName: custName, subtotal: subtotal, totalAkhir: subtotal,
-    metode: method, cashPaid: cashPaid, items: currentCart
+    kasirId: currentUser ? currentUser.id : 'KASIR-01', 
+    customerName: custName, 
+    subtotal: subtotal, 
+    totalAkhir: subtotal,
+    metode: method, 
+    cashPaid: cashPaid, 
+    items: currentCart
   };
 
   fetch(API_URL, {
@@ -538,7 +585,9 @@ function submitTransaction() {
       alert('Transaksi a/n ' + custName + ' Berhasil!');
       closeModal('payment-modal');
       showDashboard();
-    } else { alert('Gagal simpan: ' + res.message); }
+    } else { 
+      alert('Gagal simpan: ' + res.message); 
+    }
   });
 }
 
