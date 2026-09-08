@@ -4,15 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>QISKI JUICE</title>
-  <!-- Font Awesome dihapus jika hanya memakai SVG inline untuk efisiensi loading -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <!-- PAGE 1: LOGIN -->
-<div id="login-page">
+  <div id="login-page">
     <div class="login-card">
-      <!-- LOGO BRAND (GANTI TEKS H2) -->
       <div style="text-align: center; margin-bottom: 8px;">
         <img src="" id="login-brand-logo" alt="Qiski Juice Logo" style="max-width: 160px; height: auto; object-fit: contain;">
       </div>
@@ -85,7 +83,112 @@
       </div>
     </header>
 
-    <!-- BOTTOM NAVIGATION BAR (KHUSUS MOBILE) -->
+    <div class="view-content">
+      
+      <!-- VIEW 1: HOME DASHBOARD MENU -->
+      <div id="home-dashboard-view">
+        <div style="text-align: center; margin-top: 20px;"></div>
+
+        <div class="dashboard-grid">
+          <div class="dash-card" onclick="openNewOrderFlow()">
+            <div class="dash-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <h3>Pesanan Baru</h3>
+          </div>
+
+          <div class="dash-card" onclick="openDummyMenu('Rekap Penjualan Shift')">
+            <div class="dash-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <h3>Daftar Pesanan</h3>
+          </div>
+
+          <div class="dash-card" onclick="openDummyMenu('Rekap Penjualan Shift')">
+            <div class="dash-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <h3>Rekap Pesanan</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: FLOW PESANAN BARU -->
+      <div id="new-order-view" class="hidden" style="height: 100%;">
+        <div class="pos-layout">
+          <div class="menu-section">
+            <div class="search-container">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="menu-search-input" placeholder="Cari menu jus / minuman..." oninput="filterCatalogMenu()">
+            </div>
+            <div id="catalog-container"></div>
+          </div>
+
+          <!-- KERANJANG BELANJA (INTERAKTIF BOTTOM SHEET MOBILE) -->
+          <div class="cart-section" onclick="handleCartClick(event)">
+            <div class="cart-mobile-handle" onclick="toggleMobileCart()">
+              <span class="handle-bar"></span>
+            </div>
+
+            <div class="cart-header" onclick="toggleMobileCart()" style="cursor: pointer;">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span>Pesanan: <strong id="cart-customer-name">Umum</strong></span>
+              </h3>
+            </div>
+
+            <div class="cart-items" id="cart-items">
+              <p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:12px; font-weight: 700;">Keranjang masih kosong</p>
+            </div>
+
+            <div class="cart-footer">
+              <div class="cart-total">
+                <label>Total</label>
+                <span id="cart-total-val" style="font-weight: 900;">Rp 0</span>
+              </div>
+              <div class="cart-actions">
+                <button type="button" id="btnRed" onclick="handleRedButton()" class="btn btn-secondary">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                  <span id="btnRedText">Batal</span>
+                </button>
+              
+                <button type="button" onclick="savePendingOrder()" class="btn btn-warning">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Pending
+                </button>
+              
+                <button type="button" onclick="openPaymentModal()" class="btn btn-success">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="6" y1="16" x2="12" y2="16"/><circle cx="16" cy="12" r="2"/></svg>
+                  Bayar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: KANTUNG PENDING -->
+      <div id="pending-orders-view" class="view-section hidden" style="padding: 20px;">
+        <div id="pending-orders-list" class="orders-grid"></div>
+      </div>
+
+      <!-- VIEW 4: ANTRIAN PROSES -->
+      <div id="kitchen-orders-view" class="view-section hidden" style="padding: 20px;">
+        <div id="kitchen-orders-list" class="orders-grid"></div>
+      </div>
+
+      <!-- VIEW 5: TAB KANTUNG SELESAI -->
+      <div id="completed-orders-view" class="view-section hidden" style="padding: 20px;">
+        <div id="completed-orders-list" class="orders-grid"></div>
+      </div>
+            
+    </div>
+  </div> <!-- PENUTUP APP-PAGE -->
+
+  <!-- BOTTOM NAVIGATION BAR (POSISI SEJAJAR DI LUAR APP-PAGE) -->
   <div class="bottom-nav-bar">
     <button type="button" class="bottom-nav-item active" id="mobile-tab-home" onclick="showDashboard()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -107,343 +210,16 @@
       <span id="mobile-badge-selesai" class="badge-count" style="display: none;">0</span>
     </button>
   </div>
-    
-<div class="view-content">
-      
-      <!-- VIEW 1: HOME DASHBOARD MENU -->
-      <div id="home-dashboard-view">
-        <div style="text-align: center; margin-top: 20px;">
-          <!-- <h2 style="font-size: 22px; font-weight: 900; color: var(--primary-pink);">Menu Utama</h2>
-          <p style="color: var(--text-muted); font-size: 13px; font-weight: 500; margin-top: 4px;">Pilih salah satu menu operasional kasir di bawah ini</p> -->
-        </div>
 
-        <div class="dashboard-grid">
-          <div class="dash-card" onclick="openNewOrderFlow()">
-            <div class="dash-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            </div>
-            <h3>Pesanan Baru</h3>
-            <!-- <p>Buat transaksi penjualan jus baru untuk pelanggan</p> -->
-          </div>
+  <!-- ALL MODALS BELOW -->
+  <div id="custom-modal" class="modal-overlay hidden">...</div>
+  <div id="payment-modal" class="modal-overlay hidden">...</div>
+  <div id="customer-gate-modal" class="modal-overlay hidden">...</div>
+  <div id="add-member-modal" class="modal-overlay hidden">...</div>
+  <div id="custom-alert-modal" class="modal-overlay hidden" style="z-index: 9999;">...</div>
+  <div id="receipt-print-area" class="hidden-print">...</div>
+  <div id="global-loading-modal" class="modal-overlay hidden" style="z-index: 99999; background: rgba(0, 0, 0, 0.5);">...</div>
 
-          <div class="dash-card" onclick="openDummyMenu('Rekap Penjualan Shift')">
-            <div class="dash-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            </div>
-            <h3>Daftar Pesanan</h3>
-            <!-- <p>Lihat antrian Kantung Pending dan proses Bar</p> -->
-          </div>
-
-          <div class="dash-card" onclick="openDummyMenu('Rekap Penjualan Shift')">
-            <div class="dash-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            </div>
-            <h3>Rekap Pesanan</h3>
-            <!-- <p>Ringkasan total omzet tunai dan QRIS hari ini</p> -->
-          </div>
-        </div>
-      </div>
-
-      <!-- VIEW 2: FLOW PESANAN BARU -->
-      <div id="new-order-view" class="hidden" style="height: 100%;">
-        <div class="pos-layout">
-          <div class="menu-section">
-            <div class="search-container">
-              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="menu-search-input" placeholder="Cari menu jus / minuman..." oninput="filterCatalogMenu()">
-            </div>
-            <div id="catalog-container"></div>
-          </div>
-
-          <!-- KERANJANG BELANJA (INTERAKTIF BOTTOM SHEET MOBILE) -->
-<div class="cart-section" onclick="handleCartClick(event)">
-  <!-- HANDLE BAR & HEADER DIBERI TRIGGER TUTUP/BUKA DI AREA ATAS -->
-  <div class="cart-mobile-handle" onclick="toggleMobileCart()">
-    <span class="handle-bar"></span>
-  </div>
-
-  <div class="cart-header" onclick="toggleMobileCart()" style="cursor: pointer;">
-    <h3>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-      </svg>
-      <span>Pesanan: <strong id="cart-customer-name">Umum</strong></span>
-    </h3>
-  </div>
-
-  <div class="cart-items" id="cart-items">
-    <p style="color: var(--text-muted); text-align: center; margin-top: 40px; font-size:12px; font-weight: 700;">Keranjang masih kosong</p>
-  </div>
-
-  <!-- FOOTER DIBUAT INDEPENDEN (TANPA TRIGGER TOGGLE AGAR TOMBOL TETAP AMAN DITEKAN) -->
-  <div class="cart-footer">
-    <div class="cart-total">
-      <label>Total</label>
-      <span id="cart-total-val" style="font-weight: 900;">Rp 0</span>
-    </div>
-    <div class="cart-actions">
-      <button type="button" id="btnRed" onclick="handleRedButton()" class="btn btn-secondary">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-        <span id="btnRedText">Batal</span>
-      </button>
-    
-      <button type="button" onclick="savePendingOrder()" class="btn btn-warning">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Pending
-      </button>
-    
-      <button type="button" onclick="openPaymentModal()" class="btn btn-success">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="6" y1="16" x2="12" y2="16"/><circle cx="16" cy="12" r="2"/></svg>
-        Bayar
-      </button>
-    </div>
-  </div>
-</div>
-        </div>
-      </div>
-
-      <!-- VIEW 3: KANTUNG PENDING -->
-      <div id="pending-orders-view" class="view-section hidden" style="padding: 20px;">
-        <!-- <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <h2 style="font-size: 18px; font-weight: 700; color: #333;">Kantung Pending</h2>
-          <button type="button" onclick="showDashboard()" class="btn" style="background: #eee; color: #333; padding: 6px 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">← Kembali</button>
-        </div> -->
-        <div id="pending-orders-list" class="orders-grid"></div>
-      </div>
-
-      <!-- VIEW 4: ANTRIAN PROSES -->
-      <div id="kitchen-orders-view" class="view-section hidden" style="padding: 20px;">
-        <!-- <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <h2 style="font-size: 18px; font-weight: 700; color: #333;">Antrian Proses (Dapur/Bar)</h2>
-          <button type="button" onclick="showDashboard()" class="btn" style="background: #eee; color: #333; padding: 6px 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">← Kembali</button>
-        </div> -->
-        <div id="kitchen-orders-list" class="orders-grid"></div>
-      </div>
-
-      <!-- VIEW 5: TAB KANTUNG SELESAI -->
-      <div id="completed-orders-view" class="view-section hidden" style="padding: 20px;">
-        <!-- <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-          <h2 style="font-size: 18px; font-weight: 700; color: #333;">Pesanan Selesai Hari Ini</h2>
-          <button type="button" onclick="showDashboard()" class="btn" style="background: #eee; color: #333; padding: 6px 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">← Kembali</button>
-        </div> -->
-        <div id="completed-orders-list" class="orders-grid"></div>
-      </div>
-            
-    </div>
-  </div>
-
-  <!-- MODAL CUSTOM MODIFIER -->
-  <div id="custom-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="custom-modal-title">Custom Order</h3>
-        <button type="button" onclick="closeModal('custom-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
-      </div>
-      <div class="form-group">
-        <label>Level Es (Ice):</label>
-        <div class="chip-group" id="ice-chips">
-          <div class="chip selected" onclick="selectChip(this, 'ice', 'Normal Ice')">Normal Ice</div>
-          <div class="chip" onclick="selectChip(this, 'ice', 'Less Ice')">Less Ice</div>
-          <div class="chip" onclick="selectChip(this, 'ice', 'No Ice')">No Ice</div>
-        </div>
-      </div>
-      <div class="form-group" style="margin-top:14px;">
-        <label>Level Gula (Sugar):</label>
-        <div class="chip-group" id="sugar-chips">
-          <div class="chip selected" onclick="selectChip(this, 'sugar', 'Normal Sugar')">Normal Sugar</div>
-          <div class="chip" onclick="selectChip(this, 'sugar', 'Less Sugar')">Less Sugar</div>
-          <div class="chip" onclick="selectChip(this, 'sugar', 'No Sugar')">No Sugar</div>
-        </div>
-      </div>
-      <div class="form-group hidden" style="margin-top:14px;" id="mode-hold-group">
-        <label>Jumlah Pesanan Custom (Pcs):</label>
-        <div style="display:flex; align-items:center; gap:14px; margin-top:8px;">
-          <button type="button" class="btn-qty" onclick="adjustHoldQty(-1)" style="width:36px; height:36px; font-size:16px;">-</button>
-          <span id="hold-qty-val" style="font-weight:900; font-size:18px;">1</span>
-          <button type="button" class="btn-qty" onclick="adjustHoldQty(1)" style="width:36px; height:36px; font-size:16px;">+</button>
-        </div>
-      </div>
-      <div class="form-group hidden" style="margin-top:14px;" id="mode-cart-group">
-        <label for="custom-apply-qty">Terapkan catatan ini ke berapa item?</label>
-        <select id="custom-apply-qty" style="padding:8px; font-size:13px; margin-top:6px; font-weight: 700;"></select>
-      </div>
-      <button type="button" onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 12px;">SIMPAN KE KERANJANG</button>
-    </div>
-  </div>
-
-<!-- MODAL PAYMENT -->
-<div id="payment-modal" class="modal-overlay hidden">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Pembayaran Transaksi</h3>
-      <button type="button" onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
-    </div>
-    
-    <div class="form-group">
-      <label for="pay-total-akhir">Total Akhir</label>
-      <input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:900; color:var(--primary-orange-dark); font-size:18px;">
-    </div>
-
-    <!-- METODE PEMBAYARAN: MODEL CHIP BUTTON -->
-    <div class="form-group" style="margin-top: 14px;">
-      <label>Metode Pembayaran</label>
-      <input type="hidden" id="pay-method" value="CASH">
-      <div class="chip-group" style="display: flex; gap: 10px; margin-top: 6px;">
-        <div id="pay-chip-cash" class="chip selected" onclick="selectPayMethodChip('CASH')" style="flex: 1; text-align: center; padding: 10px; font-weight: 700; cursor: pointer;">
-          Tunai
-        </div>
-        <div id="pay-chip-qris" class="chip" onclick="selectPayMethodChip('QRIS')" style="flex: 1; text-align: center; padding: 10px; font-weight: 700; cursor: pointer;">
-          QRIS
-        </div>
-      </div>
-    </div>
-
-    <div id="cash-group">
-      <div class="form-group" style="margin-top: 10px; margin-bottom: 6px;">
-        <label for="pay-cash-paid">Uang Diterima</label>
-        <input type="text" id="pay-cash-paid" oninput="formatCashInput(this)" placeholder="Rp 0">
-      </div>
-      <div class="cash-chips-container">
-        <button type="button" class="cash-chip" onclick="selectCashChip(10000)">10rb</button>
-        <button type="button" class="cash-chip" onclick="selectCashChip(20000)">20rb</button>
-        <button type="button" class="cash-chip" onclick="selectCashChip(50000)">50rb</button>
-        <button type="button" class="cash-chip" onclick="selectCashChip(100000)">100rb</button>
-        <button type="button" class="cash-chip chip-exact" onclick="selectExactCash()">Uang Pas</button>
-      </div>
-      <div class="form-group">
-        <label for="pay-change">Kembalian</label>
-        <input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);" value="Rp 0">
-      </div>
-    </div>
-
-    <button type="button" onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">SUBMIT</button>
-  </div>
-</div>
-
-  <!-- MODAL INITIAL CUSTOMER GATEWAY -->
-  <div id="customer-gate-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width: 420px; padding: 24px;">
-      <div id="gate-loading-overlay" class="modal-loading-overlay hidden">
-        <div class="pulsing-dots"><div></div><div></div><div></div></div>
-        <div class="loading-text">Memuat Daftar Menu...</div>
-      </div>
-      <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 16px;">
-        <h3 style="font-size: 18px; font-weight: 800; color: var(--primary-pink); margin: 0;">Input Data Pemesan</h3>
-        <button type="button" onclick="closeModal('customer-gate-modal')" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✖</button>
-      </div>
-      <!-- <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 18px; font-weight: 600;">Silakan tentukan tipe pelanggan sebelum memulai transaksi baru.</p> -->
-      <div class="radio-chip-group" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: none; padding: 0;">
-        <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Umum
-        </div>
-        <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 1 0 7.75"/></svg>
-          Member Qiski
-        </div>
-      </div>
-      <div id="input-nama-container" style="margin-bottom: 20px;">
-        <label for="cust-name" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama:</label>
-        <input type="text" id="cust-name" placeholder="Ketik Nama Customer" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box;">
-      </div>
-      <div id="select-member-container" class="hidden" style="position: relative; margin-bottom: 20px;">
-        <label for="member-search-input" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Cari Member:</label>
-        <input type="text" id="member-search-input" placeholder="Ketik Nama Member / No. HP" onfocus="showMemberDropdown()" oninput="filterMemberList()" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box; background: #fff;">
-        <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
-          <div onclick="openAddMemberModal()" style="padding: 10px 14px; cursor: pointer; font-weight: 800; font-size: 12px; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Tambah Member Baru
-          </div>
-          <div id="member-items-list"></div>
-        </div>
-      </div>
-      <button type="button" onclick="confirmCustomerAndProceed()" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800;">MULAI PEMESANAN ➔</button>
-    </div>
-  </div>
-
-  <!-- MODAL TAMBAH MEMBER BARU -->
-  <div id="add-member-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Pendaftaran Member Baru</h3>
-        <button type="button" onclick="closeModal('add-member-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
-      </div>
-      <form onsubmit="handleSaveNewMember(event)">
-        <div class="form-group">
-          <label for="new-member-name">Nama Lengkap</label>
-          <input type="text" id="new-member-name" placeholder="Masukan nama lengkap..." required>
-        </div>
-        <div class="form-group">
-          <label for="new-member-phone">Nomor HP (WhatsApp)</label>
-          <input type="tel" id="new-member-phone" placeholder="Contoh: 08123456789" required>
-        </div>
-        <div class="form-group">
-          <label for="new-member-dob">Tanggal Lahir</label>
-          <input type="date" id="new-member-dob" required>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">SIMPAN MEMBER</button>
-      </form>
-    </div>
-  </div>
-
-<!-- MODAL ALERT YANG DIMODIFIKASI AGAR ADA TOMBOL CETAK -->
-<div id="custom-alert-modal" class="modal-overlay hidden" style="z-index: 9999;">
-  <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
-    <div id="alert-icon-container" style="margin-bottom: 12px;"></div>
-    <h3 id="alert-modal-title" style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Notifikasi</h3>
-    <p id="alert-modal-message" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4;"></p>
-    
-    <!-- Tombol Dinamis (OK / Cetak Struk) -->
-    <div id="alert-action-buttons" style="display: flex; gap: 8px;">
-      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
-    </div>
-  </div>
-</div>
-
-<!-- TEMPLATE CETAK STRUK THERMAL 57mm (Hidden secara default) -->
-<div id="receipt-print-area" class="hidden-print">
-  <div class="receipt-header" style="text-align: center; margin-bottom: 6px;">
-    <img src="https://raw.githubusercontent.com/ogituyagi/qiski-pos/e31712f4f4773293656cef9230b5f2592473eca8/Qiski%20Black.png" alt="Logo QisKi" style="width: 36mm; max-width: 100%; height: auto; margin-bottom: 2px; filter: grayscale(100%);">
-    <p style="font-size: 9px; margin: 2px 0;">Jl. Parakan Saat, Cisaranten Endah, Arcamanik, Kota Bandung</p>
-    <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
-  </div>
-
-  <div id="receipt-meta" style="font-size: 9px; margin-bottom: 6px; line-height: 1.4;">
-    <!-- Diisi via JS: ID Pesanan, Tanggal, Kasir, Customer -->
-  </div>
-
-  <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
-
-  <div id="receipt-items" style="font-size: 9px; margin-bottom: 6px; line-height: 1.3;">
-    <!-- Diisi via JS: Daftar item pesanan -->
-  </div>
-
-  <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
-
-  <div id="receipt-totals" style="font-size: 9px; margin-bottom: 8px; line-height: 1.3;">
-    <!-- Diisi via JS: Metode, Total, Tunai, Kembalian -->
-  </div>
-
-  <div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>
-  <div class="receipt-footer" style="text-align: center; font-size: 8px; line-height: 1.3; margin-top: 6px;">
-    <p style="margin: 2px 0; font-weight: bold;">Terima Kasih!</p>
-    <p style="margin: 4px 0 0 0; color: #555;">WA: 081234567890</p>
-  </div>
-</div>
-
-  <!-- GLOBAL MODAL LOADING -->
-<div id="global-loading-modal" class="modal-overlay hidden" style="z-index: 99999; background: rgba(0, 0, 0, 0.5);">
-  <div class="modal-content" style="max-width: 260px; text-align: center; padding: 24px; background: white; border-radius: 12px;">
-    <div class="pulsing-dots" style="display: flex; justify-content: center; gap: 6px; margin-bottom: 12px;">
-      <div style="width: 10px; height: 10px; background: var(--primary-pink); border-radius: 50%;"></div>
-      <div style="width: 10px; height: 10px; background: var(--primary-pink); border-radius: 50%;"></div>
-      <div style="width: 10px; height: 10px; background: var(--primary-pink); border-radius: 50%;"></div>
-    </div>
-    <div id="global-loading-text" style="font-size: 13px; font-weight: 700; color: var(--text-dark);">Memproses transaksi...</div>
-  </div>
-</div>
-  
   <script src="assets.js"></script>
   <script src="app.js"></script>
 </body>
