@@ -1492,8 +1492,8 @@ function toggleMobileCart() {
 // Menjaga agar klik tombol di dalam keranjang tidak memicu toggle buka-tutup
 function handleCartClick(e) {
   if (window.innerWidth <= 768) {
-    // Jika klik terjadi pada tombol action, cegah bubble toggle
-    if (e.target.closest('.cart-actions') || e.target.closest('.btn-qty') || e.target.closest('.btn-custom')) {
+    // Jika mengeklik tombol atau footer, jangan jalankan toggle
+    if (e.target.closest('.cart-footer') || e.target.closest('.btn-qty') || e.target.closest('.btn-custom')) {
       e.stopPropagation();
     }
   }
