@@ -239,44 +239,54 @@
     </div>
   </div>
 
-  <!-- MODAL PAYMENT -->
-  <div id="payment-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Pembayaran Transaksi</h3>
-        <button type="button" onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
-      </div>
-      <div class="form-group">
-        <label for="pay-total-akhir">Total Akhir</label>
-        <input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:900; color:var(--primary-orange-dark); font-size:18px;">
-      </div>
-      <div class="form-group">
-        <label for="pay-method">Metode Pembayaran</label>
-        <select id="pay-method" onchange="togglePayMethod()">
-          <option value="CASH">Cash / Tunai</option>
-          <option value="QRIS">QRIS / Non-Tunai</option>
-        </select>
-      </div>
-      <div id="cash-group">
-        <div class="form-group" style="margin-bottom: 6px;">
-          <label for="pay-cash-paid">Uang Diterima</label>
-          <input type="text" id="pay-cash-paid" oninput="formatCashInput(this)" placeholder="Rp 0">
-        </div>
-        <div class="cash-chips-container">
-          <button type="button" class="cash-chip" onclick="selectCashChip(10000)">10rb</button>
-          <button type="button" class="cash-chip" onclick="selectCashChip(20000)">20rb</button>
-          <button type="button" class="cash-chip" onclick="selectCashChip(50000)">50rb</button>
-          <button type="button" class="cash-chip" onclick="selectCashChip(100000)">100rb</button>
-          <button type="button" class="cash-chip chip-exact" onclick="selectExactCash()">Uang Pas</button>
-        </div>
-        <div class="form-group">
-          <label for="pay-change">Kembalian</label>
-          <input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);" value="Rp 0">
-        </div>
-      </div>
-      <button type="button" onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
+<!-- MODAL PAYMENT -->
+<div id="payment-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Pembayaran Transaksi</h3>
+      <button type="button" onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
     </div>
+    
+    <div class="form-group">
+      <label for="pay-total-akhir">Total Akhir</label>
+      <input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:900; color:var(--primary-orange-dark); font-size:18px;">
+    </div>
+
+    <!-- METODE PEMBAYARAN: MODEL CHIP BUTTON -->
+    <div class="form-group" style="margin-top: 14px;">
+      <label>Metode Pembayaran</label>
+      <input type="hidden" id="pay-method" value="CASH">
+      <div class="chip-group" style="display: flex; gap: 10px; margin-top: 6px;">
+        <div id="pay-chip-cash" class="chip selected" onclick="selectPayMethodChip('CASH')" style="flex: 1; text-align: center; padding: 10px; font-weight: 700; cursor: pointer;">
+          Tunai
+        </div>
+        <div id="pay-chip-qris" class="chip" onclick="selectPayMethodChip('QRIS')" style="flex: 1; text-align: center; padding: 10px; font-weight: 700; cursor: pointer;">
+          QRIS
+        </div>
+      </div>
+    </div>
+
+    <div id="cash-group">
+      <div class="form-group" style="margin-top: 10px; margin-bottom: 6px;">
+        <label for="pay-cash-paid">Uang Diterima</label>
+        <input type="text" id="pay-cash-paid" oninput="formatCashInput(this)" placeholder="Rp 0">
+      </div>
+      <div class="cash-chips-container">
+        <button type="button" class="cash-chip" onclick="selectCashChip(10000)">10rb</button>
+        <button type="button" class="cash-chip" onclick="selectCashChip(20000)">20rb</button>
+        <button type="button" class="cash-chip" onclick="selectCashChip(50000)">50rb</button>
+        <button type="button" class="cash-chip" onclick="selectCashChip(100000)">100rb</button>
+        <button type="button" class="cash-chip chip-exact" onclick="selectExactCash()">Uang Pas</button>
+      </div>
+      <div class="form-group">
+        <label for="pay-change">Kembalian</label>
+        <input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);" value="Rp 0">
+      </div>
+    </div>
+
+    <button type="button" onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">SUBMIT</button>
   </div>
+</div>
 
   <!-- MODAL INITIAL CUSTOMER GATEWAY -->
   <div id="customer-gate-modal" class="modal-overlay hidden">
