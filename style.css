@@ -807,3 +807,157 @@ header h1, .brand-title, .header-brand {
     margin: 0;
   }
 }
+
+
+/* ==========================================
+   RESPONSIVE DESIGN FOR MOBILE (MAX-WIDTH: 768px)
+   ========================================== */
+@media screen and (max-width: 768px) {
+  /* 1. LAYOUT POS (KELOLA KATALOG & KERANJANG) */
+  .pos-layout {
+    display: flex;
+    flex-direction: column;
+    height: auto !important;
+    padding-bottom: 80px; /* Space agar tidak tertutup bottom bar */
+  }
+
+  /* Section Katalog Penuhi Layar */
+  .menu-section {
+    width: 100% !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+
+  /* Grid Katalog 2 Kolom di HP */
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  /* Floating Bar Keranjang di Paling Bawah */
+  .cart-section {
+    position: fixed;
+    bottom: 60px; /* Di atas Bottom Navigation Bar */
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    z-index: 990;
+    background: #fff;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+    border-radius: 16px 16px 0 0;
+    transition: all 0.3s ease;
+  }
+
+  /* Sembunyikan item keranjang di floating mode standar */
+  .cart-section .cart-items {
+    display: none;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  /* Saat Keranjang Di-expand di Mobile */
+  .cart-section.mobile-expanded {
+    bottom: 0 !important;
+    height: 80vh !important;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .cart-section.mobile-expanded .cart-items {
+    display: block !important;
+  }
+
+  /* 2. HEADER COMPACT DI MOBILE */
+  header {
+    padding: 8px 12px !important;
+  }
+
+  .header-brand img {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  /* Hide Tab Atas, ganti ke Bottom Nav */
+  header .header-tabs {
+    display: none !important; 
+  }
+
+  /* 3. BOTTOM NAVIGATION BAR */
+  .bottom-nav-bar {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #ffffff;
+    border-top: 1px solid #eee;
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #777;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px;
+    cursor: pointer;
+    flex: 1;
+    position: relative;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--primary-pink, #d81b60);
+  }
+
+  .bottom-nav-item svg {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 2px;
+  }
+
+  /* Badge angka di bottom nav */
+  .bottom-nav-item .badge-count {
+    position: absolute;
+    top: 4px;
+    right: 25%;
+    background: #e53935;
+    color: #fff;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 10px;
+  }
+
+  /* 4. GRID KANTUNG JADI 1 KOLOM */
+  .orders-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 5. MODAL BOTTOM SHEET DI MOBILE */
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+}
+
+/* Sembunyikan Bottom Nav secara default di Desktop */
+.bottom-nav-bar {
+  display: none;
+}
