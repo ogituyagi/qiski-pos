@@ -312,7 +312,7 @@ function confirmCustomerAndProceed() {
   if (selectedCustomerType === 'REGULAR') {
     nameVal = document.getElementById('cust-name').value.trim();
     if (!nameVal) {
-      showAlert('Silakan masukkan nama pelanggan terlebih dahulu!', 'Peringatan', 'error');
+      showAlert('Silakan masukkan nama Customer terlebih dahulu!', 'Peringatan', 'error');
       document.getElementById('cust-name').focus();
       return;
     }
@@ -1051,7 +1051,7 @@ function renderPendingListUI() {
           <span style="font-weight:700; color:#333;">${t.transId}</span>
           <span style="background:#fff8e1; color:#f57c00; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PENDING</span>
         </div>
-        <div style="font-size:13px; color:#555; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
+        <div style="font-size:13px; color:#555; margin-bottom:4px;">Customer: <b>${t.customerName || 'Umum'}</b></div>
         <div style="font-size:12px; color:#888; margin-bottom:10px;">Waktu: ${t.waktu || '-'}</div>
 
         <!-- RINCIAN PESANAN (RINCIAN ITEM) -->
@@ -1099,7 +1099,7 @@ function renderKitchenListUI() {
         <span style="font-weight:700; color:#333;">${t.transId}</span>
         <span style="background:#e8f5e9; color:#2e7d32; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PROSES</span>
       </div>
-      <div style="font-size:13px; color:#333; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
+      <div style="font-size:13px; color:#333; margin-bottom:4px;">Customer: <b>${t.customerName || 'Umum'}</b></div>
       <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: ${t.metode || 'CASH'}</div>
       
       <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
@@ -1167,7 +1167,7 @@ function renderCompletedOrdersUI() {
           <span style="font-weight:700; color:#333;">${t.transId}</span>
           <span style="background:#ede7f6; color:#5e35b1; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">SELESAI</span>
         </div>
-        <div style="font-size:13px; color:#333; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
+        <div style="font-size:13px; color:#333; margin-bottom:4px;">Customer: <b>${t.customerName || 'Umum'}</b></div>
         <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: <b>${t.metode || 'CASH'}</b> | Waktu: ${t.waktu || '-'}</div>
         
         <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
