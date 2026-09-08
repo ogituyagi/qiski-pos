@@ -330,26 +330,26 @@
 
 <!-- TEMPLATE CETAK STRUK THERMAL 57mm (Hidden secara default) -->
 <div id="receipt-print-area" class="hidden-print">
-  <div class="receipt-header" style="text-align: center; margin-bottom: 8px;">
-    <h3 style="font-size: 14px; font-weight: 900; margin: 0;">QisKi Juice</h3>
-    <p style="font-size: 10px; margin: 2px 0;">Jl. Raya Kasir No. 01, Bandung</p>
-    <p style="font-size: 10px; margin: 2px 0;">--------------------------------</p>
+  <div class="receipt-header" style="text-align: center; margin-bottom: 6px;">
+    <!-- Logo dari GitHub -->
+    <img src="https://raw.githubusercontent.com/ogituyagi/qiski-pos/e31712f4f4773293656cef9230b5f2592473eca8/Qiski%20Black.png" alt="Logo QisKi" style="width: 36mm; max-width: 100%; height: auto; margin-bottom: 2px; filter: grayscale(100%);">
+    <p style="font-size: 9px; margin: 2px 0;">Jl. Alapyu So Muah</p>
+    <p style="font-size: 9px; margin: 2px 0;">--------------------------------</p>
   </div>
-  <div id="receipt-meta" style="font-size: 10px; margin-bottom: 6px;">
-    <!-- Diisi via JS: No Transaksi, Kasir, Waktu, Pelanggan -->
+  <div id="receipt-meta" style="font-size: 9px; margin-bottom: 6px; line-height: 1.3;">
+    <!-- Diisi via JS: No Transaksi, Waktu (dd/mm/yyyy hh:mm), Pelanggan -->
   </div>
-  <div style="font-size: 10px; margin: 4px 0;">--------------------------------</div>
-  <div id="receipt-items" style="font-size: 10px; margin-bottom: 6px;">
+  <div style="font-size: 9px; margin: 2px 0;">--------------------------------</div>
+  <div id="receipt-items" style="font-size: 9px; margin-bottom: 6px; line-height: 1.3;">
     <!-- Diisi via JS: Daftar item pesanan -->
   </div>
-  <div style="font-size: 10px; margin: 4px 0;">--------------------------------</div>
-  <div id="receipt-totals" style="font-size: 10px; margin-bottom: 10px;">
+  <div style="font-size: 9px; margin: 2px 0;">--------------------------------</div>
+  <div id="receipt-totals" style="font-size: 9px; margin-bottom: 8px; line-height: 1.3;">
     <!-- Diisi via JS: Subtotal, Metode, Total, Bayar, Kembalian -->
   </div>
-  <div class="receipt-footer" style="text-align: center; font-size: 10px;">
+  <div class="receipt-footer" style="text-align: center; font-size: 9px; line-height: 1.2;">
     <p style="margin: 2px 0;">Terima Kasih!</p>
     <p style="margin: 2px 0;">Silakan Datang Kembali</p>
-    <p style="margin: 4px 0;">=== Layanan Kasir QisKi ===</p>
   </div>
 </div>
 
