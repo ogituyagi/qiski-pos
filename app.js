@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Load Logo Login
   var loginLogo = document.getElementById('login-brand-logo');
   if (loginLogo && typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoUtama) {
-    loginLogo.src = APP_ASSETS.logoHeader;
+    loginLogo.src = APP_ASSETS.logoUtama;
   }
 
   checkExistingSession();
