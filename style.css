@@ -140,3 +140,96 @@ header { background: linear-gradient(135deg, var(--primary-pink), var(--primary-
 
 @keyframes pulse-dot { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; } }
 .loading-text { font-size: 12px; font-weight: 700; color: var(--primary-pink); }
+
+/* 1. Header Lebih Tebal & Proporsional */
+header, .top-bar {
+  padding: 16px 24px !important; /* Tambah padding vertical */
+  min-height: 64px !important;
+}
+
+header h1, .brand-title {
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+}
+
+.tab-btn {
+  padding: 10px 18px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+}
+
+/* 2. Kartu Menu / Chips Lebih Besar & Lega */
+.menu-grid {
+  gap: 14px !important; /* Jarak antar kartu lebih lega */
+}
+
+.menu-card {
+  padding: 16px 14px !important; /* Memperbesar ukuran kartu */
+  min-height: 85px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  border-radius: 12px !important;
+  cursor: pointer;
+}
+
+.menu-card h4 {
+  font-size: 15px !important; /* Ukuran nama produk lebih jelas */
+  margin-bottom: 6px !important;
+  line-height: 1.2 !important;
+}
+
+.menu-card .price {
+  font-size: 14px !important; /* Harga lebih menonjol */
+  font-weight: 700 !important;
+}
+
+/* 3. Kolom Keranjang & Item List Lebih Nyaman */
+.cart-item {
+  padding: 12px 14px !important;
+  margin-bottom: 10px !important;
+}
+
+.cart-item-title {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.cart-item-price {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+/* Tombol + dan - di Keranjang */
+.btn-qty {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+}
+
+.qty-num {
+  font-size: 15px !important;
+  min-width: 24px !important;
+  text-align: center;
+}
+
+/* 4. Action Buttons (Clear, Pending, Bayar) Lebih Gagah */
+.cart-footer-btns, .action-buttons-group {
+  padding: 16px !important;
+}
+
+.btn-danger, .btn-warning, .btn-success, #btnRed, .btn-action {
+  padding: 14px 16px !important; /* Tombol tinggi & mantap ditekan */
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+}
+
+/* 5. Input Search & Customer Gate */
+#menu-search-input {
+  padding: 12px 16px !important;
+  font-size: 15px !important;
+  height: 46px !important;
+}
