@@ -1020,3 +1020,154 @@ function renderKitchenListUI() {
     </div>
   `).join('');
 }
+
+// HELPER NAVIGASI TAB HEADER
+function setActiveHeaderTab(tabId) {
+  document.querySelectorAll('.header-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+  var targetBtn = document.getElementById(tabId);
+  if (targetBtn) targetBtn.classList.add('active');
+}
+
+function hideAllViews() {
+  var views = ['home-dashboard-view', 'new-order-view', 'pending-orders-view', 'kitchen-orders-view'];
+  views.forEach(id => {
+    var el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+}
+
+function showDashboard() {
+  setActiveHeaderTab('tab-home');
+  hideAllViews();
+  var homeView = document.getElementById('home-dashboard-view');
+  if (homeView) homeView.classList.remove('hidden');
+}
+
+// 1. HALAMAN KANTUNG PENDING
+function openPendingTab() {
+  setActiveHeaderTab('tab-pending');
+  hideAllViews();
+  var view = document.getElementById('pending-orders-view');
+  if (view) view.classList.remove('hidden');
+  renderPendingListUI();
+}
+
+function renderPendingListUI() {
+  var container = document.getElementById('pending-orders-list');
+  if (!container) return;
+
+  var pendingItems = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PENDING');
+
+  if (pendingItems.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding: 40px; color: #888;">Tidak ada pesanan pending saat ini.</div>';
+    return;
+  }
+
+  container.innerHTML = pendingItems.map(t => `
+    <div style="background:#fff; border:1px solid #e0e0e0; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="font-weight:700; color:#333;">${t.transId}</span>
+        <span style="background:#fff8e1; color:#f57c00; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PENDING</span>
+      </div>
+      <div style="font-size:13px; color:#555; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b> (${t.jenisPelanggan || 'REGULAR'})</div>
+      <div style="font-size:12px; color:#888; margin-bottom:8px;">Waktu: ${t.waktu}</div>
+      <div style="font-size:14px; font-weight:700; color:#2e7d32; margin-bottom:12px;">Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</div>
+      <button onclick="restorePendingOrder('${t.transId}')" style="width:100%; background:var(--primary-pink, #d81b60); color:#fff; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;">
+        Restore ke Keranjang
+      </button>
+    </div>
+  `).join('');
+}
+
+// RESTORE PENDING ORDER DENGAN MENGAMBIL ITEM DARI APP SCRIPT / CACHE
+function restorePendingOrder(transId) {
+  var order = activeTransactions.find(t => t.transId === transId);
+  if (!order) return;
+
+  // Kembalikan item ke keranjang belanja POS
+  cart = order.items.map(item => ({
+    id: item.id,
+    nama: item.nama,
+    harga: item.harga,
+    qty: item.qty,
+    notes: item.notes || 'Normal'
+  }));
+
+  // Set info pelanggan
+  currentCustomerName = order.customerName;
+  currentCustomerType = order.jenisPelanggan;
+  currentTransId = order.transId; // Simpan ID agar pas bayar statusnya ter-update di row yang sama
+
+  // Render ulang UI POS Keranjang
+  renderCart();
+  
+  // Berpindah ke Halaman Utama / Kasir
+  showDashboard();
+}
+
+// 2. HALAMAN ANTRIAN PROSES
+function openKitchenTab() {
+  setActiveHeaderTab('tab-kitchen');
+  hideAllViews();
+  var view = document.getElementById('kitchen-orders-view');
+  if (view) view.classList.remove('hidden');
+  renderKitchenListUI();
+}
+
+function renderKitchenListUI() {
+  var container = document.getElementById('kitchen-orders-list');
+  if (!container) return;
+
+  var prosesItems = activeTransactions.filter(t => String(t.status).toUpperCase() === 'PROSES');
+
+  if (prosesItems.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding: 40px; color: #888;">Tidak ada antrian pesanan yang diproses.</div>';
+    return;
+  }
+
+  container.innerHTML = prosesItems.map(t => `
+    <div style="background:#fff; border:1px solid #c8e6c9; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="font-weight:700; color:#333;">${t.transId}</span>
+        <span style="background:#e8f5e9; color:#2e7d32; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">PROSES</span>
+      </div>
+      <div style="font-size:13px; color:#333; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
+      <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: ${t.metode || 'CASH'}</div>
+      
+      <!-- List Items Pesanan -->
+      <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
+        ${t.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+          <span><b>${i.qty}x</b> ${i.nama}</span>
+          <span style="font-size:11px; color:#777;">${i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+        </div>`).join('')}
+      </div>
+
+      <button onclick="finishOrder('${t.transId}')" style="width:100%; background:#2e7d32; color:#fff; border:none; padding:10px; border-radius:8px; font-weight:600; cursor:pointer;">
+        ✓ Tandai Selesai
+      </button>
+    </div>
+  `).join('');
+}
+
+// UBAH STATUS TRANSAKSI JADI SELESAI
+function finishOrder(transId) {
+  if (!confirm('Tandai pesanan ini sudah selesai?')) return;
+
+  // 1. Update di Frontend Local Active Array
+  activeTransactions = activeTransactions.filter(t => t.transId !== transId);
+  updateBadges();
+  renderKitchenListUI();
+
+  // 2. Update Status di Sheet Backend lewat API
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'updateOrderStatus',
+      transId: transId,
+      status: 'SELESAI'
+    })
+  }).then(res => res.json())
+    .then(res => {
+      if (!res.success) alert('Gagal memperbarui status di server.');
+    }).catch(err => console.error(err));
+}
