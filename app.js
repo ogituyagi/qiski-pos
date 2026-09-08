@@ -213,28 +213,38 @@ function updateBadges() {
   var todayMonth = now.getMonth();
   var todayDate = now.getDate();
 
-  var pendingCount = activeTransactions.filter(function(t) {
-    if (String(t.status).toUpperCase() !== 'PENDING') return false;
-    if (!t.waktu) return true;
-
-    var d = new Date(t.waktu);
+  var isToday = function(waktuStr) {
+    if (!waktuStr) return false;
+    var d = new Date(waktuStr);
     if (!isNaN(d.getTime())) {
       return d.getFullYear() === todayYear && 
              d.getMonth() === todayMonth && 
              d.getDate() === todayDate;
     }
-    
-    var datePart = String(t.waktu).split(' ')[0].split('T')[0];
+    var datePart = String(waktuStr).split(' ')[0].split('T')[0];
     var todayStr = todayYear + '-' + String(todayMonth + 1).padStart(2, '0') + '-' + String(todayDate).padStart(2, '0');
     return datePart === todayStr;
+  };
+
+  // 1. Pending (Hari Ini)
+  var pendingCount = activeTransactions.filter(function(t) {
+    return String(t.status).toUpperCase() === 'PENDING' && isToday(t.waktu);
   }).length;
 
+  // 2. Proses (Semua Antrian Dapur)
   var prosesCount = activeTransactions.filter(function(t) {
     return String(t.status).toUpperCase() === 'PROSES';
   }).length;
 
+  // 3. Selesai (Hari Ini) -> Tambahan Perbaikan
+  var selesaiCount = activeTransactions.filter(function(t) {
+    return String(t.status).toUpperCase() === 'SELESAI' && isToday(t.waktu);
+  }).length;
+
+  // Render Badges ke HTML
   var pendingBadge = document.getElementById('badge-pending');
   var prosesBadge = document.getElementById('badge-proses');
+  var selesaiBadge = document.getElementById('badge-selesai');
 
   if (pendingBadge) {
     pendingBadge.innerText = pendingCount;
@@ -243,6 +253,10 @@ function updateBadges() {
   if (prosesBadge) {
     prosesBadge.innerText = prosesCount;
     prosesBadge.style.display = prosesCount > 0 ? 'inline-block' : 'none';
+  }
+  if (selesaiBadge) {
+    selesaiBadge.innerText = selesaiCount;
+    selesaiBadge.style.display = selesaiCount > 0 ? 'inline-block' : 'none';
   }
 }
 
@@ -882,22 +896,21 @@ function submitTransaction() {
 }
 
 function finishOrder(transId) {
-  var target = activeTransactions.find(function(t) { return String(t.transId) === String(transId); });
-  
+  var target = activeTransactions.find(function(t) { return t.transId === transId; });
   if (target) {
     target.status = 'SELESAI'; // Ubah status transaksi lokal
-    
-    // Simpan ke LocalStorage agar tidak hilang
     localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
     
-    // Refresh tampilan badges dan list dapur
-    updateBadges();
-    renderKitchenListUI();
+    // Perbarui counter badge di header
+    updateBadges(); 
+    
+    // Refresh UI dapur agar card yang selesai hilang dari tab Proses
+    renderKitchenListUI(); 
   }
 
   var payload = { transId: transId, status: 'SELESAI' };
 
-  // Sync ke backend
+  // Kirim update ke Server / Sync Queue
   if (isOnline()) {
     fetch(API_URL, {
       method: 'POST',
@@ -905,7 +918,9 @@ function finishOrder(transId) {
       body: JSON.stringify({ action: 'updateOrderStatus', payload: payload })
     })
     .then(function(res) { return res.json(); })
-    .catch(function(err) { queueForSync('updateOrderStatus', payload); });
+    .catch(function(err) {
+      queueForSync('updateOrderStatus', payload);
+    });
   } else {
     queueForSync('updateOrderStatus', payload);
   }
