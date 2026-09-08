@@ -552,6 +552,59 @@ function calculatePayment() {
   }
 }
 
+// Format Rupiah saat diketik manual
+function formatCashInput(input) {
+  var rawVal = input.value.replace(/[^0-9]/g, '');
+  var numericVal = Number(rawVal) || 0;
+
+  if (numericVal === 0) {
+    input.value = '';
+  } else {
+    input.value = 'Rp ' + numericVal.toLocaleString('id-ID');
+  }
+
+  calculatePayment();
+}
+
+// Klik Chip Nominal
+function selectCashChip(amount) {
+  var input = document.getElementById('pay-cash-paid');
+  if (input) {
+    input.value = 'Rp ' + amount.toLocaleString('id-ID');
+    calculatePayment();
+  }
+}
+
+// Klik Chip Uang Pas
+function selectExactCash() {
+  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
+  selectCashChip(subtotal);
+}
+
+// Hitung Kembalian
+function calculatePayment() {
+  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
+  var method = document.getElementById('pay-method').value;
+  
+  if (method === 'CASH') {
+    var rawPaid = document.getElementById('pay-cash-paid').value.replace(/[^0-9]/g, '');
+    var cashPaid = Number(rawPaid) || 0;
+    var change = cashPaid - subtotal;
+    var changeElem = document.getElementById('pay-change');
+
+    if (cashPaid === 0) {
+      changeElem.value = 'Rp 0';
+      changeElem.style.color = 'var(--text-dark)';
+    } else if (change < 0) {
+      changeElem.value = 'Uang Kurang!';
+      changeElem.style.color = '#e53935';
+    } else {
+      changeElem.value = 'Rp ' + change.toLocaleString('id-ID');
+      changeElem.style.color = '#2e7d32';
+    }
+  }
+}
+
 function submitTransaction() {
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
   var method = document.getElementById('pay-method').value;
