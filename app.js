@@ -660,8 +660,7 @@ function savePendingOrder() {
   if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
   var now = new Date();
-  var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
-  var transId = currentRestoredTransId || generateTrxId();
+  var transId = generateTrxId(); // Langsung panggil generator TRX ID baru
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
   var payload = {
@@ -697,10 +696,10 @@ function savePendingOrder() {
   fetch(API_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'text/plain;charset=utf-8', // Bypass CORS preflight
+      'Content-Type': 'text/plain;charset=utf-8',
     },
     body: JSON.stringify({
-      action: 'holdTransaction', // Menyamakan action name ke Apps Script
+      action: 'holdTransaction',
       payload: payload
     })
   })
@@ -712,7 +711,6 @@ function savePendingOrder() {
     console.error("Gagal Sync Pending ke Sheet, tersimpan di Local Storage:", err);
   })
   .finally(function() {
-    // Reset UI & Cart setelah fetch dikirim
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
     
     clearCart();
@@ -731,15 +729,30 @@ function restorePendingOrder(transId) {
     return showAlert('Selesaikan atau bersihkan keranjang aktif terlebih dahulu!', 'Peringatan', 'error');
   }
 
-  currentCart = JSON.parse(JSON.stringify(target.items));
+  // BIFURKASI SAFETY: Handling jika target.items berbentuk string JSON dari Sheet/LocalStorage
+  var rawItems = target.items;
+  if (typeof rawItems === 'string') {
+    try {
+      rawItems = JSON.parse(rawItems);
+    } catch (e) {
+      console.error("Gagal parse items:", e);
+      rawItems = [];
+    }
+  }
+
+  currentCart = JSON.parse(JSON.stringify(rawItems || []));
   currentRestoredTransId = target.transId;
 
   lockCartUI();
   
   setActiveHeaderTab(null);
   hideAllViews();
-  document.getElementById('new-order-view').classList.remove('hidden');
-  document.getElementById('cart-customer-name').innerText = target.customerName;
+
+  var newOrderView = document.getElementById('new-order-view');
+  if (newOrderView) newOrderView.classList.remove('hidden');
+
+  var custNameElem = document.getElementById('cart-customer-name');
+  if (custNameElem) custNameElem.innerText = target.customerName || 'Umum';
 
   updateCartUI();
   showAlert('Pesanan ' + transId + ' dipulihkan ke keranjang (Di-kunci).', 'Informasi', 'info');
