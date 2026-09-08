@@ -279,22 +279,22 @@
         <div class="loading-text">Memuat Katalog Juice...</div>
       </div>
       <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 16px;">
-        <h3 style="font-size: 18px; font-weight: 800; color: var(--primary-pink); margin: 0;">Pilih Identitas Pemesan</h3>
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--primary-pink); margin: 0;">Input Data Pemesan</h3>
         <button type="button" onclick="closeModal('customer-gate-modal')" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 18px; font-weight: 600;">Silakan tentukan tipe pelanggan sebelum memulai transaksi baru.</p>
+      <!-- <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 18px; font-weight: 600;">Silakan tentukan tipe pelanggan sebelum memulai transaksi baru.</p> -->
       <div class="radio-chip-group" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: none; padding: 0;">
         <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Pelanggan Umum
+          Umum
         </div>
         <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 1 0 7.75"/></svg>
-          Member QSK
+          Member Qiski
         </div>
       </div>
       <div id="input-nama-container" style="margin-bottom: 20px;">
-        <label for="cust-name" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama Pelanggan / Meja:</label>
+        <label for="cust-name" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama:</label>
         <input type="text" id="cust-name" placeholder="Contoh: Budi / Meja 04..." style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box;">
       </div>
       <div id="select-member-container" class="hidden" style="position: relative; margin-bottom: 20px;">
