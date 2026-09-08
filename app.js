@@ -1188,9 +1188,8 @@ function renderCompletedOrdersUI() {
   var todayMonth = now.getMonth();
   var todayDate = now.getDate();
 
-  // Helper pemeriksa tanggal hari ini
   var isToday = function(waktuStr) {
-    if (!waktuStr) return true; // Fallback jika waktu tidak tercatat
+    if (!waktuStr) return true;
     var d = new Date(waktuStr);
     if (!isNaN(d.getTime())) {
       return d.getFullYear() === todayYear && 
@@ -1202,10 +1201,8 @@ function renderCompletedOrdersUI() {
     return datePart === todayStr;
   };
 
-  // Filter transaksi berstatus SELESAI
   var completedItems = activeTransactions.filter(function(t) {
-    var statusClean = String(t.status || '').trim().toUpperCase();
-    return statusClean === 'SELESAI' && isToday(t.waktu);
+    return String(t.status || '').trim().toUpperCase() === 'SELESAI' && isToday(t.waktu);
   });
 
   if (completedItems.length === 0) {
@@ -1215,29 +1212,30 @@ function renderCompletedOrdersUI() {
 
   container.innerHTML = completedItems.map(function(t) {
     var itemsList = Array.isArray(t.items) ? t.items : [];
-    
+
     return `
-      <div style="background:#fff; border:1px solid #d1c4e9; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+      <div style="background:#fff; border:1px solid #d1c4e9; border-radius:12px; padding:16px; box-shadow:0 2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; height: 100%; box-sizing: border-box;">
         <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
           <span style="font-weight:700; color:#333;">${t.transId}</span>
           <span style="background:#ede7f6; color:#5e35b1; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">SELESAI</span>
         </div>
         <div style="font-size:13px; color:#333; margin-bottom:4px;">Customer: <b>${t.customerName || 'Umum'}</b></div>
-        <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: <b>${t.metode || 'CASH'}</b> | Waktu: ${t.waktu || '-'}</div>
+        <div style="font-size:12px; color:#666; margin-bottom:4px;">Metode: <b>${t.metode || 'CASH'}</b></div>
+        <div style="font-size:12px; color:#888; margin-bottom:10px;">Waktu: ${t.waktu || '-'}</div>
         
+        <!-- DETAIL ITEMS -->
         <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
           ${itemsList.length > 0 ? itemsList.map(function(i) {
             return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
               <span><b>${i.qty || 1}x</b> ${i.nama || 'Menu'}</span>
-              <span style="font-size:11px; color:#333; font-weight: 800;">
-                ${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}
-              </span>
+              <span style="font-size:11px; color:#333; font-weight: 800;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
             </div>`;
           }).join('') : '<span style="color:#888; font-size:12px;">Detail item tidak tersedia</span>'}
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-weight:700; color:#2e7d32;">Rp ${Number(t.totalAkhir || 0).toLocaleString('id-ID')}</span>
+        <!-- TOTAL HARGA & STATUS FOOTER (MENTOK BAWAH) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: auto;">
+          <span style="font-size:15px; font-weight:800; color:#2e7d32;">Rp ${Number(t.totalAkhir || 0).toLocaleString('id-ID')}</span>
           <span style="font-size:11px; color:#888; font-weight: 600;">✓ Selesai diproses</span>
         </div>
       </div>
