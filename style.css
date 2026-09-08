@@ -814,6 +814,13 @@ header h1, .brand-title, .header-brand {
   display: none;
 }
 
+/* Sembunyikan Bottom Nav secara default di Desktop atau saat Login Page Aktif */
+.bottom-nav-bar,
+body.login-active .bottom-nav-bar,
+#app-page.hidden ~ .bottom-nav-bar {
+  display: none !important;
+}
+
 /* ==========================================
    RESPONSIVE DESIGN FOR MOBILE (MAX-WIDTH: 768px)
    ========================================== */
@@ -841,9 +848,10 @@ header h1, .brand-title, .header-brand {
     transform: translateX(-50%) !important;
   }
 
+  /* Perbesar Logo di Header Mobile */
   .header-brand img {
-    width: 45px !important;
-    height: 45px !important;
+    width: 62px !important;
+    height: 62px !important;
   }
 
   .header-user-section {
@@ -893,7 +901,7 @@ header h1, .brand-title, .header-brand {
   /* 4. FLOATING BAR KERANJANG (MODE TERTUTUP) */
   .cart-section {
     position: fixed !important;
-    bottom: 60px !important; /* TETAP DI ATAS BOTTOM NAV BAR */
+    bottom: 60px !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
@@ -905,7 +913,7 @@ header h1, .brand-title, .header-brand {
     border-radius: 20px 20px 0 0 !important;
     padding: 6px 16px 12px 16px !important;
     box-sizing: border-box !important;
-    transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important; /* Animasi Smooth */
+    transition: max-height 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
   }
 
   .cart-section .cart-header,
@@ -920,8 +928,8 @@ header h1, .brand-title, .header-brand {
 
   /* 5. FLOATING BAR KERANJANG (MODE TERBUKA / EXPANDED) */
   .cart-section.mobile-expanded {
-    bottom: 60px !important; /* TETAP MENJAGA TAMPILAN BOTTOM NAV */
-    max-height: 75vh !important; /* HANYA CONTAINER NAIK KE ATAS */
+    bottom: 60px !important;
+    max-height: 75vh !important;
     z-index: 995 !important;
     display: flex !important;
     flex-direction: column !important;
@@ -950,13 +958,25 @@ header h1, .brand-title, .header-brand {
     margin-top: auto !important;
   }
 
-  .cart-section.mobile-expanded .cart-actions {
+  /* KONTINER TOMBOL PENUHIN LAYAR & RATA SAMA KANAN KIRI */
+  .cart-actions {
     display: flex !important;
+    width: 100% !important;
     gap: 8px !important;
+    box-sizing: border-box !important;
   }
 
-  /* 6. BOTTOM NAVIGATION BAR */
-  .bottom-nav-bar {
+  .cart-actions .btn {
+    flex: 1 !important;
+    width: 100% !important;
+    padding: 10px 4px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  /* 6. BOTTOM NAVIGATION BAR (HANYA MUNCUL JIKA USER LOGIN) */
+  body:not(.login-active) #app-page:not(.hidden) ~ .bottom-nav-bar {
     display: flex !important;
     position: fixed !important;
     bottom: 0 !important;
@@ -1013,7 +1033,7 @@ header h1, .brand-title, .header-brand {
     grid-template-columns: 1fr !important;
   }
 
-  /* 8. MODAL FIX KEYBOARD */
+  /* 8. MODAL FIX KEYBOARD HP */
   .modal-overlay {
     z-index: 99999 !important;
     align-items: center !important;
@@ -1032,51 +1052,4 @@ header h1, .brand-title, .header-brand {
     padding: 20px !important;
     box-sizing: border-box !important;
   }
-}
-
-@media screen and (max-width: 768px) {
-  /* PASTIIN KONTINER TOMBOL PENUHIN LAYAR */
-  .cart-actions {
-    display: flex !important;
-    width: 100% !important;
-    gap: 8px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* BIKIN KETIGA TOMBOL BAGI LAPANGAN SAMA RATA */
-  .cart-actions .btn {
-    flex: 1 !important;
-    width: 100% !important;
-    padding: 10px 4px !important;
-    font-size: 12px !important;
-    justify-content: center !important;
-    text-align: center !important;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  /* PERBESAR LOGO DI HEADER MOBILE */
-  .header-brand img {
-    width: 62px !important;  /* Naik dari 45px */
-    height: 62px !important;
-  }
-}
-
-/* Sembunyikan Bottom Nav Bar jika #app-page memiliki class .hidden (saat di Login Page) */
-#app-page.hidden ~ .bottom-nav-bar,
-.login-page-active .bottom-nav-bar {
-  display: none !important;
-}
-
-/* PAKSA SEMBUNYIKAN BOTTOM NAV JIKA USER BELUM LOGIN / APP-PAGE MASIH HIDDEN */
-#app-page.hidden ~ .bottom-nav-bar,
-#app-page.hidden + .bottom-nav-bar,
-#login-page:not(.hidden) ~ .bottom-nav-bar {
-  display: none !important;
-}
-
-
-/* Sembunyikan bottom nav secara mutlak saat ada class .login-active di body */
-body.login-active .bottom-nav-bar {
-  display: none !important;
 }
