@@ -121,22 +121,30 @@ function handleLogin(e) {
   })
   .then(res => res.json())
   .then(res => {
-    hideLoading();
     if (res.success) {
       currentUser = res.user;
       localStorage.setItem('qiski_session', JSON.stringify(currentUser));
       document.getElementById('user-display').innerText = currentUser.nama;
+      
+      // PINDAH HALAMAN
       document.getElementById('login-page').classList.add('hidden');
       document.getElementById('app-page').classList.remove('hidden');
 
-      // PAKSA TAMPILKAN BOTTOM NAV PAS SUKSES LOGIN DI MOBILE
+      // TAMPILKAN BOTTOM NAV DI MOBILE
       var bottomNav = document.querySelector('.bottom-nav-bar');
       if (bottomNav) {
         bottomNav.style.setProperty('display', (window.innerWidth <= 768 ? 'flex' : 'none'), 'important');
       }
 
       showDashboard();
+
+      // HIDE LOADING SETELAH HALAMAN DIBUKA (PAKAI TIMEOUT SEBENTAR AGAR SMOOTH)
+      setTimeout(() => {
+        hideLoading();
+      }, 300);
+
     } else { 
+      hideLoading();
       showAlert(res.message, 'Gagal Login', 'error'); 
     }
   })
