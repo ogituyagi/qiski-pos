@@ -116,7 +116,10 @@ function logout() {
 
 // DATA FETCHING & SYNC ENGINE (ONLINE FIRST WITH OFFLINE FALLBACK)
 function loadDataFromSheet() {
-  // 1. Ambil data lokal terlebih dahulu agar UI cepat tampil
+  // 1. Tampilkan loading overlay di awal refresh/load
+  showLoading('Memuat data sistem...');
+
+  // 2. Ambil data lokal terlebih dahulu agar UI tidak kosong jika offline
   var localActive = localStorage.getItem('pos_active_orders');
   if (localActive) {
     try { activeTransactions = JSON.parse(localActive); } catch(e) { activeTransactions = []; }
@@ -131,7 +134,7 @@ function loadDataFromSheet() {
     } catch(e) {}
   }
 
-  // 2. Jika online, langsung perbarui data terbaru dari Apps Script
+  // 3. Jika online, langsung perbarui data terbaru dari Apps Script
   if (isOnline()) {
     fetch(API_URL, {
       method: 'POST',
@@ -156,7 +159,16 @@ function loadDataFromSheet() {
         processSyncQueue();
       }
     })
-    .catch(err => console.warn("Koneksi gagal, menggunakan data lokal:", err));
+    .catch(err => {
+      console.warn("Koneksi gagal saat load awal, menggunakan data lokal:", err);
+    })
+    .finally(() => {
+      // Selesai narik data dari server -> Matikan loading
+      hideLoading();
+    });
+  } else {
+    // Jika posisi offline sejak awal, langsung matikan loading
+    hideLoading();
   }
 }
 
