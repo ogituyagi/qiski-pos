@@ -809,11 +809,8 @@ function openPaymentModal() {
     changeInput.style.color = 'var(--text-dark)';
   }
 
-  var methodSelect = document.getElementById('pay-method');
-  if (methodSelect) {
-    methodSelect.value = 'CASH';
-    togglePayMethod();
-  }
+  // Reset metode bawaan ke CASH saat modal terbuka
+  selectPayMethodChip('CASH');
 
   document.getElementById('payment-modal').classList.remove('hidden');
 }
@@ -940,15 +937,34 @@ function finishOrder(transId) {
   showAlert('Pesanan ' + transId + ' telah Selesai!', 'Sukses', 'success');
 }
 
-// CALCULATION & PAYMENT HELPERS
+// Fungsi memilih chip metode pembayaran (CASH / QRIS)
+function selectPayMethodChip(method) {
+  var hiddenInput = document.getElementById('pay-method');
+  var chipCash = document.getElementById('pay-chip-cash');
+  var chipQris = document.getElementById('pay-chip-qris');
+
+  if (hiddenInput) hiddenInput.value = method;
+
+  if (method === 'CASH') {
+    if (chipCash) chipCash.classList.add('selected');
+    if (chipQris) chipQris.classList.remove('selected');
+  } else {
+    if (chipQris) chipQris.classList.add('selected');
+    if (chipCash) chipCash.classList.remove('selected');
+  }
+
+  togglePayMethod();
+}
+
 function togglePayMethod() {
-  var method = document.getElementById('pay-method').value;
+  var methodInput = document.getElementById('pay-method');
+  var method = methodInput ? methodInput.value : 'CASH';
   var cashGroup = document.getElementById('cash-group');
   
   if (method === 'QRIS') {
-    cashGroup.classList.add('hidden');
+    if (cashGroup) cashGroup.classList.add('hidden');
   } else {
-    cashGroup.classList.remove('hidden');
+    if (cashGroup) cashGroup.classList.remove('hidden');
     calculatePayment();
   }
 }
