@@ -1014,30 +1014,62 @@ function renderKitchenListUI() {
   `).join('');
 }
 
-// CUSTOM ALERT MODAL HELPERS
-function showAlert(message, title = 'Informasi', type = 'info') {
+// Fungsi Alert Standar (Bawaan untuk Error, Info, Warning) -> TANPA Tombol Cetak Struk
+function showAlert(message, title, type) {
   var modal = document.getElementById('custom-alert-modal');
-  var titleElem = document.getElementById('alert-modal-title');
-  var msgElem = document.getElementById('alert-modal-message');
+  var titleEl = document.getElementById('alert-modal-title');
+  var msgEl = document.getElementById('alert-modal-message');
   var iconContainer = document.getElementById('alert-icon-container');
+  var btnContainer = document.getElementById('alert-action-buttons');
 
-  if (!modal || !titleElem || !msgElem || !iconContainer) {
-    alert(title + ": " + message);
-    return;
+  if (titleEl) titleEl.innerText = title || 'Notifikasi';
+  if (msgEl) msgEl.innerText = message;
+
+  // Ikon dinamis berdasarkan tipe
+  if (iconContainer) {
+    if (type === 'error') {
+      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #ffebee; color: #c62828; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✕</div>';
+    } else if (type === 'success') {
+      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
+    } else {
+      iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e3f2fd; color: #1565c0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">i</div>';
+    }
   }
 
-  titleElem.innerText = title;
-  msgElem.innerText = message;
-
-  if (type === 'success') {
-    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
-  } else if (type === 'error') {
-    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
-  } else {
-    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+  // RESET TOMBOL: Hanya tombol OK standar untuk alert biasa
+  if (btnContainer) {
+    btnContainer.innerHTML = `
+      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
+    `;
   }
 
-  modal.classList.remove('hidden');
+  if (modal) modal.classList.remove('hidden');
+}
+
+// Fungsi Khusus Sukses Pembayaran -> ADA Tombol Cetak Struk
+function showSuccessAlertWithPrint(message) {
+  var modal = document.getElementById('custom-alert-modal');
+  var titleEl = document.getElementById('alert-modal-title');
+  var msgEl = document.getElementById('alert-modal-message');
+  var iconContainer = document.getElementById('alert-icon-container');
+  var btnContainer = document.getElementById('alert-action-buttons');
+
+  if (titleEl) titleEl.innerText = 'Sukses';
+  if (msgEl) msgEl.innerText = message;
+  
+  if (iconContainer) {
+    iconContainer.innerHTML = '<div style="width: 42px; height: 42px; background: #e8f5e9; color: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 20px; font-weight: bold;">✓</div>';
+  }
+
+  // Pasang dua tombol: Cetak Struk dan OK
+  if (btnContainer) {
+    btnContainer.innerHTML = `
+      <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; background: #eee; color: #333; border: none; border-radius: 6px; cursor: pointer;">Cetak Struk</button>
+      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800;">OK</button>
+    `;
+  }
+
+  if (modal) modal.classList.remove('hidden');
 }
 
 function closeCustomAlert() {
