@@ -324,6 +324,16 @@
     </div>
   </div>
 
+  <!-- GLOBAL MODAL ALERT -->
+<div id="custom-alert-modal" class="modal-overlay hidden" style="z-index: 9999;">
+  <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
+    <div id="alert-icon-container" style="margin-bottom: 12px;"></div>
+    <h3 id="alert-modal-title" style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Notifikasi</h3>
+    <p id="alert-modal-message" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4;"></p>
+    <button onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
+  </div>
+</div>
+  
   <script src="app.js"></script>
 </body>
 </html>
