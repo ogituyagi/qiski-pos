@@ -219,15 +219,10 @@ function hideAllViews() {
 }
 
 function showDashboard() {
-  if (currentCart && currentCart.length > 0) {
-    showAlert('Selesaikan atau kosongkan keranjang terlebih dahulu sebelum meninggalkan halaman transaksi!', 'Peringatan', 'warning');
-    return;
-  }
-  document.getElementById('home-dashboard-view').classList.remove('hidden');
-  document.getElementById('new-order-view').classList.add('hidden');
-  document.getElementById('pending-orders-view').classList.add('hidden');
-  document.getElementById('kitchen-orders-view').classList.add('hidden');
-  setActiveTab('tab-home');
+  setActiveHeaderTab('tab-home');
+  hideAllViews();
+  var homeView = document.getElementById('home-dashboard-view');
+  if (homeView) homeView.classList.remove('hidden');
 }
 
 function openNewOrderFlow() {
@@ -943,12 +938,11 @@ function selectExactCash() {
 
 // TAB VIEW NAVIGATION (PENDING & KITCHEN)
 function openPendingTab() {
-  renderPendingOrders();
-  document.getElementById('home-dashboard-view').classList.add('hidden');
-  document.getElementById('new-order-view').classList.add('hidden');
-  document.getElementById('pending-orders-view').classList.remove('hidden');
-  document.getElementById('kitchen-orders-view').classList.add('hidden');
-  setActiveTab('tab-pending');
+  setActiveHeaderTab('tab-pending');
+  hideAllViews();
+  var view = document.getElementById('pending-orders-view');
+  if (view) view.classList.remove('hidden');
+  renderPendingListUI();
 }
 
 function renderPendingListUI() {
@@ -979,12 +973,11 @@ function renderPendingListUI() {
 }
 
 function openKitchenTab() {
-  renderKitchenOrders();
-  document.getElementById('home-dashboard-view').classList.add('hidden');
-  document.getElementById('new-order-view').classList.add('hidden');
-  document.getElementById('pending-orders-view').classList.add('hidden');
-  document.getElementById('kitchen-orders-view').classList.remove('hidden');
-  setActiveTab('tab-kitchen');
+  setActiveHeaderTab('tab-kitchen');
+  hideAllViews();
+  var view = document.getElementById('kitchen-orders-view');
+  if (view) view.classList.remove('hidden');
+  renderKitchenListUI();
 }
 
 function renderKitchenListUI() {
