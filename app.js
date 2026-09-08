@@ -1477,3 +1477,24 @@ function toggleMobileCart() {
     cartSec.classList.toggle('mobile-expanded');
   }
 }
+
+
+// Buka / Tutup Bottom Sheet Keranjang di Mobile
+function toggleMobileCart() {
+  if (window.innerWidth <= 768) {
+    var cartSec = document.querySelector('.cart-section');
+    if (cartSec) {
+      cartSec.classList.toggle('mobile-expanded');
+    }
+  }
+}
+
+// Menjaga agar klik tombol di dalam keranjang tidak memicu toggle buka-tutup
+function handleCartClick(e) {
+  if (window.innerWidth <= 768) {
+    // Jika klik terjadi pada tombol action, cegah bubble toggle
+    if (e.target.closest('.cart-actions') || e.target.closest('.btn-qty') || e.target.closest('.btn-custom')) {
+      e.stopPropagation();
+    }
+  }
+}
