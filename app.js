@@ -23,18 +23,24 @@ var selectedSugar = "Normal Sugar";
 var holdTimer = null;
 var isLongPress = false;
 
-// INITIALIZATION & SESSION MANAGEMENT
 document.addEventListener("DOMContentLoaded", function() {
-  // Load Logo Header
+  // 1. Load Logo Header
   var headerLogo = document.getElementById('header-brand-logo');
   if (headerLogo && typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoHeader) {
     headerLogo.src = APP_ASSETS.logoHeader;
   }
 
-  // Load Logo Login
+  // 2. Load Logo Login
   var loginLogo = document.getElementById('login-brand-logo');
   if (loginLogo && typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoUtama) {
     loginLogo.src = APP_ASSETS.logoUtama;
+  }
+
+  // 3. FIX: Sembunyikan Bottom Nav jika user belum login (#app-page masih tersembunyi)
+  var appPage = document.getElementById('app-page');
+  var bottomNav = document.querySelector('.bottom-nav-bar');
+  if (appPage && appPage.classList.contains('hidden') && bottomNav) {
+    bottomNav.style.display = 'none';
   }
 
   checkExistingSession();
