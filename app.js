@@ -1299,22 +1299,22 @@ function printReceipt() {
   }
 
   var t = lastSuccessfulTransaction;
-  
-  // 1. Header Metadata (Tambah Kasir & Tipe Pelanggan)
+  var dividerHTML = '<div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>';
+
+  // 1. Header Metadata (Format Sejajar Biasa & Tanpa Jenis Pelanggan)
   var metaHTML = `
-    <div style="display: flex; justify-content: space-between;"><span>No:</span><b>${t.transId}</b></div>
-    <div style="display: flex; justify-content: space-between;"><span>Waktu:</span><span>${t.waktu || '-'}</span></div>
-    <div style="display: flex; justify-content: space-between;"><span>Kasir:</span><span>${currentUser ? currentUser.nama : 'Kasir'}</span></div>
-    <div style="display: flex; justify-content: space-between;"><span>Pelanggan:</span><span><b>${t.customerName}</b> (${t.jenisPelanggan || 'REGULAR'})</span></div>
+    <div>ID Pesanan: <b>${t.transId}</b></div>
+    <div>Tanggal: ${t.waktu || '-'}</div>
+    <div>Kasir: ${currentUser ? currentUser.nama : 'Kasir'}</div>
+    <div>Customer: <b>${t.customerName}</b></div>
   `;
   document.getElementById('receipt-meta').innerHTML = metaHTML;
 
-  // 2. Rincian Items + Catatan Custom (Ice/Sugar)
+  // 2. Rincian Items + Catatan
   var itemsHTML = '';
   if (t.items && t.items.length > 0) {
     t.items.forEach(function(item) {
       var itemTotal = item.harga * item.qty;
-      // Menampilkan catatan jika bukan 'Normal'
       var notesText = (item.notes && item.notes !== 'Normal') 
         ? `<div style="font-size: 8px; color: #444; font-style: italic; padding-left: 8px;">* ${item.notes}</div>` 
         : '';
@@ -1333,11 +1333,10 @@ function printReceipt() {
   }
   document.getElementById('receipt-items').innerHTML = itemsHTML;
 
-  // 3. Ringkasan Pembayaran
+  // 3. Totals (Langsung Total Akhir, Tanpa Subtotal)
   var totalsHTML = `
-    <div style="display: flex; justify-content: space-between;"><span>Subtotal:</span><span>Rp ${Number(t.subtotal).toLocaleString('id-ID')}</span></div>
     <div style="display: flex; justify-content: space-between;"><span>Metode:</span><span><b>${t.metode}</b></span></div>
-    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 10px; margin-top: 2px;"><span>Total Akhir:</span><span>Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</span></div>
+    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 10px; margin-top: 2px;"><span>Total:</span><span>Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</span></div>
   `;
   
   if (t.metode === 'CASH') {
