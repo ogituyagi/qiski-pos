@@ -661,7 +661,7 @@ function savePendingOrder() {
 
   var now = new Date();
   var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
-  var transId = 'TRX-' + dateStr + '-' + Math.floor(1000 + Math.random() * 9000);
+  var transId = currentRestoredTransId || generateTrxId();
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
   var payload = {
@@ -787,7 +787,7 @@ function submitTransaction() {
 
   var now = new Date();
   var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
-  var transId = currentRestoredTransId || ('TRX-' + dateStr + '-' + Math.floor(1000 + Math.random() * 9000));
+  var transId = currentRestoredTransId || generateTrxId();
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
   var payload = {
@@ -1056,3 +1056,29 @@ window.addEventListener('beforeunload', function (e) {
     return e.returnValue;
   }
 });
+
+
+function generateTrxId() {
+  var now = new Date();
+  var yy = String(now.getFullYear()).slice(-2);
+  var mm = String(now.getMonth() + 1).padStart(2, '0');
+  var dd = String(now.getDate()).padStart(2, '0');
+  var todayStr = yy + mm + dd;
+
+  var lastDate = localStorage.getItem('pos_last_date');
+  var counter = parseInt(localStorage.getItem('pos_trx_counter') || '0', 10);
+
+  // Jika hari baru / belum ada record, reset counter ke 1
+  if (lastDate !== todayStr) {
+    lastDate = todayStr;
+    counter = 1;
+  } else {
+    counter += 1;
+  }
+
+  // Update counter terbaru ke LocalStorage
+  localStorage.setItem('pos_last_date', lastDate);
+  localStorage.setItem('pos_trx_counter', counter);
+
+  return 'QSK-' + todayStr + '-' + String(counter).padStart(3, '0');
+}
