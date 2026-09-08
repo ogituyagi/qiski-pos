@@ -974,3 +974,41 @@ header h1, .brand-title, .header-brand {
 .bottom-nav-bar {
   display: none;
 }
+
+@media screen and (max-width: 768px) {
+  /* 1. LAYOUT HEADER COMPACT 3 BARIS/AREA DI MOBILE */
+  header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    position: relative !important;
+  }
+
+  /* Logo Geser Tepat ke Tengah Layar */
+  .header-brand {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .header-brand img {
+    width: 45px !important;
+    height: 45px !important;
+  }
+
+  /* Status Online di Ujung Kiri */
+  #connection-status-indicator {
+    padding: 3px 6px !important;
+    font-size: 9px !important;
+  }
+  
+  #status-text {
+    font-size: 9px !important;
+  }
+
+  /* Sembunyikan Tab Atas (Pindah ke Bottom Nav) */
+  header .header-tabs {
+    display: none !important; 
+  }
+}
