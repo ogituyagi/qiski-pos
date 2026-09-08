@@ -989,3 +989,46 @@ header h1, .brand-title, .header-brand {
 .bottom-nav-bar {
   display: none;
 }
+
+
+@media screen and (max-width: 768px) {
+  /* Mode Keranjang Buka Penuh (Expanded) */
+  .cart-section.mobile-expanded {
+    bottom: 0 !important;
+    height: 80vh !important;
+    border-radius: 20px 20px 0 0 !important;
+    z-index: 10001 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding-bottom: 15px !important;
+  }
+
+  .cart-section.mobile-expanded .cart-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .cart-section.mobile-expanded .cart-items {
+    display: block !important;
+    flex: 1 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    padding: 10px 0 !important;
+  }
+
+  /* Ketiak Buka, Footer & Tombol Tetap Tampil Tegas di Bawah */
+  .cart-section.mobile-expanded .cart-footer {
+    display: block !important;
+    border-top: 1px solid #eee !important;
+    padding-top: 10px !important;
+    margin-top: auto !important;
+  }
+
+  .cart-section.mobile-expanded .cart-actions {
+    display: flex !important;
+    gap: 8px !important;
+  }
+}
