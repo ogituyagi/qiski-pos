@@ -192,27 +192,51 @@
   </div>
 
   <!-- MODAL PAYMENT -->
-  <div id="payment-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Pembayaran Transaksi</h3>
-        <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
-      </div>
-      <div class="form-group"><label>Total Akhir</label><input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:900; color:var(--primary-orange-dark); font-size:18px;"></div>
-      <div class="form-group">
-        <label>Metode Pembayaran</label>
-        <select id="pay-method" onchange="togglePayMethod()">
-          <option value="CASH">Cash / Tunai</option>
-          <option value="QRIS">QRIS / Non-Tunai</option>
-        </select>
-      </div>
-      <div id="cash-group">
-        <div class="form-group"><label>Uang Diterima</label><input type="number" id="pay-cash-paid" oninput="calculatePayment()" placeholder="0"></div>
-        <div class="form-group"><label>Kembalian</label><input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);"></div>
-      </div>
-      <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
+<div id="payment-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Pembayaran Transaksi</h3>
+      <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
     </div>
+    
+    <div class="form-group">
+      <label>Total Akhir</label>
+      <input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:900; color:var(--primary-orange-dark); font-size:18px;">
+    </div>
+    
+    <div class="form-group">
+      <label>Metode Pembayaran</label>
+      <select id="pay-method" onchange="togglePayMethod()">
+        <option value="CASH">Cash / Tunai</option>
+        <option value="QRIS">QRIS / Non-Tunai</option>
+      </select>
+    </div>
+    
+    <!-- GROUP PEMBAYARAN CASH (DILENGKAPI CHIP & AUTO FORMAT RP) -->
+    <div id="cash-group">
+      <div class="form-group" style="margin-bottom: 6px;">
+        <label>Uang Diterima</label>
+        <input type="text" id="pay-cash-paid" oninput="formatCashInput(this)" placeholder="Rp 0">
+      </div>
+
+      <!-- Chip Shortcut Nominal Uang -->
+      <div class="cash-chips-container">
+        <button type="button" class="cash-chip" onclick="selectCashChip(10000)">10rb</button>
+        <button type="button" class="cash-chip" onclick="selectCashChip(20000)">20rb</button>
+        <button type="button" class="cash-chip" onclick="selectCashChip(50000)">50rb</button>
+        <button type="button" class="cash-chip" onclick="selectCashChip(100000)">100rb</button>
+        <button type="button" class="cash-chip chip-exact" onclick="selectExactCash()">Uang Pas</button>
+      </div>
+
+      <div class="form-group">
+        <label>Kembalian</label>
+        <input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);">
+      </div>
+    </div>
+
+    <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
   </div>
+</div>
 
   <!-- MODAL INITIAL CUSTOMER GATEWAY -->
   <div id="customer-gate-modal" class="modal-overlay hidden">
