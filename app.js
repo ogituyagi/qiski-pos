@@ -1237,33 +1237,41 @@ function renderCompletedOrdersUI() {
   var container = document.getElementById('completed-orders-list');
   if (!container) return;
 
-  var completedItems = activeTransactions.filter(t => String(t.status).toUpperCase() === 'SELESAI');
+  // Gunakan .trim() dan .toUpperCase() untuk menghindari masalah spasi atau huruf kecil dari Sheet
+  var completedItems = activeTransactions.filter(function(t) {
+    var statusClean = String(t.status || '').trim().toUpperCase();
+    return statusClean === 'SELESAI';
+  });
 
   if (completedItems.length === 0) {
     container.innerHTML = '<div style="text-align:center; padding: 40px; color: #888;">Belum ada pesanan yang selesai.</div>';
     return;
   }
 
-  container.innerHTML = completedItems.map(t => `
-    <div style="background:#fff; border:1px solid #d1c4e9; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-        <span style="font-weight:700; color:#333;">${t.transId}</span>
-        <span style="background:#ede7f6; color:#5e35b1; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">SELESAI</span>
-      </div>
-      <div style="font-size:13px; color:#333; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
-      <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: ${t.metode || 'CASH'} | Waktu: ${t.waktu}</div>
-      
-      <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
-        ${t.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span><b>${i.qty}x</b> ${i.nama}</span>
-          <span style="font-size:11px; color:#777;">${i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
-        </div>`).join('')}
-      </div>
+  container.innerHTML = completedItems.map(function(t) {
+    return `
+      <div style="background:#fff; border:1px solid #d1c4e9; border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-weight:700; color:#333;">${t.transId}</span>
+          <span style="background:#ede7f6; color:#5e35b1; font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px;">SELESAI</span>
+        </div>
+        <div style="font-size:13px; color:#333; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
+        <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: ${t.metode || 'CASH'} | Waktu: ${t.waktu}</div>
+        
+        <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
+          ${(t.items || []).map(function(i) {
+            return `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <span><b>${i.qty}x</b> ${i.nama}</span>
+              <span style="font-size:11px; color:#777;">${i.notes && i.notes !== 'Normal' ? `(${i.notes})` : ''}</span>
+            </div>`;
+          }).join('')}
+        </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-weight:700; color:#2e7d32;">Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</span>
-        <span style="font-size:11px; color:#888;">Selesai diproses</span>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:700; color:#2e7d32;">Rp ${Number(t.totalAkhir || 0).toLocaleString('id-ID')}</span>
+          <span style="font-size:11px; color:#888;">Selesai diproses</span>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
