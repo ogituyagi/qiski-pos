@@ -25,9 +25,16 @@ var isLongPress = false;
 
 // INITIALIZATION & SESSION MANAGEMENT
 document.addEventListener("DOMContentLoaded", function() {
+  // Load Logo Header
   var headerLogo = document.getElementById('header-brand-logo');
   if (headerLogo && typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoHeader) {
     headerLogo.src = APP_ASSETS.logoHeader;
+  }
+
+  // Load Logo Login
+  var loginLogo = document.getElementById('login-brand-logo');
+  if (loginLogo && typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoUtama) {
+    loginLogo.src = APP_ASSETS.logoUtama;
   }
 
   checkExistingSession();
