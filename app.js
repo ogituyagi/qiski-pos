@@ -660,7 +660,8 @@ function savePendingOrder() {
   if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
   var now = new Date();
-  var transId = generateTrxId(); 
+  var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+  var transId = 'TRX-' + dateStr + '-' + Math.floor(1000 + Math.random() * 9000);
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
   var payload = {
@@ -696,40 +697,22 @@ function savePendingOrder() {
   fetch(API_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'text/plain;charset=utf-8',
+      'Content-Type': 'text/plain;charset=utf-8', // Bypass CORS preflight
     },
     body: JSON.stringify({
-      action: 'holdTransaction',
+      action: 'holdTransaction', // Menyamakan action name ke Apps Script
       payload: payload
     })
   })
   .then(function(res) { return res.json(); })
   .then(function(result) {
     console.log("Sync Pending ke Sheet Berhasil:", result);
-
-    // Ambil data terbaru dari server untuk membersihkan & menyamakan state lokal
-    return fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'getInitialData' })
-    });
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(res) {
-    if (res.success && res.data && res.data.activeTransactions) {
-      activeTransactions = res.data.activeTransactions.map(t => {
-        if (typeof t.items === 'string') {
-          try { t.items = JSON.parse(t.items); } catch(e) { t.items = []; }
-        }
-        return t;
-      });
-      localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-      updateBadges();
-    }
   })
   .catch(function(err) {
-    console.error("Gagal Sync Pending ke Sheet:", err);
+    console.error("Gagal Sync Pending ke Sheet, tersimpan di Local Storage:", err);
   })
   .finally(function() {
+    // Reset UI & Cart setelah fetch dikirim
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
     
     clearCart();
@@ -748,30 +731,15 @@ function restorePendingOrder(transId) {
     return showAlert('Selesaikan atau bersihkan keranjang aktif terlebih dahulu!', 'Peringatan', 'error');
   }
 
-  // BIFURKASI SAFETY: Handling jika target.items berbentuk string JSON dari Sheet/LocalStorage
-  var rawItems = target.items;
-  if (typeof rawItems === 'string') {
-    try {
-      rawItems = JSON.parse(rawItems);
-    } catch (e) {
-      console.error("Gagal parse items:", e);
-      rawItems = [];
-    }
-  }
-
-  currentCart = JSON.parse(JSON.stringify(rawItems || []));
+  currentCart = JSON.parse(JSON.stringify(target.items));
   currentRestoredTransId = target.transId;
 
   lockCartUI();
   
   setActiveHeaderTab(null);
   hideAllViews();
-
-  var newOrderView = document.getElementById('new-order-view');
-  if (newOrderView) newOrderView.classList.remove('hidden');
-
-  var custNameElem = document.getElementById('cart-customer-name');
-  if (custNameElem) custNameElem.innerText = target.customerName || 'Umum';
+  document.getElementById('new-order-view').classList.remove('hidden');
+  document.getElementById('cart-customer-name').innerText = target.customerName;
 
   updateCartUI();
   showAlert('Pesanan ' + transId + ' dipulihkan ke keranjang (Di-kunci).', 'Informasi', 'info');
@@ -818,7 +786,8 @@ function submitTransaction() {
   if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
   var now = new Date();
-  var transId = currentRestoredTransId || generateTrxId();
+  var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+  var transId = currentRestoredTransId || ('TRX-' + dateStr + '-' + Math.floor(1000 + Math.random() * 9000));
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
   var payload = {
@@ -833,12 +802,7 @@ function submitTransaction() {
     items: JSON.parse(JSON.stringify(currentCart))
   };
 
-  // Jika transaksi ini berasal dari Restore Pending, bersihkan dari daftar pending lokal terlebih dahulu
-  if (currentRestoredTransId) {
-    activeTransactions = activeTransactions.filter(function(t) {
-      return t.transId !== currentRestoredTransId;
-    });
-  }
+  var existingIdx = activeTransactions.findIndex(t => t.transId === transId);
 
   var orderData = {
     transId: transId,
@@ -855,14 +819,19 @@ function submitTransaction() {
     items: payload.items
   };
 
-  activeTransactions.push(orderData);
+  // Update UI lokal
+  if (existingIdx >= 0) {
+    activeTransactions[existingIdx] = orderData;
+  } else {
+    activeTransactions.push(orderData);
+  }
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
-  // TERBANGKAN LANGSUNG KE GOOGLE SHEET VIA FETCH
+  // TERBANGKAN LANGSUNG KE GOOGLE SHEET
   fetch(API_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'text/plain;charset=utf-8',
+      'Content-Type': 'text/plain;charset=utf-8', // Bypass CORS preflight browser
     },
     body: JSON.stringify({
       action: 'saveTransaction',
@@ -871,31 +840,13 @@ function submitTransaction() {
   })
   .then(function(res) { return res.json(); })
   .then(function(result) {
-    console.log("Sync Submit ke Sheet Berhasil:", result);
-
-    // Ambil data terbaru dari server untuk membersihkan & menyamakan state lokal
-    return fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'getInitialData' })
-    });
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(res) {
-    if (res.success && res.data && res.data.activeTransactions) {
-      activeTransactions = res.data.activeTransactions.map(t => {
-        if (typeof t.items === 'string') {
-          try { t.items = JSON.parse(t.items); } catch(e) { t.items = []; }
-        }
-        return t;
-      });
-      localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-      updateBadges();
-    }
+    console.log("Sync Sheet Berhasil:", result);
   })
   .catch(function(err) {
-    console.error("Gagal Sync Submit ke Sheet:", err);
+    console.error("Gagal Sync ke Sheet, data tersimpan di Local Storage:", err);
   })
   .finally(function() {
+    // Tutup overlay & reset cart setelah fetch dipicu
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
     closeModal('payment-modal');
     
@@ -1105,29 +1056,3 @@ window.addEventListener('beforeunload', function (e) {
     return e.returnValue;
   }
 });
-
-
-function generateTrxId() {
-  var now = new Date();
-  var yy = String(now.getFullYear()).slice(-2);
-  var mm = String(now.getMonth() + 1).padStart(2, '0');
-  var dd = String(now.getDate()).padStart(2, '0');
-  var todayStr = yy + mm + dd;
-
-  var lastDate = localStorage.getItem('pos_last_date');
-  var counter = parseInt(localStorage.getItem('pos_trx_counter') || '0', 10);
-
-  // Jika hari baru / belum ada record, reset counter ke 1
-  if (lastDate !== todayStr) {
-    lastDate = todayStr;
-    counter = 1;
-  } else {
-    counter += 1;
-  }
-
-  // Update counter terbaru ke LocalStorage
-  localStorage.setItem('pos_last_date', lastDate);
-  localStorage.setItem('pos_trx_counter', counter);
-
-  return 'QSK-' + todayStr + '-' + String(counter).padStart(3, '0');
-}
