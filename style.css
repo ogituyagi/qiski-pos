@@ -808,8 +808,14 @@ header h1, .brand-title, .header-brand {
   }
 }
 
+/* Sembunyikan Bottom Nav & Handle Bar secara default di Desktop */
+.bottom-nav-bar,
+.cart-mobile-handle {
+  display: none;
+}
+
 /* ==========================================
-   RESPONSIVE DESIGN FOR MOBILE (FIXED & OPTIMIZED)
+   RESPONSIVE DESIGN FOR MOBILE (MAX-WIDTH: 768px)
    ========================================== */
 @media screen and (max-width: 768px) {
   
@@ -848,12 +854,12 @@ header h1, .brand-title, .header-brand {
     display: none !important; 
   }
 
-  /* 2. LAYOUT POS & KATALOG (FIXED HALAMAN KETUTUP) */
+  /* 2. LAYOUT POS & KATALOG */
   .pos-layout {
     display: flex !important;
     flex-direction: column !important;
     height: auto !important;
-    padding-bottom: 110px !important; /* Biar catalog ga ketutup floating bar */
+    padding-bottom: 110px !important;
   }
 
   .menu-section {
@@ -867,25 +873,42 @@ header h1, .brand-title, .header-brand {
     gap: 10px !important;
   }
 
-  /* FIX FLOATING BAR KERANJANG (TIDAK LAGI NUTUPIN KATALOG) */
+  /* 3. HANDLE BAR (GARIS TARIKAN ABU-ABU) */
+  .cart-mobile-handle {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 6px 0 2px 0 !important;
+    cursor: pointer !important;
+    width: 100% !important;
+  }
+
+  .handle-bar {
+    width: 36px !important;
+    height: 4px !important;
+    background: #ccc !important;
+    border-radius: 4px !important;
+  }
+
+  /* 4. FLOATING BAR KERANJANG (MODE TERTUTUP) */
   .cart-section {
     position: fixed !important;
-    bottom: 60px !important; /* Pas di atas Bottom Navigation Bar */
+    bottom: 60px !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    height: auto !important; /* PENTING: Bikin tinggi menyesuaikan isi bar saja */
+    height: auto !important;
     z-index: 990 !important;
     background: #fff !important;
     box-shadow: 0 -4px 15px rgba(0,0,0,0.15) !important;
     border-radius: 16px 16px 0 0 !important;
-    padding: 10px 14px !important;
+    padding: 6px 14px 12px 14px !important;
     box-sizing: border-box !important;
   }
 
   .cart-section .cart-header,
   .cart-section .cart-items {
-    display: none !important; /* Sembunyikan item keranjang di mode ringkas */
+    display: none !important;
   }
 
   .cart-footer {
@@ -893,19 +916,46 @@ header h1, .brand-title, .header-brand {
     border: none !important;
   }
 
-  /* Mode Keranjang Di-expand/Buka Penuh */
+  /* 5. FLOATING BAR KERANJANG (MODE TERBUKA / EXPANDED) */
   .cart-section.mobile-expanded {
     bottom: 0 !important;
     height: 80vh !important;
     border-radius: 20px 20px 0 0 !important;
+    z-index: 10001 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 10px 16px 16px 16px !important;
   }
 
-  .cart-section.mobile-expanded .cart-header,
+  .cart-section.mobile-expanded .cart-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid #eee !important;
+  }
+
   .cart-section.mobile-expanded .cart-items {
     display: block !important;
+    flex: 1 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    padding: 10px 0 !important;
   }
 
-  /* 3. BOTTOM NAVIGATION BAR */
+  .cart-section.mobile-expanded .cart-footer {
+    display: block !important;
+    border-top: 1px solid #eee !important;
+    padding-top: 10px !important;
+    margin-top: auto !important;
+  }
+
+  .cart-section.mobile-expanded .cart-actions {
+    display: flex !important;
+    gap: 8px !important;
+  }
+
+  /* 6. BOTTOM NAVIGATION BAR */
   .bottom-nav-bar {
     display: flex !important;
     position: fixed !important;
@@ -958,15 +1008,15 @@ header h1, .brand-title, .header-brand {
     border-radius: 10px;
   }
 
-  /* 4. GRID KANTUNG 1 KOLOM */
+  /* 7. GRID KANTUNG 1 KOLOM */
   .orders-grid {
     grid-template-columns: 1fr !important;
   }
 
-  /* 5. FIX MODAL AMAN DARI KEYBOARD HP */
+  /* 8. MODAL FIX KEYBOARD */
   .modal-overlay {
     z-index: 99999 !important;
-    align-items: center !important; /* Ubah ke center agar modal terdorong ke tengah */
+    align-items: center !important;
     padding: 15px !important;
     box-sizing: border-box !important;
   }
@@ -977,58 +1027,9 @@ header h1, .brand-title, .header-brand {
     border-radius: 16px !important;
     position: relative !important;
     margin: auto !important;
-    
-    /* Mencegah modal terpotong saat keyboard aktif */
     max-height: 80vh !important;
     overflow-y: auto !important;
     padding: 20px !important;
     box-sizing: border-box !important;
-  }
-}
-
-.bottom-nav-bar {
-  display: none;
-}
-
-
-@media screen and (max-width: 768px) {
-  /* Mode Keranjang Buka Penuh (Expanded) */
-  .cart-section.mobile-expanded {
-    bottom: 0 !important;
-    height: 80vh !important;
-    border-radius: 20px 20px 0 0 !important;
-    z-index: 10001 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    padding-bottom: 15px !important;
-  }
-
-  .cart-section.mobile-expanded .cart-header {
-    display: flex !important;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #eee;
-  }
-
-  .cart-section.mobile-expanded .cart-items {
-    display: block !important;
-    flex: 1 !important;
-    max-height: none !important;
-    overflow-y: auto !important;
-    padding: 10px 0 !important;
-  }
-
-  /* Ketiak Buka, Footer & Tombol Tetap Tampil Tegas di Bawah */
-  .cart-section.mobile-expanded .cart-footer {
-    display: block !important;
-    border-top: 1px solid #eee !important;
-    padding-top: 10px !important;
-    margin-top: auto !important;
-  }
-
-  .cart-section.mobile-expanded .cart-actions {
-    display: flex !important;
-    gap: 8px !important;
   }
 }
