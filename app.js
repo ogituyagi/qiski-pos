@@ -81,12 +81,25 @@ function updateOnlineStatusUI() {
 
 function checkExistingSession() {
   var savedSession = localStorage.getItem('qiski_session');
+  var bottomNav = document.querySelector('.bottom-nav-bar');
+
   if (savedSession) {
     currentUser = JSON.parse(savedSession);
     document.getElementById('user-display').innerText = currentUser.nama;
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('app-page').classList.remove('hidden');
+
+    // TAMPILKAN BOTTOM NAV JIKA SUDAH LOGIN & DI MOBILE
+    if (window.innerWidth <= 768 && bottomNav) {
+      bottomNav.style.display = 'flex';
+    }
+
     showDashboard();
+  } else {
+    // SEMBUNYIKAN BOTTOM NAV JIKA BELUM LOGIN
+    if (bottomNav) {
+      bottomNav.style.display = 'none';
+    }
   }
 }
 
