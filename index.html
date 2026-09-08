@@ -216,10 +216,10 @@
     <div id="cash-group">
       <div class="form-group" style="margin-bottom: 6px;">
         <label>Uang Diterima</label>
+        <!-- PASTIKAN type="text", BUKAN type="number" -->
         <input type="text" id="pay-cash-paid" oninput="formatCashInput(this)" placeholder="Rp 0">
       </div>
-
-      <!-- Chip Shortcut Nominal Uang -->
+    
       <div class="cash-chips-container">
         <button type="button" class="cash-chip" onclick="selectCashChip(10000)">10rb</button>
         <button type="button" class="cash-chip" onclick="selectCashChip(20000)">20rb</button>
@@ -227,10 +227,10 @@
         <button type="button" class="cash-chip" onclick="selectCashChip(100000)">100rb</button>
         <button type="button" class="cash-chip chip-exact" onclick="selectExactCash()">Uang Pas</button>
       </div>
-
+    
       <div class="form-group">
         <label>Kembalian</label>
-        <input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);">
+        <input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);" value="Rp 0">
       </div>
     </div>
 
