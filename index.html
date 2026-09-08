@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>QisKi Juice POS</title>
+  <!-- Font Awesome dihapus jika hanya memakai SVG inline untuk efisiensi loading -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,8 +15,14 @@
       <h2>QisKi Juice</h2>
       <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 13px; font-weight: 600;">Point of Sales System</p>
       <form onsubmit="handleLogin(event)">
-        <div class="form-group"><label>Username</label><input type="text" id="username" required></div>
-        <div class="form-group"><label>Password</label><input type="password" id="password" required></div>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="current-password" required>
+        </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">LOGIN KASIR</button>
       </form>
     </div>
@@ -25,24 +31,24 @@
   <!-- PAGE 2: MAIN APP -->
   <div id="app-page" class="hidden">
     <header>
-      <div class="header-brand" onclick="showDashboard()">
+      <div class="header-brand" onclick="showDashboard()" style="cursor: pointer;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
         <span>QisKi Juice POS</span>
       </div>
 
       <div class="header-tabs">
-        <button class="tab-btn active" id="tab-home" onclick="showDashboard()">
+        <button type="button" class="tab-btn active" id="tab-home" onclick="showDashboard()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           Home
         </button>
         
-        <button class="tab-btn" id="tab-pending" onclick="openPendingTab()">
+        <button type="button" class="tab-btn" id="tab-pending" onclick="openPendingTab()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Pending
           <span id="badge-pending" class="badge-count" style="display: none;">0</span>
         </button>
         
-        <button class="tab-btn" id="tab-kitchen" onclick="openKitchenTab()">
+        <button type="button" class="tab-btn" id="tab-kitchen" onclick="openKitchenTab()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A8 8 0 0 1 12 4a8 8 0 0 1 6 9.87"/><line x1="6" y1="17" x2="18" y2="17"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           Antrian Proses
           <span id="badge-proses" class="badge-count" style="display: none;">0</span>
@@ -51,7 +57,7 @@
 
       <div style="display: flex; align-items: center; gap: 10px;">
         <span id="user-display" style="font-size: 12px; font-weight: 700;">Kasir</span>
-        <button onclick="logout()" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 4px 10px; font-size: 11px;">Logout</button>
+        <button type="button" onclick="logout()" class="btn" style="background: rgba(255,255,255,0.2); color: white; padding: 4px 10px; font-size: 11px; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
       </div>
     </header>
 
@@ -73,7 +79,6 @@
             <p>Buat transaksi penjualan jus baru untuk pelanggan</p>
           </div>
 
-          <!-- PENDING & DAPUR LINK KE TAB KANTUNG -->
           <div class="dash-card" onclick="openPendingTab()">
             <div class="dash-icon">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -121,20 +126,20 @@
             <div class="cart-footer">
               <div class="cart-total">
                 <label>Total</label>
-                <val id="cart-total-val">Rp 0</val>
+                <span id="cart-total-val" style="font-weight: 900;">Rp 0</span>
               </div>
               <div class="cart-actions">
-                <button id="btnRed" onclick="handleRedButton()" class="btn btn-secondary">
+                <button type="button" id="btnRed" onclick="handleRedButton()" class="btn btn-secondary">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                   <span id="btnRedText">Batal</span>
                 </button>
               
-                <button onclick="savePendingOrder()" class="btn btn-warning">
+                <button type="button" onclick="savePendingOrder()" class="btn btn-warning">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   Pending
                 </button>
               
-                <button onclick="openPaymentModal()" class="btn btn-success">
+                <button type="button" onclick="openPaymentModal()" class="btn btn-success">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="12" x2="10" y2="12"/><line x1="6" y1="16" x2="12" y2="16"/><circle cx="16" cy="12" r="2"/></svg>
                   Bayar
                 </button>
@@ -144,33 +149,33 @@
         </div>
       </div>
 
-      <!-- VIEW 3: KANTUNG PENDING (DIPINDAHKAN KE DALAM VIEW-CONTENT) -->
+      <!-- VIEW 3: KANTUNG PENDING -->
       <div id="pending-orders-view" class="view-section hidden" style="padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
           <h2 style="font-size: 18px; font-weight: 700; color: #333;">Kantung Pending</h2>
-          <button onclick="showDashboard()" class="btn" style="background: #eee; color: #333; padding: 6px 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">← Kembali</button>
+          <button type="button" onclick="showDashboard()" class="btn" style="background: #eee; color: #333; padding: 6px 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">← Kembali</button>
         </div>
         <div id="pending-orders-list" class="orders-grid"></div>
       </div>
 
-      <!-- VIEW 4: ANTRIAN PROSES (DIPINDAHKAN KE DALAM VIEW-CONTENT) -->
+      <!-- VIEW 4: ANTRIAN PROSES -->
       <div id="kitchen-orders-view" class="view-section hidden" style="padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
           <h2 style="font-size: 18px; font-weight: 700; color: #333;">Antrian Proses (Dapur/Bar)</h2>
-          <button onclick="showDashboard()" class="btn" style="background: #eee; color: #333; padding: 6px 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">← Kembali</button>
+          <button type="button" onclick="showDashboard()" class="btn" style="background: #eee; color: #333; padding: 6px 12px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer;">← Kembali</button>
         </div>
         <div id="kitchen-orders-list" class="orders-grid"></div>
       </div>
 
-    </div> <!-- TUTUP VIEW-CONTENT -->
-  </div> <!-- TUTUP APP-PAGE -->
+    </div>
+  </div>
 
   <!-- MODAL CUSTOM MODIFIER -->
   <div id="custom-modal" class="modal-overlay hidden">
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="custom-modal-title">Custom Order</h3>
-        <button onclick="closeModal('custom-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
+        <button type="button" onclick="closeModal('custom-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
       <div class="form-group">
         <label>Level Es (Ice):</label>
@@ -191,16 +196,16 @@
       <div class="form-group hidden" style="margin-top:14px;" id="mode-hold-group">
         <label>Jumlah Pesanan Custom (Pcs):</label>
         <div style="display:flex; align-items:center; gap:14px; margin-top:8px;">
-          <button class="btn-qty" onclick="adjustHoldQty(-1)" style="width:36px; height:36px; font-size:16px;">-</button>
+          <button type="button" class="btn-qty" onclick="adjustHoldQty(-1)" style="width:36px; height:36px; font-size:16px;">-</button>
           <span id="hold-qty-val" style="font-weight:900; font-size:18px;">1</span>
-          <button class="btn-qty" onclick="adjustHoldQty(1)" style="width:36px; height:36px; font-size:16px;">+</button>
+          <button type="button" class="btn-qty" onclick="adjustHoldQty(1)" style="width:36px; height:36px; font-size:16px;">+</button>
         </div>
       </div>
       <div class="form-group hidden" style="margin-top:14px;" id="mode-cart-group">
-        <label>Terapkan catatan ini ke berapa item?</label>
+        <label for="custom-apply-qty">Terapkan catatan ini ke berapa item?</label>
         <select id="custom-apply-qty" style="padding:8px; font-size:13px; margin-top:6px; font-weight: 700;"></select>
       </div>
-      <button onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 12px;">SIMPAN KE KERANJANG</button>
+      <button type="button" onclick="saveCustomModifier()" class="btn btn-primary" style="width: 100%; margin-top: 20px; padding: 12px;">SIMPAN KE KERANJANG</button>
     </div>
   </div>
 
@@ -209,14 +214,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>Pembayaran Transaksi</h3>
-        <button onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
+        <button type="button" onclick="closeModal('payment-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
       <div class="form-group">
-        <label>Total Akhir</label>
+        <label for="pay-total-akhir">Total Akhir</label>
         <input type="text" id="pay-total-akhir" readonly style="background:#fff7f0; font-weight:900; color:var(--primary-orange-dark); font-size:18px;">
       </div>
       <div class="form-group">
-        <label>Metode Pembayaran</label>
+        <label for="pay-method">Metode Pembayaran</label>
         <select id="pay-method" onchange="togglePayMethod()">
           <option value="CASH">Cash / Tunai</option>
           <option value="QRIS">QRIS / Non-Tunai</option>
@@ -224,7 +229,7 @@
       </div>
       <div id="cash-group">
         <div class="form-group" style="margin-bottom: 6px;">
-          <label>Uang Diterima</label>
+          <label for="pay-cash-paid">Uang Diterima</label>
           <input type="text" id="pay-cash-paid" oninput="formatCashInput(this)" placeholder="Rp 0">
         </div>
         <div class="cash-chips-container">
@@ -235,11 +240,11 @@
           <button type="button" class="cash-chip chip-exact" onclick="selectExactCash()">Uang Pas</button>
         </div>
         <div class="form-group">
-          <label>Kembalian</label>
+          <label for="pay-change">Kembalian</label>
           <input type="text" id="pay-change" readonly style="font-weight:900; color:var(--primary-pink);" value="Rp 0">
         </div>
       </div>
-      <button onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
+      <button type="button" onclick="submitTransaction()" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">PROSES TRANSAKSI</button>
     </div>
   </div>
 
@@ -252,25 +257,25 @@
       </div>
       <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 16px;">
         <h3 style="font-size: 18px; font-weight: 800; color: var(--primary-pink); margin: 0;">Pilih Identitas Pemesan</h3>
-        <button onclick="closeModal('customer-gate-modal')" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✖</button>
+        <button type="button" onclick="closeModal('customer-gate-modal')" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
       <p style="font-size: 12px; color: var(--text-muted); margin-top: -10px; margin-bottom: 18px; font-weight: 600;">Silakan tentukan tipe pelanggan sebelum memulai transaksi baru.</p>
       <div class="radio-chip-group" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: none; padding: 0;">
-        <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; justify-content: center;">
+        <div class="radio-chip selected" id="chip-umum" onclick="selectCustomerType('REGULAR')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Pelanggan Umum
         </div>
-        <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; justify-content: center;">
+        <div class="radio-chip" id="chip-member" onclick="selectCustomerType('MEMBER')" style="flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 1 0 7.75"/></svg>
           Member QSK
         </div>
       </div>
       <div id="input-nama-container" style="margin-bottom: 20px;">
-        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama Pelanggan / Meja:</label>
+        <label for="cust-name" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama Pelanggan / Meja:</label>
         <input type="text" id="cust-name" placeholder="Contoh: Budi / Meja 04..." style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box;">
       </div>
       <div id="select-member-container" class="hidden" style="position: relative; margin-bottom: 20px;">
-        <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Cari Member:</label>
+        <label for="member-search-input" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Cari Member:</label>
         <input type="text" id="member-search-input" placeholder="Ketik Nama Member / No. HP..." onfocus="showMemberDropdown()" oninput="filterMemberList()" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box; background: #fff;">
         <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
           <div onclick="openAddMemberModal()" style="padding: 10px 14px; cursor: pointer; font-weight: 800; font-size: 12px; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
@@ -289,12 +294,21 @@
     <div class="modal-content">
       <div class="modal-header">
         <h3>Pendaftaran Member Baru</h3>
-        <button onclick="closeModal('add-member-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
+        <button type="button" onclick="closeModal('add-member-modal')" style="border:none; background:none; font-size:18px; cursor:pointer; color:var(--text-muted);">✖</button>
       </div>
       <form onsubmit="handleSaveNewMember(event)">
-        <div class="form-group"><label>Nama Lengkap</label><input type="text" id="new-member-name" placeholder="Masukan nama lengkap..." required></div>
-        <div class="form-group"><label>Nomor HP (WhatsApp)</label><input type="tel" id="new-member-phone" placeholder="Contoh: 08123456789" required></div>
-        <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="new-member-dob" required></div>
+        <div class="form-group">
+          <label for="new-member-name">Nama Lengkap</label>
+          <input type="text" id="new-member-name" placeholder="Masukan nama lengkap..." required>
+        </div>
+        <div class="form-group">
+          <label for="new-member-phone">Nomor HP (WhatsApp)</label>
+          <input type="tel" id="new-member-phone" placeholder="Contoh: 08123456789" required>
+        </div>
+        <div class="form-group">
+          <label for="new-member-dob">Tanggal Lahir</label>
+          <input type="date" id="new-member-dob" required>
+        </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px; padding: 12px;">SIMPAN MEMBER</button>
       </form>
     </div>
@@ -306,7 +320,7 @@
       <div id="alert-icon-container" style="margin-bottom: 12px;"></div>
       <h3 id="alert-modal-title" style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Notifikasi</h3>
       <p id="alert-modal-message" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.4;"></p>
-      <button onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
+      <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800;">OK</button>
     </div>
   </div>
 
