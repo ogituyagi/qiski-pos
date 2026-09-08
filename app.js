@@ -6,11 +6,10 @@ var membersData = [];
 var activeTransactions = []; // Menyimpan data pending & proses
 
 var currentUser = null;
-var currentCart = [];
-var cart = currentCart;
+var currentCart = []; // KUNCI: Hanya menggunakan 1 variabel tunggal ini
 var selectedCustomerType = 'REGULAR';
 var selectedMemberId = null;
-var currentRestoredTransId = null; // Stays NOT NULL if order is restored from Pending
+var currentRestoredTransId = null; // Stays NOT NULL jika order direstore dari Pending
 
 // Modal & Customization State
 var modalTriggerSource = null; 
@@ -28,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
   checkExistingSession();
   loadDataFromSheet();
   
-  // Auto sync when coming back online
+  // Auto sync saat koneksi kembali online
   window.addEventListener('online', function() {
     showAlert('Koneksi internet kembali! Mengirim data antrean...', 'Online', 'info');
     processSyncQueue();
@@ -80,14 +79,12 @@ function logout() {
 
 // DATA FETCHING & LOCALSTORAGE SYNC ENGINE
 function loadDataFromSheet() {
-  // 1. Load Local Active Orders First (Instant UI)
   var localActive = localStorage.getItem('pos_active_orders');
   if (localActive) {
     activeTransactions = JSON.parse(localActive);
     updateBadges();
   }
 
-  // 2. Sync From Spreadsheet Backend
   fetch(API_URL, {
     method: 'POST',
     body: JSON.stringify({ action: 'getInitialData' })
@@ -103,7 +100,7 @@ function loadDataFromSheet() {
       }
       renderCatalog();
       updateBadges();
-      processSyncQueue(); // Trigger background sync check
+      processSyncQueue();
     }
   })
   .catch(err => console.warn("Menggunakan data lokal (Offline Mode):", err));
@@ -147,7 +144,6 @@ function processSyncQueue() {
       if (currentQueue.length > 0) {
         processSyncQueue();
       } else {
-        // Sync full state when queue is cleared
         fetch(API_URL, {
           method: 'POST',
           body: JSON.stringify({ action: 'getInitialData' })
@@ -174,17 +170,15 @@ function updateBadges() {
 
   var pendingCount = activeTransactions.filter(function(t) {
     if (t.status !== 'PENDING') return false;
-    if (!t.waktu) return true; // Jika waktu kosong, tetap tampilkan
+    if (!t.waktu) return true;
 
     var d = new Date(t.waktu);
-    // Jika format tanggal valid, cocokkan tanggal, bulan, dan tahunnya
     if (!isNaN(d.getTime())) {
       return d.getFullYear() === todayYear && 
              d.getMonth() === todayMonth && 
              d.getDate() === todayDate;
     }
     
-    // Fallback jika berupa string manual YYYY-MM-DD
     var datePart = String(t.waktu).split(' ')[0].split('T')[0];
     var todayStr = todayYear + '-' + String(todayMonth + 1).padStart(2, '0') + '-' + String(todayDate).padStart(2, '0');
     return datePart === todayStr;
@@ -210,13 +204,25 @@ function updateBadges() {
 // HEADER TAB & ROUTING MANAGEMENT
 function setActiveHeaderTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  if (tabId) document.getElementById(tabId).classList.add('active');
+  if (tabId) {
+    var target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+  }
+}
+
+function hideAllViews() {
+  var views = ['home-dashboard-view', 'new-order-view', 'pending-orders-view', 'kitchen-orders-view'];
+  views.forEach(id => {
+    var el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
 }
 
 function showDashboard() {
   setActiveHeaderTab('tab-home');
-  document.getElementById('home-dashboard-view').classList.remove('hidden');
-  document.getElementById('new-order-view').classList.add('hidden');
+  hideAllViews();
+  var homeView = document.getElementById('home-dashboard-view');
+  if (homeView) homeView.classList.remove('hidden');
 }
 
 function openNewOrderFlow() {
@@ -256,7 +262,7 @@ function confirmCustomerAndProceed() {
     closeModal('customer-gate-modal');
 
     setActiveHeaderTab(null);
-    document.getElementById('home-dashboard-view').classList.add('hidden');
+    hideAllViews();
     document.getElementById('new-order-view').classList.remove('hidden');
 
     document.getElementById('cart-customer-name').innerText = getActiveCustomerName();
@@ -406,7 +412,7 @@ function filterCatalogMenu() {
 
 // CART CUSTOMIZATION & MODIFIER
 function startHold(productId) {
-  if (currentRestoredTransId) return; // Block adding items if cart is locked from pending restore
+  if (currentRestoredTransId) return;
   isLongPress = false;
   holdTimer = setTimeout(function() {
     isLongPress = true;
@@ -560,7 +566,6 @@ function updateCartUI() {
     var subtotal = item.harga * item.qty;
     total += subtotal;
     
-    // Hide controls if cart is locked from pending restore
     var isLocked = currentRestoredTransId !== null;
 
     return `
@@ -638,7 +643,7 @@ function getActiveCustomerName() {
   }
 }
 
-// HOLD & PENDING FLOW (OFFLINE-FIRST)
+// HOLD & PENDING FLOW
 function savePendingOrder() {
   if (currentCart.length === 0) {
     return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
@@ -666,7 +671,6 @@ function savePendingOrder() {
     items: JSON.parse(JSON.stringify(currentCart))
   };
 
-  // 1. Instant Local Update
   activeTransactions.push({
     transId: transId,
     waktu: timeStr,
@@ -684,13 +688,11 @@ function savePendingOrder() {
 
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
-  // 2. Clear UI & Update Badges
   clearCart();
   updateBadges();
   showDashboard();
   showAlert('Pesanan a/n "' + custName + '" berhasil di-Hold!', 'Sukses', 'success');
 
-  // 3. Queue Background Sync
   queueForSync('holdTransaction', payload);
 }
 
@@ -707,9 +709,8 @@ function restorePendingOrder(transId) {
 
   lockCartUI();
   
-  // Navigate back to cart view
   setActiveHeaderTab(null);
-  document.getElementById('home-dashboard-view').classList.add('hidden');
+  hideAllViews();
   document.getElementById('new-order-view').classList.remove('hidden');
   document.getElementById('cart-customer-name').innerText = target.customerName;
 
@@ -717,7 +718,7 @@ function restorePendingOrder(transId) {
   showAlert('Pesanan ' + transId + ' dipulihkan ke keranjang (Di-kunci).', 'Informasi', 'info');
 }
 
-// PAYMENT FLOW (WITH LOADING OVERLAY & OFFLINE-FIRST)
+// PAYMENT FLOW
 function openPaymentModal() {
   if (currentCart.length === 0) {
     return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
@@ -754,7 +755,6 @@ function submitTransaction() {
     return showAlert('Uang pembayaran masih kurang!', 'Gagal Transaksi', 'error');
   }
 
-  // TAMPILKAN LOADING OVERLAY
   var loadingOverlay = document.getElementById('gate-loading-overlay');
   if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
@@ -775,7 +775,6 @@ function submitTransaction() {
     items: JSON.parse(JSON.stringify(currentCart))
   };
 
-  // 1. Instant Local State Update
   var existingIdx = activeTransactions.findIndex(t => t.transId === transId);
 
   var orderData = {
@@ -794,14 +793,12 @@ function submitTransaction() {
   };
 
   if (existingIdx >= 0) {
-    activeTransactions[existingIdx] = orderData; // Update PENDING -> PROSES
+    activeTransactions[existingIdx] = orderData;
   } else {
     activeTransactions.push(orderData);
   }
 
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-
-  // 2. Queue Background Sync & Delay Sedikit Biar Loading Mulus
   queueForSync('saveTransaction', payload);
 
   setTimeout(function() {
@@ -823,8 +820,10 @@ function finishOrder(transId) {
   var target = activeTransactions.find(t => t.transId === transId);
   if (target) {
     target.status = 'SELESAI';
+    activeTransactions = activeTransactions.filter(t => t.transId !== transId);
     localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
     updateBadges();
+    renderKitchenListUI();
   }
 
   queueForSync('updateOrderStatus', { transId: transId, status: 'SELESAI' });
@@ -893,157 +892,7 @@ function selectExactCash() {
   selectCashChip(subtotal);
 }
 
-// CUSTOM ALERT MODAL HELPERS
-function showAlert(message, title = 'Informasi', type = 'info') {
-  var modal = document.getElementById('custom-alert-modal');
-  var titleElem = document.getElementById('alert-modal-title');
-  var msgElem = document.getElementById('alert-modal-message');
-  var iconContainer = document.getElementById('alert-icon-container');
-
-  if (!modal || !titleElem || !msgElem || !iconContainer) {
-    alert(title + ": " + message);
-    return;
-  }
-
-  titleElem.innerText = title;
-  msgElem.innerText = message;
-
-  if (type === 'success') {
-    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
-  } else if (type === 'error') {
-    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
-  } else {
-    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
-  }
-
-  modal.classList.remove('hidden');
-}
-
-function closeCustomAlert() {
-  document.getElementById('custom-alert-modal').classList.add('hidden');
-}
-
-function closeModal(id) { 
-  document.getElementById(id).classList.add('hidden'); 
-}
-
-// PREVENT CLOSE/REFRESH ACCIDENTAL LOSS
-window.addEventListener('beforeunload', function (e) {
-  if (currentCart && currentCart.length > 0) {
-    e.preventDefault();
-    e.returnValue = 'Masih ada transaksi di keranjang! Yakin ingin keluar?';
-    return e.returnValue;
-  }
-});
-
-// OPEN & RENDER TAB KANTUNG PENDING
-function openPendingTab() {
-  setActiveHeaderTab('tab-pending');
-  document.getElementById('home-dashboard-view').classList.add('hidden');
-  document.getElementById('new-order-view').classList.add('hidden');
-  
-  // Tampilkan container pending view jika ada, atau buat kontainer dinamis
-  var pendingContainer = document.getElementById('pending-orders-view');
-  if (pendingContainer) pendingContainer.classList.remove('hidden');
-
-  renderPendingListUI();
-}
-
-function renderPendingListUI() {
-  var container = document.getElementById('pending-orders-list');
-  if (!container) return;
-
-  var todayStr = new Date().toLocaleDateString('sv-SE');
-  var pendingItems = activeTransactions.filter(t => {
-    var transDate = (t.waktu || '').substring(0, 10);
-    return t.status === 'PENDING' && (transDate === todayStr || !transDate);
-  });
-
-  if (pendingItems.length === 0) {
-    container.innerHTML = '<p style="text-align:center; padding: 30px; color: var(--text-muted);">Tidak ada pesanan pending hari ini.</p>';
-    return;
-  }
-
-  container.innerHTML = pendingItems.map(t => `
-    <div class="order-card-pending" style="border: 1px solid #ddd; padding: 12px; margin-bottom: 10px; border-radius: 8px; background: #fff;">
-      <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 6px;">
-        <span>${t.transId}</span>
-        <span style="color: #f57c00;">PENDING</span>
-      </div>
-      <div style="font-size: 13px; color: #555;">Pelanggan: <b>${t.customerName}</b> (${t.jenisPelanggan})</div>
-      <div style="font-size: 12px; color: #888; margin-bottom: 8px;">Jam: ${t.waktu.substring(11)}</div>
-      <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Total: Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</div>
-      <button onclick="restorePendingOrder('${t.transId}')" style="width: 100%; background: var(--primary-pink, #333); color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-        Restore Pesanan
-      </button>
-    </div>
-  `).join('');
-}
-
-// OPEN & RENDER TAB ANTRIAN PROSES (DAPUR / BAR)
-function openKitchenTab() {
-  setActiveHeaderTab('tab-kitchen');
-  document.getElementById('home-dashboard-view').classList.add('hidden');
-  document.getElementById('new-order-view').classList.add('hidden');
-
-  var kitchenContainer = document.getElementById('kitchen-orders-view');
-  if (kitchenContainer) kitchenContainer.classList.remove('hidden');
-
-  renderKitchenListUI();
-}
-
-function renderKitchenListUI() {
-  var container = document.getElementById('kitchen-orders-list');
-  if (!container) return;
-
-  var prosesItems = activeTransactions.filter(t => t.status === 'PROSES');
-
-  if (prosesItems.length === 0) {
-    container.innerHTML = '<p style="text-align:center; padding: 30px; color: var(--text-muted);">Tidak ada antrian pesanan.</p>';
-    return;
-  }
-
-  container.innerHTML = prosesItems.map(t => `
-    <div class="order-card-proses" style="border: 1px solid #4caf50; padding: 12px; margin-bottom: 10px; border-radius: 8px; background: #f1f8e9;">
-      <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 6px;">
-        <span>${t.transId}</span>
-        <span style="color: #2e7d32;">DIPROSES</span>
-      </div>
-      <div style="font-size: 13px; color: #333;">Pelanggan: <b>${t.customerName}</b></div>
-      <div style="font-size: 12px; color: #666; margin-bottom: 8px;">Metode: ${t.metode}</div>
-      <div style="background: #fff; padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 12px;">
-        ${t.items.map(i => `<div>• ${i.nama} x${i.qty} ${i.notes !== 'Normal' ? `<i>(${i.notes})</i>` : ''}</div>`).join('')}
-      </div>
-      <button onclick="finishOrder('${t.transId}')" style="width: 100%; background: #2e7d32; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer;">
-        Tandai Selesai
-      </button>
-    </div>
-  `).join('');
-}
-
-// HELPER NAVIGASI TAB HEADER
-function setActiveHeaderTab(tabId) {
-  document.querySelectorAll('.header-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
-  var targetBtn = document.getElementById(tabId);
-  if (targetBtn) targetBtn.classList.add('active');
-}
-
-function hideAllViews() {
-  var views = ['home-dashboard-view', 'new-order-view', 'pending-orders-view', 'kitchen-orders-view'];
-  views.forEach(id => {
-    var el = document.getElementById(id);
-    if (el) el.classList.add('hidden');
-  });
-}
-
-function showDashboard() {
-  setActiveHeaderTab('tab-home');
-  hideAllViews();
-  var homeView = document.getElementById('home-dashboard-view');
-  if (homeView) homeView.classList.remove('hidden');
-}
-
-// 1. HALAMAN KANTUNG PENDING
+// TAB VIEW NAVIGATION (PENDING & KITCHEN)
 function openPendingTab() {
   setActiveHeaderTab('tab-pending');
   hideAllViews();
@@ -1079,33 +928,6 @@ function renderPendingListUI() {
   `).join('');
 }
 
-// RESTORE PENDING ORDER DENGAN MENGAMBIL ITEM DARI APP SCRIPT / CACHE
-function restorePendingOrder(transId) {
-  var order = activeTransactions.find(t => t.transId === transId);
-  if (!order) return;
-
-  // Kembalikan item ke keranjang belanja POS
-  cart = order.items.map(item => ({
-    id: item.id,
-    nama: item.nama,
-    harga: item.harga,
-    qty: item.qty,
-    notes: item.notes || 'Normal'
-  }));
-
-  // Set info pelanggan
-  currentCustomerName = order.customerName;
-  currentCustomerType = order.jenisPelanggan;
-  currentTransId = order.transId; // Simpan ID agar pas bayar statusnya ter-update di row yang sama
-
-  // Render ulang UI POS Keranjang
-  renderCart();
-  
-  // Berpindah ke Halaman Utama / Kasir
-  showDashboard();
-}
-
-// 2. HALAMAN ANTRIAN PROSES
 function openKitchenTab() {
   setActiveHeaderTab('tab-kitchen');
   hideAllViews();
@@ -1134,7 +956,6 @@ function renderKitchenListUI() {
       <div style="font-size:13px; color:#333; margin-bottom:4px;">Pelanggan: <b>${t.customerName || 'Umum'}</b></div>
       <div style="font-size:12px; color:#666; margin-bottom:10px;">Metode: ${t.metode || 'CASH'}</div>
       
-      <!-- List Items Pesanan -->
       <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;">
         ${t.items.map(i => `<div style="display:flex; justify-content:space-between; margin-bottom:4px;">
           <span><b>${i.qty}x</b> ${i.nama}</span>
@@ -1149,25 +970,44 @@ function renderKitchenListUI() {
   `).join('');
 }
 
-// UBAH STATUS TRANSAKSI JADI SELESAI
-function finishOrder(transId) {
-  if (!confirm('Tandai pesanan ini sudah selesai?')) return;
+// CUSTOM ALERT MODAL HELPERS
+function showAlert(message, title = 'Informasi', type = 'info') {
+  var modal = document.getElementById('custom-alert-modal');
+  var titleElem = document.getElementById('alert-modal-title');
+  var msgElem = document.getElementById('alert-modal-message');
+  var iconContainer = document.getElementById('alert-icon-container');
 
-  // 1. Update di Frontend Local Active Array
-  activeTransactions = activeTransactions.filter(t => t.transId !== transId);
-  updateBadges();
-  renderKitchenListUI();
+  if (!modal || !titleElem || !msgElem || !iconContainer) {
+    alert(title + ": " + message);
+    return;
+  }
 
-  // 2. Update Status di Sheet Backend lewat API
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify({
-      action: 'updateOrderStatus',
-      transId: transId,
-      status: 'SELESAI'
-    })
-  }).then(res => res.json())
-    .then(res => {
-      if (!res.success) alert('Gagal memperbarui status di server.');
-    }).catch(err => console.error(err));
+  titleElem.innerText = title;
+  msgElem.innerText = message;
+
+  if (type === 'success') {
+    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`;
+  } else if (type === 'error') {
+    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+  } else {
+    iconContainer.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+  }
+
+  modal.classList.remove('hidden');
 }
+
+function closeCustomAlert() {
+  document.getElementById('custom-alert-modal').classList.add('hidden');
+}
+
+function closeModal(id) { 
+  document.getElementById(id).classList.add('hidden'); 
+}
+
+window.addEventListener('beforeunload', function (e) {
+  if (currentCart && currentCart.length > 0) {
+    e.preventDefault();
+    e.returnValue = 'Masih ada transaksi di keranjang! Yakin ingin keluar?';
+    return e.returnValue;
+  }
+});
