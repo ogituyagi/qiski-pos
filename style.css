@@ -777,3 +777,33 @@ header h1, .brand-title, .header-brand {
   padding-top: 10px;
   margin-top: auto;
 }
+
+
+/* Styling Khusus Cetak Struk Thermal 57mm */
+.hidden-print {
+  display: none !important;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #receipt-print-area, #receipt-print-area * {
+    visibility: visible !important;
+  }
+  #receipt-print-area {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 48mm; /* Lebar efektif kertas thermal 57mm/58mm */
+    font-family: 'Courier New', Courier, monospace;
+    color: #000;
+    padding: 2mm;
+    background: #fff;
+  }
+  @page {
+    size: 58mm auto;
+    margin: 0;
+  }
+}
