@@ -233,3 +233,112 @@ header h1, .brand-title {
   font-size: 15px !important;
   height: 46px !important;
 }
+
+/* Perbaikan Input Search */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-container input, 
+#menu-search-input {
+  width: 100% !important;
+  padding-left: 42px !important; /* Memberi ruang untuk icon di kiri */
+  padding-right: 16px !important;
+  height: 48px !important;
+  font-size: 15px !important;
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.search-container svg, 
+.search-container i,
+.search-icon {
+  position: absolute !important;
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+}
+
+/* Tampilan Item Keranjang Baru */
+.cart-item {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 14px !important;
+  margin-bottom: 12px !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  border: 1px solid #ffe3d1 !important;
+}
+
+.cart-item-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+}
+
+.cart-item-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #222 !important;
+}
+
+/* Tombol Custom Lebih Besar & Jelas */
+.btn-custom {
+  padding: 6px 14px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 20px !important;
+  border: 1px solid #ff4d4d !important;
+  color: #ff4d4d !important;
+  background: #fff5f5 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* Kolom Kanan: Qty di Atas, Harga di Bawah */
+.cart-item-right {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  gap: 8px !important;
+}
+
+.qty-control {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: #f5f5f5 !important;
+  padding: 3px !important;
+  border-radius: 8px !important;
+}
+
+.btn-qty {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  border: none !important;
+  border-radius: 6px !important;
+  background: #fff !important;
+  cursor: pointer !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.qty-num {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  min-width: 24px !important;
+  text-align: center !important;
+}
+
+.cart-item-price {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #1a202c !important;
+}
