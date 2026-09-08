@@ -646,45 +646,6 @@ function calculatePayment() {
   }
 }
 
-function submitTransaction() {
-  var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-  var method = document.getElementById('pay-method').value;
-  
-  // Bersihkan format Rp sebelum dijadikan Angka untuk dikirim ke backend
-  var rawPaid = document.getElementById('pay-cash-paid').value.replace(/[^0-9]/g, '');
-  var cashPaid = method === 'CASH' ? (Number(rawPaid) || 0) : subtotal;
-  var custName = getActiveCustomerName();
-
-  if (method === 'CASH' && cashPaid < subtotal) {
-    return alert('Uang pembayaran masih kurang!');
-  }
-
-  var payload = {
-    kasirId: currentUser ? currentUser.id : 'KASIR-01', 
-    customerName: custName, 
-    subtotal: subtotal, 
-    totalAkhir: subtotal,
-    metode: method, 
-    cashPaid: cashPaid, 
-    items: currentCart
-  };
-
-  fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'saveTransaction', payload: payload })
-  })
-  .then(res => res.json())
-  .then(res => {
-    if (res.success) {
-      alert('Transaksi a/n ' + custName + ' Berhasil!');
-      closeModal('payment-modal');
-      showDashboard();
-    } else { 
-      alert('Gagal simpan: ' + res.message); 
-    }
-  });
-}
-
 // Function pengganti alert() bawaan browser
 function showAlert(message, title = 'Informasi', type = 'info') {
   var modal = document.getElementById('custom-alert-modal');
