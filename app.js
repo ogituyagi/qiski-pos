@@ -660,7 +660,7 @@ function savePendingOrder() {
   if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
   var now = new Date();
-  var transId = generateTrxId(); // Langsung panggil generator TRX ID baru
+  var transId = generateTrxId(); 
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
   var payload = {
@@ -706,9 +706,28 @@ function savePendingOrder() {
   .then(function(res) { return res.json(); })
   .then(function(result) {
     console.log("Sync Pending ke Sheet Berhasil:", result);
+
+    // Ambil data terbaru dari server untuk membersihkan & menyamakan state lokal
+    return fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'getInitialData' })
+    });
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(res) {
+    if (res.success && res.data && res.data.activeTransactions) {
+      activeTransactions = res.data.activeTransactions.map(t => {
+        if (typeof t.items === 'string') {
+          try { t.items = JSON.parse(t.items); } catch(e) { t.items = []; }
+        }
+        return t;
+      });
+      localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+      updateBadges();
+    }
   })
   .catch(function(err) {
-    console.error("Gagal Sync Pending ke Sheet, tersimpan di Local Storage:", err);
+    console.error("Gagal Sync Pending ke Sheet:", err);
   })
   .finally(function() {
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
@@ -799,7 +818,6 @@ function submitTransaction() {
   if (loadingOverlay) loadingOverlay.classList.remove('hidden');
 
   var now = new Date();
-  var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
   var transId = currentRestoredTransId || generateTrxId();
   var timeStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
 
@@ -815,7 +833,12 @@ function submitTransaction() {
     items: JSON.parse(JSON.stringify(currentCart))
   };
 
-  var existingIdx = activeTransactions.findIndex(t => t.transId === transId);
+  // Jika transaksi ini berasal dari Restore Pending, bersihkan dari daftar pending lokal terlebih dahulu
+  if (currentRestoredTransId) {
+    activeTransactions = activeTransactions.filter(function(t) {
+      return t.transId !== currentRestoredTransId;
+    });
+  }
 
   var orderData = {
     transId: transId,
@@ -832,19 +855,14 @@ function submitTransaction() {
     items: payload.items
   };
 
-  // Update UI lokal
-  if (existingIdx >= 0) {
-    activeTransactions[existingIdx] = orderData;
-  } else {
-    activeTransactions.push(orderData);
-  }
+  activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
-  // TERBANGKAN LANGSUNG KE GOOGLE SHEET
+  // TERBANGKAN LANGSUNG KE GOOGLE SHEET VIA FETCH
   fetch(API_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'text/plain;charset=utf-8', // Bypass CORS preflight browser
+      'Content-Type': 'text/plain;charset=utf-8',
     },
     body: JSON.stringify({
       action: 'saveTransaction',
@@ -853,13 +871,31 @@ function submitTransaction() {
   })
   .then(function(res) { return res.json(); })
   .then(function(result) {
-    console.log("Sync Sheet Berhasil:", result);
+    console.log("Sync Submit ke Sheet Berhasil:", result);
+
+    // Ambil data terbaru dari server untuk membersihkan & menyamakan state lokal
+    return fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'getInitialData' })
+    });
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(res) {
+    if (res.success && res.data && res.data.activeTransactions) {
+      activeTransactions = res.data.activeTransactions.map(t => {
+        if (typeof t.items === 'string') {
+          try { t.items = JSON.parse(t.items); } catch(e) { t.items = []; }
+        }
+        return t;
+      });
+      localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
+      updateBadges();
+    }
   })
   .catch(function(err) {
-    console.error("Gagal Sync ke Sheet, data tersimpan di Local Storage:", err);
+    console.error("Gagal Sync Submit ke Sheet:", err);
   })
   .finally(function() {
-    // Tutup overlay & reset cart setelah fetch dipicu
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
     closeModal('payment-modal');
     
