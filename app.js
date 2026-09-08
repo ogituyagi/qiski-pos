@@ -644,7 +644,6 @@ function getActiveCustomerName() {
 }
 
 // HOLD & PENDING FLOW
-// HOLD & PENDING FLOW
 function savePendingOrder() {
   if (currentCart.length === 0) {
     return showAlert('Keranjang masih kosong, pilih menu terlebih dahulu!', 'Peringatan', 'error');
@@ -692,46 +691,33 @@ function savePendingOrder() {
   activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
+// Cukup fetch sekali untuk simpan data ke server
   fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'text/plain;charset=utf-8',
     },
     body: JSON.stringify({
-      action: 'holdTransaction',
+      action: 'holdTransaction', // atau 'saveTransaction'
       payload: payload
     })
   })
   .then(function(res) { return res.json(); })
   .then(function(result) {
-    console.log("Sync Pending ke Sheet Berhasil:", result);
-    return fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'getInitialData' })
-    });
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(res) {
-    if (res.success && res.data && res.data.activeTransactions) {
-      activeTransactions = res.data.activeTransactions.map(t => {
-        if (typeof t.items === 'string') {
-          try { t.items = JSON.parse(t.items); } catch(e) { t.items = []; }
-        }
-        return t;
-      });
-      localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-      updateBadges();
-    }
+    console.log("Sync Berhasil:", result);
   })
   .catch(function(err) {
-    console.error("Gagal Sync Pending ke Sheet:", err);
+    console.error("Gagal Sync ke Sheet, tersimpan di Local Storage:", err);
   })
   .finally(function() {
+    // Loading langsung ditutup tanpa nunggu request kedua
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
+    
     clearCart();
     updateBadges();
     showDashboard();
-    showAlert('Pesanan a/n "' + custName + '" berhasil di-Hold/Pending!', 'Sukses', 'success');
+
+    showAlert('Berhasil diproses!', 'Sukses', 'success');
   });
 }
 
@@ -838,50 +824,33 @@ function submitTransaction() {
   activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
+// Cukup fetch sekali untuk simpan data ke server
   fetch(API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'text/plain;charset=utf-8',
     },
     body: JSON.stringify({
-      action: 'saveTransaction',
+      action: 'holdTransaction', // atau 'saveTransaction'
       payload: payload
     })
   })
   .then(function(res) { return res.json(); })
   .then(function(result) {
-    console.log("Sync Submit ke Sheet Berhasil:", result);
-    return fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'getInitialData' })
-    });
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(res) {
-    if (res.success && res.data && res.data.activeTransactions) {
-      activeTransactions = res.data.activeTransactions.map(t => {
-        if (typeof t.items === 'string') {
-          try { t.items = JSON.parse(t.items); } catch(e) { t.items = []; }
-        }
-        return t;
-      });
-      localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
-      updateBadges();
-    }
+    console.log("Sync Berhasil:", result);
   })
   .catch(function(err) {
-    console.error("Gagal Sync Submit ke Sheet:", err);
+    console.error("Gagal Sync ke Sheet, tersimpan di Local Storage:", err);
   })
   .finally(function() {
+    // Loading langsung ditutup tanpa nunggu request kedua
     if (loadingOverlay) loadingOverlay.classList.add('hidden');
-    closeModal('payment-modal');
-    currentCart = [];
-    currentRestoredTransId = null;
-    unlockCartUI();
-    updateCartUI();
+    
+    clearCart();
     updateBadges();
     showDashboard();
-    showAlert('Transaksi a/n ' + custName + ' Berhasil Diproses!', 'Sukses', 'success');
+
+    showAlert('Berhasil diproses!', 'Sukses', 'success');
   });
 }
 
