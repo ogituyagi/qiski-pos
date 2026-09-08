@@ -917,3 +917,88 @@ window.addEventListener('beforeunload', function (e) {
     return e.returnValue;
   }
 });
+
+// OPEN & RENDER TAB KANTUNG PENDING
+function openPendingTab() {
+  setActiveHeaderTab('tab-pending');
+  document.getElementById('home-dashboard-view').classList.add('hidden');
+  document.getElementById('new-order-view').classList.add('hidden');
+  
+  // Tampilkan container pending view jika ada, atau buat kontainer dinamis
+  var pendingContainer = document.getElementById('pending-orders-view');
+  if (pendingContainer) pendingContainer.classList.remove('hidden');
+
+  renderPendingListUI();
+}
+
+function renderPendingListUI() {
+  var container = document.getElementById('pending-orders-list');
+  if (!container) return;
+
+  var todayStr = new Date().toLocaleDateString('sv-SE');
+  var pendingItems = activeTransactions.filter(t => {
+    var transDate = (t.waktu || '').substring(0, 10);
+    return t.status === 'PENDING' && (transDate === todayStr || !transDate);
+  });
+
+  if (pendingItems.length === 0) {
+    container.innerHTML = '<p style="text-align:center; padding: 30px; color: var(--text-muted);">Tidak ada pesanan pending hari ini.</p>';
+    return;
+  }
+
+  container.innerHTML = pendingItems.map(t => `
+    <div class="order-card-pending" style="border: 1px solid #ddd; padding: 12px; margin-bottom: 10px; border-radius: 8px; background: #fff;">
+      <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 6px;">
+        <span>${t.transId}</span>
+        <span style="color: #f57c00;">PENDING</span>
+      </div>
+      <div style="font-size: 13px; color: #555;">Pelanggan: <b>${t.customerName}</b> (${t.jenisPelanggan})</div>
+      <div style="font-size: 12px; color: #888; margin-bottom: 8px;">Jam: ${t.waktu.substring(11)}</div>
+      <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Total: Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</div>
+      <button onclick="restorePendingOrder('${t.transId}')" style="width: 100%; background: var(--primary-pink, #333); color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer;">
+        Restore Pesanan
+      </button>
+    </div>
+  `).join('');
+}
+
+// OPEN & RENDER TAB ANTRIAN PROSES (DAPUR / BAR)
+function openKitchenTab() {
+  setActiveHeaderTab('tab-kitchen');
+  document.getElementById('home-dashboard-view').classList.add('hidden');
+  document.getElementById('new-order-view').classList.add('hidden');
+
+  var kitchenContainer = document.getElementById('kitchen-orders-view');
+  if (kitchenContainer) kitchenContainer.classList.remove('hidden');
+
+  renderKitchenListUI();
+}
+
+function renderKitchenListUI() {
+  var container = document.getElementById('kitchen-orders-list');
+  if (!container) return;
+
+  var prosesItems = activeTransactions.filter(t => t.status === 'PROSES');
+
+  if (prosesItems.length === 0) {
+    container.innerHTML = '<p style="text-align:center; padding: 30px; color: var(--text-muted);">Tidak ada antrian pesanan.</p>';
+    return;
+  }
+
+  container.innerHTML = prosesItems.map(t => `
+    <div class="order-card-proses" style="border: 1px solid #4caf50; padding: 12px; margin-bottom: 10px; border-radius: 8px; background: #f1f8e9;">
+      <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 6px;">
+        <span>${t.transId}</span>
+        <span style="color: #2e7d32;">DIPROSES</span>
+      </div>
+      <div style="font-size: 13px; color: #333;">Pelanggan: <b>${t.customerName}</b></div>
+      <div style="font-size: 12px; color: #666; margin-bottom: 8px;">Metode: ${t.metode}</div>
+      <div style="background: #fff; padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 12px;">
+        ${t.items.map(i => `<div>• ${i.nama} x${i.qty} ${i.notes !== 'Normal' ? `<i>(${i.notes})</i>` : ''}</div>`).join('')}
+      </div>
+      <button onclick="finishOrder('${t.transId}')" style="width: 100%; background: #2e7d32; color: #fff; border: none; padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer;">
+        Tandai Selesai
+      </button>
+    </div>
+  `).join('');
+}
