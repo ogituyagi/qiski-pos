@@ -79,29 +79,35 @@ function updateOnlineStatusUI() {
   }
 }
 
+// A. SAAT CEK SESI / INIT APP
 function checkExistingSession() {
   var savedSession = localStorage.getItem('qiski_session');
-  var bottomNav = document.querySelector('.bottom-nav-bar');
 
   if (savedSession) {
     currentUser = JSON.parse(savedSession);
     document.getElementById('user-display').innerText = currentUser.nama;
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('app-page').classList.remove('hidden');
-
-    // TAMPILKAN BOTTOM NAV JIKA SUDAH LOGIN & DI MOBILE
-    if (window.innerWidth <= 768 && bottomNav) {
-      bottomNav.style.display = 'flex';
-    }
+    
+    // LEPAS CLASS LOGIN
+    document.body.classList.remove('login-active');
 
     showDashboard();
   } else {
-    // SEMBUNYIKAN BOTTOM NAV JIKA BELUM LOGIN
-    if (bottomNav) {
-      bottomNav.style.display = 'none';
-    }
+    // TAMBAHKAN CLASS LOGIN
+    document.getElementById('login-page').classList.remove('hidden');
+    document.getElementById('app-page').classList.add('hidden');
+    document.body.classList.add('login-active');
   }
 }
+
+// B. SAAT HANDLE LOGIN SUKSES
+// Tambahkan baris ini di dalam .then(res => ...) pas res.success true:
+document.body.classList.remove('login-active');
+
+// C. SAAT LOGOUT
+// Tambahkan baris ini di fungsi logout():
+document.body.classList.add('login-active');
 
 function handleLogin(e) {
   e.preventDefault();
