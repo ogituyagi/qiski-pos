@@ -82,32 +82,30 @@ function updateOnlineStatusUI() {
 // A. SAAT CEK SESI / INIT APP
 function checkExistingSession() {
   var savedSession = localStorage.getItem('qiski_session');
+  var bottomNav = document.querySelector('.bottom-nav-bar');
 
   if (savedSession) {
     currentUser = JSON.parse(savedSession);
     document.getElementById('user-display').innerText = currentUser.nama;
     document.getElementById('login-page').classList.add('hidden');
     document.getElementById('app-page').classList.remove('hidden');
-    
-    // LEPAS CLASS LOGIN
-    document.body.classList.remove('login-active');
+
+    // TAMPILKAN BOTTOM NAV HANYA JIKA LOGIN & DI MOBILE
+    if (bottomNav) {
+      bottomNav.style.setProperty('display', (window.innerWidth <= 768 ? 'flex' : 'none'), 'important');
+    }
 
     showDashboard();
   } else {
-    // TAMBAHKAN CLASS LOGIN
+    // PASTIIN SEMBUNYI SAAT MASIH DI LOGIN
     document.getElementById('login-page').classList.remove('hidden');
     document.getElementById('app-page').classList.add('hidden');
-    document.body.classList.add('login-active');
+    
+    if (bottomNav) {
+      bottomNav.style.setProperty('display', 'none', 'important');
+    }
   }
 }
-
-// B. SAAT HANDLE LOGIN SUKSES
-// Tambahkan baris ini di dalam .then(res => ...) pas res.success true:
-document.body.classList.remove('login-active');
-
-// C. SAAT LOGOUT
-// Tambahkan baris ini di fungsi logout():
-document.body.classList.add('login-active');
 
 function handleLogin(e) {
   e.preventDefault();
@@ -131,10 +129,10 @@ function handleLogin(e) {
       document.getElementById('login-page').classList.add('hidden');
       document.getElementById('app-page').classList.remove('hidden');
 
-      // TAMPILKAN BOTTOM NAV JIKA BUKA DI MOBILE (HP)
-      if (window.innerWidth <= 768) {
-        var bottomNav = document.querySelector('.bottom-nav-bar');
-        if (bottomNav) bottomNav.style.display = 'flex';
+      // PAKSA TAMPILKAN BOTTOM NAV PAS SUKSES LOGIN DI MOBILE
+      var bottomNav = document.querySelector('.bottom-nav-bar');
+      if (bottomNav) {
+        bottomNav.style.setProperty('display', (window.innerWidth <= 768 ? 'flex' : 'none'), 'important');
       }
 
       showDashboard();
