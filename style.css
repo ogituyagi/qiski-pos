@@ -940,15 +940,28 @@ header h1, .brand-title, .header-brand {
     grid-template-columns: 1fr !important;
   }
 
-  /* 5. MODAL BOTTOM SHEET DI MOBILE */
+  /* 5. FIX OVERLAY & MODAL BOTTOM SHEET DI MOBILE */
+  .modal-overlay {
+    z-index: 99999 !important; /* Di atas Bottom Nav */
+    align-items: flex-end !important; /* Posisi nempel bawah */
+    padding: 0 !important;
+  }
+
   .modal-content {
     width: 100% !important;
     max-width: 100% !important;
     border-radius: 20px 20px 0 0 !important;
-    position: fixed !important;
+    position: relative !important;
     bottom: 0 !important;
     margin: 0 !important;
-    animation: slideUp 0.3s ease-out;
+    
+    /* Mencegah modal terpotong & mempermudah scroll */
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    padding: 20px 20px 40px 20px !important;
+    box-sizing: border-box !important;
+    
+    animation: slideUp 0.25s ease-out;
   }
 
   @keyframes slideUp {
