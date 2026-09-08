@@ -167,14 +167,32 @@ function processSyncQueue() {
 }
 
 function updateBadges() {
-  var todayStr = new Date().toLocaleDateString('sv-SE'); // format YYYY-MM-DD
-  
-  var pendingCount = activeTransactions.filter(t => {
-    var transDate = (t.waktu || '').substring(0, 10);
-    return t.status === 'PENDING' && (transDate === todayStr || !transDate);
+  var now = new Date();
+  var todayYear = now.getFullYear();
+  var todayMonth = now.getMonth();
+  var todayDate = now.getDate();
+
+  var pendingCount = activeTransactions.filter(function(t) {
+    if (t.status !== 'PENDING') return false;
+    if (!t.waktu) return true; // Jika waktu kosong, tetap tampilkan
+
+    var d = new Date(t.waktu);
+    // Jika format tanggal valid, cocokkan tanggal, bulan, dan tahunnya
+    if (!isNaN(d.getTime())) {
+      return d.getFullYear() === todayYear && 
+             d.getMonth() === todayMonth && 
+             d.getDate() === todayDate;
+    }
+    
+    // Fallback jika berupa string manual YYYY-MM-DD
+    var datePart = String(t.waktu).split(' ')[0].split('T')[0];
+    var todayStr = todayYear + '-' + String(todayMonth + 1).padStart(2, '0') + '-' + String(todayDate).padStart(2, '0');
+    return datePart === todayStr;
   }).length;
 
-  var prosesCount = activeTransactions.filter(t => t.status === 'PROSES').length;
+  var prosesCount = activeTransactions.filter(function(t) {
+    return t.status === 'PROSES';
+  }).length;
 
   var pendingBadge = document.getElementById('badge-pending');
   var prosesBadge = document.getElementById('badge-proses');
