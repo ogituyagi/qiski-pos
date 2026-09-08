@@ -721,3 +721,59 @@ header h1, .brand-title, .header-brand {
   vertical-align: middle;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Tambahan bayangan halus */
 }
+
+/* Layout Grid untuk Kartu Pesanan Berjejer */
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* Card Style Modern */
+.order-card {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color, #eee);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+.order-card-title {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-dark, #333);
+}
+
+.order-card-items {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+.order-card-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.order-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 10px;
+  margin-top: auto;
+}
