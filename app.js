@@ -1170,11 +1170,10 @@ function printReceipt() {
 
   var t = lastSuccessfulTransaction;
   
-  // 1. Masukkan data ke elemen cetak
+  // 1. Masukkan data ke elemen cetak (Baris Kasir sudah dihapus)
   var metaHTML = `
     <div>No: <b>${t.transId}</b></div>
     <div>Waktu: ${t.waktu}</div>
-    <div>Kasir: ${t.kasirId}</div>
     <div>Pelanggan: ${t.customerName} (${t.jenisPelanggan})</div>
   `;
   document.getElementById('receipt-meta').innerHTML = metaHTML;
@@ -1212,7 +1211,7 @@ function printReceipt() {
   }
   document.getElementById('receipt-totals').innerHTML = totalsHTML;
 
-  // 2. Tutup modal lalu cetak via browser print (otomatis terkirim ke thermal printer default)
+  // 2. Tutup modal lalu cetak via browser print
   closeCustomAlert();
   setTimeout(function() {
     window.print();
