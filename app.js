@@ -655,7 +655,10 @@ function savePendingOrder() {
 
   var custName = getActiveCustomerName();
   var subtotal = currentCart.reduce((a, b) => a + (b.harga * b.qty), 0);
-  
+
+  var loadingOverlay = document.getElementById('gate-loading-overlay');
+  if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
   var now = new Date();
   var dateStr = now.getFullYear() + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
   var transId = 'TRX-' + dateStr + '-' + Math.floor(1000 + Math.random() * 9000);
@@ -671,7 +674,7 @@ function savePendingOrder() {
     items: JSON.parse(JSON.stringify(currentCart))
   };
 
-  activeTransactions.push({
+  var orderData = {
     transId: transId,
     waktu: timeStr,
     kasirId: payload.kasirId,
@@ -684,16 +687,40 @@ function savePendingOrder() {
     kembalian: 0,
     status: 'PENDING',
     items: payload.items
-  });
+  };
 
+  // 1. Simpan ke Local Storage untuk UI Lokal
+  activeTransactions.push(orderData);
   localStorage.setItem('pos_active_orders', JSON.stringify(activeTransactions));
 
-  clearCart();
-  updateBadges();
-  showDashboard();
-  showAlert('Pesanan a/n "' + custName + '" berhasil di-Hold!', 'Sukses', 'success');
+  // 2. TERBANGKAN LANGSUNG KE GOOGLE SHEET VIA FETCH
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8', // Bypass CORS preflight
+    },
+    body: JSON.stringify({
+      action: 'holdTransaction', // Menyamakan action name ke Apps Script
+      payload: payload
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(result) {
+    console.log("Sync Pending ke Sheet Berhasil:", result);
+  })
+  .catch(function(err) {
+    console.error("Gagal Sync Pending ke Sheet, tersimpan di Local Storage:", err);
+  })
+  .finally(function() {
+    // Reset UI & Cart setelah fetch dikirim
+    if (loadingOverlay) loadingOverlay.classList.add('hidden');
+    
+    clearCart();
+    updateBadges();
+    showDashboard();
 
-  queueForSync('holdTransaction', payload);
+    showAlert('Pesanan a/n "' + custName + '" berhasil di-Hold/Pending!', 'Sukses', 'success');
+  });
 }
 
 function restorePendingOrder(transId) {
