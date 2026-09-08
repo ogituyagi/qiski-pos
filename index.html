@@ -276,7 +276,7 @@
     <div class="modal-content" style="max-width: 420px; padding: 24px;">
       <div id="gate-loading-overlay" class="modal-loading-overlay hidden">
         <div class="pulsing-dots"><div></div><div></div><div></div></div>
-        <div class="loading-text">Memuat Katalog Juice...</div>
+        <div class="loading-text">Memuat Daftar Menu...</div>
       </div>
       <div class="modal-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 16px;">
         <h3 style="font-size: 18px; font-weight: 800; color: var(--primary-pink); margin: 0;">Input Data Pemesan</h3>
@@ -295,11 +295,11 @@
       </div>
       <div id="input-nama-container" style="margin-bottom: 20px;">
         <label for="cust-name" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nama:</label>
-        <input type="text" id="cust-name" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box;">
+        <input type="text" id="cust-name" placeholder="Ketik Nama Customer" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box;">
       </div>
       <div id="select-member-container" class="hidden" style="position: relative; margin-bottom: 20px;">
         <label for="member-search-input" style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Cari Member:</label>
-        <input type="text" id="member-search-input" placeholder="Ketik Nama Member / No. HP..." onfocus="showMemberDropdown()" oninput="filterMemberList()" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box; background: #fff;">
+        <input type="text" id="member-search-input" placeholder="Ketik Nama Member / No. HP" onfocus="showMemberDropdown()" oninput="filterMemberList()" style="width: 100%; padding: 11px 14px; border: 1.5px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; box-sizing: border-box; background: #fff;">
         <div id="member-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1.5px solid var(--border-color); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 6px 15px rgba(0,0,0,0.1); margin-top: 4px;">
           <div onclick="openAddMemberModal()" style="padding: 10px 14px; cursor: pointer; font-weight: 800; font-size: 12px; color: var(--primary-pink); border-bottom: 1.5px solid var(--border-color); display: flex; align-items: center; gap: 6px; background: #fff5f8;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -308,7 +308,7 @@
           <div id="member-items-list"></div>
         </div>
       </div>
-      <button type="button" onclick="confirmCustomerAndProceed()" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800;">LANJUTKAN KE KATALOG ➔</button>
+      <button type="button" onclick="confirmCustomerAndProceed()" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800;">MULAI PEMESANAN ➔</button>
     </div>
   </div>
 
