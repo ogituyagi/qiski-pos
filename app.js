@@ -59,10 +59,10 @@ function updateOnlineStatusUI() {
 
   if (navigator.onLine) {
     dot.style.background = '#4caf50'; // Warna Hijau
-    text.innerText = 'Online First';
+    text.innerText = 'Online';
   } else {
     dot.style.background = '#f44336'; // Warna Merah
-    text.innerText = 'Offline (Local)';
+    text.innerText = 'Offline';
   }
 }
 
