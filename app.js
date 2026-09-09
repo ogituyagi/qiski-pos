@@ -1555,7 +1555,7 @@ function handleCartClick(e) {
 }
 
 // Helper untuk Load Image/Base64 ke Canvas (Maksimal 250px biar pas di tengah kertas 58mm)
-function loadLogoToCanvas(imageSrc, maxWidth = 250) {
+function loadLogoToCanvas(imageSrc, maxWidth = 240) { // Default diubah ke 240 (Kelipatan 8: 240 / 8 = 30)
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
@@ -1570,11 +1570,15 @@ function loadLogoToCanvas(imageSrc, maxWidth = 250) {
         width = maxWidth;
       }
 
+      // WAJIB: Bulatkan lebar ke kelipatan 8 ke bawah
+      width = Math.floor(width / 8) * 8;
+      if (width < 8) width = 8; // Minimal 8px
+
       canvas.width = width;
       canvas.height = height;
 
       const ctx = canvas.getContext('2d');
-      // Latar belakang putih murni wajib buat thermal
+      // Latar belakang putih murni
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
@@ -1609,7 +1613,7 @@ async function printReceiptDirect() {
     let logoCanvas = null;
     if (typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoStruk) {
       try {
-        logoCanvas = await loadLogoToCanvas(APP_ASSETS.logoStruk, 220); // Width 220px pas di tengah
+        logoCanvas = await loadLogoToCanvas(APP_ASSETS.logoStruk, 240); // Width 220px pas di tengah
       } catch (e) {
         console.warn("Gagal load logo, cetak teks saja", e);
       }
