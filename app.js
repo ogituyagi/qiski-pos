@@ -1235,9 +1235,8 @@ function reprintReceipt(transId) {
     return;
   }
 
-  lastSuccessfulTransaction = target;
-  // printReceipt();
-  printReceiptDirect();
+  // Oper data target ke fungsi cetak direct
+  printReceiptDirect(target);
 }
 
 function openCompletedOrdersTab() {
@@ -1639,8 +1638,11 @@ function formatDateCustom(dateInput) {
 let btDevice = null;
 let btCharacteristic = null;
 
-async function printReceiptDirect() {
-  if (!lastSuccessfulTransaction) {
+async function printReceiptDirect(customData = null) {
+  // Ambil customData jika dikirim (dari reprint), atau fallback ke lastSuccessfulTransaction
+  const t = customData || lastSuccessfulTransaction;
+
+  if (!t) {
     showAlert('Data transaksi tidak ditemukan.', 'Error', 'error');
     return;
   }
@@ -1664,7 +1666,7 @@ async function printReceiptDirect() {
     }
 
     const encoder = new EscPosEncoder();
-    const t = lastSuccessfulTransaction;
+    // const t = lastSuccessfulTransaction; <-- BARIS INI SUDAH DIGANTI DI ATAS
 
     let receipt = encoder.initialize().codepage('cp437').align('center');
 
