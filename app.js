@@ -472,7 +472,10 @@ document.addEventListener('click', function(e) {
 });
 
 // CATALOG RENDERING
-// 1. CATALOG RENDERING (Ganti fungsi renderCatalog lama dengan ini)
+// Variable penanda touch
+var isTouchAction = false;
+
+// CATALOG RENDERING (BISA SCROLL & GAK KELIPATAN 2)
 function renderCatalog(itemsToRender) {
   var container = document.getElementById('catalog-container');
   var list = itemsToRender || productsData;
@@ -491,11 +494,11 @@ function renderCatalog(itemsToRender) {
       <div class="menu-grid">
         ${items.map(p => `
           <div class="menu-card" 
-               onmousedown="startHold('${p.id}')" 
-               onmouseup="endHold('${p.id}')" 
+               onmousedown="startHold('${p.id}', false)" 
+               onmouseup="endHold('${p.id}', false)" 
                onmouseleave="cancelHold()"
-               ontouchstart="handleTouchStart(event, '${p.id}')" 
-               ontouchend="handleTouchEnd(event, '${p.id}')"
+               ontouchstart="startHold('${p.id}', true)" 
+               ontouchend="endHold('${p.id}', true)"
                ontouchcancel="cancelHold()">
             <h4>${p.nama}</h4>
             <div class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
@@ -506,15 +509,38 @@ function renderCatalog(itemsToRender) {
   }).join('');
 }
 
-// 2. HELPER EVENT TOUCH (Tambahkan di bawah fungsi renderCatalog)
-function handleTouchStart(e, productId) {
-  e.preventDefault(); // Mengunci event mouse agar tidak terpicu ganda di HP
-  startHold(productId);
+// HOLD & CLICK CONTROL (FIXED SCROLL + NO DOUBLE TRIGGER)
+function startHold(productId, isTouch) {
+  if (isTouch) {
+    isTouchAction = true; // Tandai kalau ini aksi dari HP/Touch
+  } else if (isTouchAction) {
+    // Jika event mouse terpicu padahal tadi udah lewat touch, abaikan!
+    return;
+  }
+
+  if (currentRestoredTransId) return;
+  isLongPress = false;
+  holdTimer = setTimeout(function() {
+    isLongPress = true;
+    openHoldCustomModal(productId);
+  }, 500);
 }
 
-function handleTouchEnd(e, productId) {
-  e.preventDefault(); // Mengunci event mouse agar tidak terpicu ganda di HP
-  endHold(productId);
+function endHold(productId, isTouch) {
+  clearTimeout(holdTimer);
+
+  if (!isTouch && isTouchAction) {
+    // Abaikan onmouseup buatan browser mobile
+    return;
+  }
+
+  if (currentRestoredTransId) {
+    return showAlert('Pesanan dari Hold/Pending di-kunci. Tidak bisa menambah menu baru!', 'Peringatan', 'error');
+  }
+  if (!isLongPress) { directAddToCart(productId); }
+
+  // Reset penanda setelah beberapa saat
+  setTimeout(function() { isTouchAction = false; }, 300);
 }
 
 function filterCatalogMenu() {
