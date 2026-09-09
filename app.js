@@ -1687,9 +1687,9 @@ async function printReceiptDirect() {
 
       // 2. METADATA
       .align('left')
-      .line(`ID Trans : ${t.transId}`)
-      .line(`Tanggal  : ${formatDateCustom(t.waktu)}`)
-      .line(`Customer : ${t.customerName}`)
+      .line(`ID Pesanan : ${t.transId}`)
+      .line(`Tanggal    : ${formatDateCustom(t.waktu)}`)
+      .line(`Customer   : ${t.customerName}`)
       .line('--------------------------------');
 
     // 3. ITEMS
@@ -1700,16 +1700,14 @@ async function printReceiptDirect() {
         const totalPrice = `Rp ${itemTotal.toLocaleString('id-ID')}`;
 
         receipt
-          .bold(true)
-          .line(item.nama)
-          .bold(false)
+          .line(item.nama) // Nama item biasa (tanpa bold)
           .line(formatTwoColumns(priceDetail, totalPrice));
 
-        // Catatan Item: Pakai Font Small (Ganti ke .size('small'))
+        // Catatan Item: Pakai Font Small + Tanda Bintang (*)
         if (item.notes && item.notes !== 'Normal') {
           receipt
             .size('small')
-            .line(`  └ ${item.notes}`)
+            .line(`  * ${item.notes}`) // Ganti └ jadi *
             .size('normal'); // Kembalikan ke Font Normal
         }
       });
