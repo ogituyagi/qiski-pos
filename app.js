@@ -1754,3 +1754,11 @@ async function sendByteChunks(bytes) {
     await new Promise(resolve => setTimeout(resolve, 50));
   }
 }
+
+
+// Helper untuk membuat teks Rata Kiri & Kanan (Maksimal 32 karakter untuk kertas 58mm)
+function formatTwoColumns(leftText, rightText, maxChars = 32) {
+  let spaceNeeded = maxChars - leftText.length - rightText.length;
+  if (spaceNeeded < 1) spaceNeeded = 1;
+  return leftText + ' '.repeat(spaceNeeded) + rightText;
+}
