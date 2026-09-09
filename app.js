@@ -1554,151 +1554,147 @@ function handleCartClick(e) {
   }
 }
 
-// Variable untuk menyimpan koneksi printer Bluetooth
-let bluetoothDevice = null;
-let printCharacteristic = null;
+// Variable Global Koneksi
+let btDevice = null;
+let btCharacteristic = null;
 
-// FUNGSI UTAMA: Cetak Langsung via Bluetooth (ESC/POS)
 async function printReceiptDirect() {
   if (!lastSuccessfulTransaction) {
     showAlert('Data transaksi tidak ditemukan.', 'Error', 'error');
     return;
   }
 
-  showLoading('Mencetak Struk...');
+  showLoading('Menghubungkan ke Printer...');
 
   try {
-    // 1. Hubungkan ke Printer jika belum terkoneksi
-    if (!printCharacteristic || !bluetoothDevice || !bluetoothDevice.gatt.connected) {
-      await connectBluetoothPrinter();
+    // 1. Hubungkan Bluetooth jika belum ada koneksi aktif
+    if (!btCharacteristic || !btDevice || !btDevice.gatt.connected) {
+      await connectWebBluetooth();
     }
 
-    // 2. Buat Perintah ESC/POS menggunakan Encoder
+    showLoading('Mengirim Data Cetak...');
+
+    // 2. Inisialisasi Encoder ESC/POS
     const encoder = new EscPosEncoder();
     const t = lastSuccessfulTransaction;
 
-    let receiptData = encoder
+    let receipt = encoder
       .initialize()
       .codepage('cp437')
       .align('center')
       .bold(true)
-      .size(1, 1) // Font agak besar untuk Header
-      .text('QISKI JUICE\n')
-      .size(0, 0) // Kembali ke ukuran normal
+      .line('QISKI JUICE')
       .bold(false)
-      .text('Jl. Parakan Saat, Cisaranten Endah\n')
-      .text('Arcamanik, Kota Bandung\n')
+      .line('Jl. Parakan Saat, Cisaranten')
+      .line('Arcamanik, Kota Bandung')
       .line('--------------------------------')
       .align('left')
-      .text(`ID  : ${t.transId}\n`)
-      .text(`Tgl : ${t.waktu || '-'}\n`)
-      .text(`Ksr : ${currentUser ? currentUser.nama : 'Kasir'}\n`)
-      .text(`Cst : ${t.customerName}\n`)
+      .line(`ID  : ${t.transId}`)
+      .line(`Tgl : ${t.waktu || '-'}`)
+      .line(`Ksr : ${currentUser ? currentUser.nama : 'Kasir'}`)
+      .line(`Cst : ${t.customerName}`)
       .line('--------------------------------');
 
-    // Item-item Transaksi
     if (t.items && t.items.length > 0) {
       t.items.forEach(item => {
         const itemTotal = item.harga * item.qty;
-        receiptData
+        receipt
           .bold(true)
-          .text(`${item.nama}\n`)
+          .line(item.nama)
           .bold(false)
-          .text(`${item.qty}x @${Number(item.harga).toLocaleString('id-ID')}`)
-          .align('right')
-          .text(` Rp ${itemTotal.toLocaleString('id-ID')}\n`)
-          .align('left');
-
+          .line(`${item.qty}x @${Number(item.harga).toLocaleString('id-ID')}  Rp ${itemTotal.toLocaleString('id-ID')}`);
+        
         if (item.notes && item.notes !== 'Normal') {
-          receiptData.text(` * ${item.notes}\n`);
+          receipt.line(` * ${item.notes}`);
         }
       });
     }
 
-    receiptData
+    receipt
       .line('--------------------------------')
-      .align('left')
-      .text(`Metode : ${t.metode}\n`)
+      .line(`Metode : ${t.metode}`)
       .bold(true)
-      .text(`TOTAL  : Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}\n`)
+      .line(`TOTAL  : Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}`)
       .bold(false);
 
     if (t.metode === 'CASH') {
-      receiptData
-        .text(`Tunai  : Rp ${Number(t.cashPaid || 0).toLocaleString('id-ID')}\n`)
-        .text(`Kembali: Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}\n`);
+      receipt
+        .line(`Tunai  : Rp ${Number(t.cashPaid || 0).toLocaleString('id-ID')}`)
+        .line(`Kembali: Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}`);
     }
 
-    receiptData
+    receipt
       .line('--------------------------------')
       .align('center')
-      .text('Terima Kasih!\n')
-      .text('WA: 081234567890\n\n\n\n') // Spasi tarik kertas kosong
-      .encode();
+      .line('Terima Kasih!')
+      .line('WA: 081234567890')
+      .newline()
+      .newline()
+      .newline()
+      .newline(); // Feed Kertas
 
-    // 3. Kirim Chunk Byte Data ke Printer Bluetooth
-    const data = receiptData.encode();
-    await sendDataInChunks(data);
+    const dataByte = receipt.encode();
+
+    // 3. Kirim Byte secara bertahap (Chunking 20 Bytes)
+    await sendByteChunks(dataByte);
 
     hideLoading();
-    closeCustomAlert();
     showAlert('Struk berhasil dicetak!', 'Sukses', 'success');
 
   } catch (err) {
     hideLoading();
-    console.error("Gagal Cetak Bluetooth:", err);
-    showAlert('Gagal mencetak: ' + err.message + '\n\nMemproses ke opsi cetak biasa...', 'Bluetooth Info', 'info');
-    
-    // Fallback ke browser print biasa jika bluetooth disconnect / gagal
-    window.print();
+    console.error("Web Bluetooth Error:", err);
+    showAlert('Gagal Cetak Direct: ' + err.message, 'Bluetooth Error', 'error');
   }
 }
 
-// FUNGSI KONEKSI BLUETOOTH PRINTER
-async function connectBluetoothPrinter() {
-  // 1. Minta browser scan perangkat Bluetooth
-  bluetoothDevice = await navigator.bluetooth.requestDevice({
+// FUNGSI KONEKSI WEB BLUETOOTH AUTOMATIC DISCOVERY
+async function connectWebBluetooth() {
+  // Minta browser scan semua perangkat Bluetooth
+  btDevice = await navigator.bluetooth.requestDevice({
     acceptAllDevices: true,
     optionalServices: [
       '000018f0-0000-1000-8000-00805f9b34fb',
       '0000ff00-0000-1000-8000-00805f9b34fb',
-      '0000ffe0-0000-1000-8000-00805f9b34fb', // UUID standar RPP02N / Bluetooth Thermal
+      '0000ffe0-0000-1000-8000-00805f9b34fb',
       '49535343-fe7d-435e-8ab0-99161392650e'
     ]
   });
 
-  const server = await bluetoothDevice.gatt.connect();
+  const server = await btDevice.gatt.connect();
   const services = await server.getPrimaryServices();
-  
-  // 2. Cari karakteristik write yang valid
+
+  // Cari Karakteristik yang Punya Izin 'Write' Secara Otomatis
   for (const service of services) {
     const characteristics = await service.getCharacteristics();
     for (const char of characteristics) {
       if (char.properties.write || char.properties.writeWithoutResponse) {
-        printCharacteristic = char;
+        btCharacteristic = char;
         break;
       }
     }
-    if (printCharacteristic) break;
+    if (btCharacteristic) break;
   }
 
-  if (!printCharacteristic) {
+  if (!btCharacteristic) {
     throw new Error('Karakteristik cetak printer tidak ditemukan.');
   }
 }
 
-// HELPER SEND DATA (CHUNK LEBIH KECIL BIAR PRINTER GAK FREEZE)
-async function sendDataInChunks(data) {
-  const chunkSize = 20; // Diturunkan ke 20 bytes (standar BLE GATT buffer)
-  for (let i = 0; i < data.length; i += chunkSize) {
-    const chunk = data.slice(i, i + chunkSize);
-    if (printCharacteristic.properties.writeWithoutResponse) {
-      await printCharacteristic.writeValueWithoutResponse(chunk);
+// SEND CHUNKS PER 20 BYTE DENGAN DELAY 50MS
+async function sendByteChunks(bytes) {
+  const chunkSize = 20; // Ukuran aman memori RPP02N
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.slice(i, i + chunkSize);
+    const arrayBuffer = new Uint8Array(chunk).buffer;
+
+    if (btCharacteristic.properties.writeWithoutResponse) {
+      await btCharacteristic.writeValueWithoutResponse(arrayBuffer);
     } else {
-      await printCharacteristic.writeValue(chunk);
+      await btCharacteristic.writeValue(arrayBuffer);
     }
-    // Delay kecil agar buffer memori printer tidak kewalahan
-    await new Promise(resolve => setTimeout(resolve, 20));
+    
+    // Delay wajib agar chip printer tidak mogok
+    await new Promise(resolve => setTimeout(resolve, 50));
   }
 }
-
