@@ -1654,7 +1654,7 @@ async function printReceiptDirect() {
     // Alamat & Header Detail (Ukuran Normal/Kecil)
     receipt
       .size(0, 0)
-      .line('Jl. Parakan Saat, Cisaranten')
+      .line('Jl. Parakan Saat, Cisaranten Endah')
       .line('Arcamanik, Kota Bandung')
       .line('--------------------------------')
 
@@ -1705,8 +1705,7 @@ async function printReceiptDirect() {
       .line('--------------------------------')
       .align('center')
       .line('Terima Kasih!')
-      .line('Segarnya Alami, Manisnya Pas')
-      .line('WA: 081234567890')
+      .line('WA: 0857 5022 9773')
       .newline()
       .newline()
       .newline()
