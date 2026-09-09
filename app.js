@@ -1594,6 +1594,21 @@ function loadLogoToCanvas(imageSrc, maxWidth = 240) {
   });
 }
 
+function formatDateCustom(dateInput) {
+  if (!dateInput) return '-';
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return dateInput; // Fallback jika string tanggal mentah
+
+  const pad = (num) => String(num).padStart(2, '0');
+  const day = pad(d.getDate());
+  const month = pad(d.getMonth() + 1);
+  const year = d.getFullYear();
+  const hours = pad(d.getHours());
+  const minutes = pad(d.getMinutes());
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
 // Variable Global Koneksi
 let btDevice = null;
 let btCharacteristic = null;
@@ -1611,13 +1626,12 @@ async function printReceiptDirect() {
       await connectWebBluetooth();
     }
 
-    showLoading('Memproses Logo & Data Cetak...');
+    showLoading('Memproses Data Cetak...');
 
-    // 1. Convert Logo ke Canvas
     let logoCanvas = null;
     if (typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoStruk) {
       try {
-        logoCanvas = await loadLogoToCanvas(APP_ASSETS.logoStruk, 240); // Width 220px pas di tengah
+        logoCanvas = await loadLogoToCanvas(APP_ASSETS.logoStruk, 240);
       } catch (e) {
         console.warn("Gagal load logo, cetak teks saja", e);
       }
@@ -1628,27 +1642,30 @@ async function printReceiptDirect() {
 
     let receipt = encoder.initialize().codepage('cp437').align('center');
 
-    // 2. Jika Canvas Logo Berhasil Dibuat, Render Gambar Logo
+    // 1. HEADER & LOGO
     if (logoCanvas) {
       receipt
-        .image(logoCanvas, logoCanvas.width, logoCanvas.height, 'threshold') // 'threshold' bikin gambar item-putih tajam
+        .image(logoCanvas, logoCanvas.width, logoCanvas.height, 'threshold')
         .newline();
     } else {
-      // Fallback Header Teks kalau logo gagal/kosong
-      receipt.bold(true).size(1, 1).line('QISKI JUICE').size(0, 0).bold(false);
+      receipt.bold(true).line('QISKI JUICE').bold(false);
     }
 
-    // 3. Sisa Struktur Struk Teks Seperti Biasa
+    // Alamat & Header Detail (Ukuran Normal/Kecil)
     receipt
+      .size(0, 0)
       .line('Jl. Parakan Saat, Cisaranten')
       .line('Arcamanik, Kota Bandung')
       .line('--------------------------------')
+
+      // 2. METADATA (Dipisah: ID & Tanggal Format DD/MM/YYYY HH:mm)
       .align('left')
-      .line(formatTwoColumns(`ID : ${t.transId}`, t.waktu || ''))
-      .line(`Ksr: ${currentUser ? currentUser.nama : 'Kasir'}`)
-      .line(`Cst: ${t.customerName}`)
+      .line(`ID Trans : ${t.transId}`)
+      .line(`Tanggal  : ${formatDateCustom(t.waktu)}`)
+      .line(`Customer : ${t.customerName}`)
       .line('--------------------------------');
 
+    // 3. ITEMS (Font Ukuran Standar 0,0)
     if (t.items && t.items.length > 0) {
       t.items.forEach(item => {
         const itemTotal = item.harga * item.qty;
@@ -1656,23 +1673,26 @@ async function printReceiptDirect() {
         const totalPrice = `Rp ${itemTotal.toLocaleString('id-ID')}`;
 
         receipt
-          .bold(true)
           .line(item.nama)
-          .bold(false)
           .line(formatTwoColumns(priceDetail, totalPrice));
 
+        // Jika ada catatan, langsung cetak miring tanpa kata "Catatan:"
         if (item.notes && item.notes !== 'Normal') {
-          receipt.line(` * Catatan: ${item.notes}`);
+          receipt
+            .italic(true)
+            .line(` * ${item.notes}`)
+            .italic(false); // Kembalikan ke teks tegak biasa
         }
       });
     }
 
+    // 4. TOTAL & PEMBAYARAN
     receipt
       .line('--------------------------------')
       .bold(true)
       .line(formatTwoColumns('TOTAL', `Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}`))
       .bold(false)
-      .line(formatTwoColumns('Metode Bayar', t.metode));
+      .line(formatTwoColumns('Metode', t.metode));
 
     if (t.metode === 'CASH') {
       receipt
@@ -1680,10 +1700,11 @@ async function printReceiptDirect() {
         .line(formatTwoColumns('Kembali', `Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}`));
     }
 
+    // 5. FOOTER
     receipt
       .line('--------------------------------')
       .align('center')
-      .line('Terima Kasih Atas Kunjungan Anda!')
+      .line('Terima Kasih!')
       .line('Segarnya Alami, Manisnya Pas')
       .line('WA: 081234567890')
       .newline()
