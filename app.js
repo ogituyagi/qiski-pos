@@ -1811,3 +1811,17 @@ function formatTwoColumns(leftText, rightText, maxChars = 32) {
   if (spaceNeeded < 1) spaceNeeded = 1;
   return leftText + ' '.repeat(spaceNeeded) + rightText;
 }
+
+
+function printTransactionById(transId) {
+  // Cari data transaksi di daftar transaksi/history
+  var allTransactions = getSavedTransactions(); // atau variabel array daftar transaksi kamu
+  var targetTrans = allTransactions.find(t => t.transId === transId);
+
+  if (!targetTrans) {
+    return showAlert('Data transaksi tidak ditemukan!', 'Error', 'error');
+  }
+
+  // Panggil cetak direct dengan data transaksi yang benar
+  printReceiptDirect(targetTrans);
+}
