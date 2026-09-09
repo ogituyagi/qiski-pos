@@ -332,11 +332,12 @@ header h1, .brand-title, .header-brand {
   pointer-events: none;
 }
 
-/* Catalog Area */
+/* Catalog Area: Tambahkan padding-bottom lega agar tidak mentok */
 #catalog-container {
   flex: 1;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 6px;
+  padding-bottom: 40px; /* Ruang napas ekstra untuk tampilan desktop */
   -webkit-overflow-scrolling: touch;
 }
 
@@ -1077,5 +1078,15 @@ header h1, .brand-title, .header-brand {
     height: auto !important;
     display: block !important;
     margin: 0 auto 4px auto !important;
+  }
+.menu-section {
+    width: 100% !important;
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+
+  /* Beri jarak bawah lebih besar di mobile biar menu terbawah tidak ke-hide floating cart */
+  #catalog-container {
+    padding-bottom: 140px !important; 
   }
 }
