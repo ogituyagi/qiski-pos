@@ -1554,6 +1554,38 @@ function handleCartClick(e) {
   }
 }
 
+// Helper untuk Load Image/Base64 ke Canvas (Maksimal 250px biar pas di tengah kertas 58mm)
+function loadLogoToCanvas(imageSrc, maxWidth = 250) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let width = img.width;
+      let height = img.height;
+
+      // Resize proporsional
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext('2d');
+      // Latar belakang putih murni wajib buat thermal
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+
+      resolve(canvas);
+    };
+    img.onerror = (err) => reject(err);
+    img.src = imageSrc;
+  });
+}
+
 // Variable Global Koneksi
 let btDevice = null;
 let btCharacteristic = null;
@@ -1567,75 +1599,91 @@ async function printReceiptDirect() {
   showLoading('Menghubungkan ke Printer...');
 
   try {
-    // 1. Hubungkan Bluetooth jika belum ada koneksi aktif
     if (!btCharacteristic || !btDevice || !btDevice.gatt.connected) {
       await connectWebBluetooth();
     }
 
-    showLoading('Mengirim Data Cetak...');
+    showLoading('Memproses Logo & Data Cetak...');
 
-    // 2. Inisialisasi Encoder ESC/POS
+    // 1. Convert Logo ke Canvas
+    let logoCanvas = null;
+    if (typeof APP_ASSETS !== 'undefined' && APP_ASSETS.logoStruk) {
+      try {
+        logoCanvas = await loadLogoToCanvas(APP_ASSETS.logoStruk, 220); // Width 220px pas di tengah
+      } catch (e) {
+        console.warn("Gagal load logo, cetak teks saja", e);
+      }
+    }
+
     const encoder = new EscPosEncoder();
     const t = lastSuccessfulTransaction;
 
-    let receipt = encoder
-      .initialize()
-      .codepage('cp437')
-      .align('center')
-      .bold(true)
-      .line('QISKI JUICE')
-      .bold(false)
+    let receipt = encoder.initialize().codepage('cp437').align('center');
+
+    // 2. Jika Canvas Logo Berhasil Dibuat, Render Gambar Logo
+    if (logoCanvas) {
+      receipt
+        .image(logoCanvas, logoCanvas.width, logoCanvas.height, 'threshold') // 'threshold' bikin gambar item-putih tajam
+        .newline();
+    } else {
+      // Fallback Header Teks kalau logo gagal/kosong
+      receipt.bold(true).size(1, 1).line('QISKI JUICE').size(0, 0).bold(false);
+    }
+
+    // 3. Sisa Struktur Struk Teks Seperti Biasa
+    receipt
       .line('Jl. Parakan Saat, Cisaranten')
       .line('Arcamanik, Kota Bandung')
       .line('--------------------------------')
       .align('left')
-      .line(`ID  : ${t.transId}`)
-      .line(`Tgl : ${t.waktu || '-'}`)
-      .line(`Ksr : ${currentUser ? currentUser.nama : 'Kasir'}`)
-      .line(`Cst : ${t.customerName}`)
+      .line(formatTwoColumns(`ID : ${t.transId}`, t.waktu || ''))
+      .line(`Ksr: ${currentUser ? currentUser.nama : 'Kasir'}`)
+      .line(`Cst: ${t.customerName}`)
       .line('--------------------------------');
 
     if (t.items && t.items.length > 0) {
       t.items.forEach(item => {
         const itemTotal = item.harga * item.qty;
+        const priceDetail = `${item.qty}x @${Number(item.harga).toLocaleString('id-ID')}`;
+        const totalPrice = `Rp ${itemTotal.toLocaleString('id-ID')}`;
+
         receipt
           .bold(true)
           .line(item.nama)
           .bold(false)
-          .line(`${item.qty}x @${Number(item.harga).toLocaleString('id-ID')}  Rp ${itemTotal.toLocaleString('id-ID')}`);
-        
+          .line(formatTwoColumns(priceDetail, totalPrice));
+
         if (item.notes && item.notes !== 'Normal') {
-          receipt.line(` * ${item.notes}`);
+          receipt.line(` * Catatan: ${item.notes}`);
         }
       });
     }
 
     receipt
       .line('--------------------------------')
-      .line(`Metode : ${t.metode}`)
       .bold(true)
-      .line(`TOTAL  : Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}`)
-      .bold(false);
+      .line(formatTwoColumns('TOTAL', `Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}`))
+      .bold(false)
+      .line(formatTwoColumns('Metode Bayar', t.metode));
 
     if (t.metode === 'CASH') {
       receipt
-        .line(`Tunai  : Rp ${Number(t.cashPaid || 0).toLocaleString('id-ID')}`)
-        .line(`Kembali: Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}`);
+        .line(formatTwoColumns('Tunai', `Rp ${Number(t.cashPaid || 0).toLocaleString('id-ID')}`))
+        .line(formatTwoColumns('Kembali', `Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}`));
     }
 
     receipt
       .line('--------------------------------')
       .align('center')
-      .line('Terima Kasih!')
+      .line('Terima Kasih Atas Kunjungan Anda!')
+      .line('Segarnya Alami, Manisnya Pas')
       .line('WA: 081234567890')
       .newline()
       .newline()
       .newline()
-      .newline(); // Feed Kertas
+      .newline();
 
     const dataByte = receipt.encode();
-
-    // 3. Kirim Byte secara bertahap (Chunking 20 Bytes)
     await sendByteChunks(dataByte);
 
     hideLoading();
