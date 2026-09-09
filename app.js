@@ -471,11 +471,10 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// CATALOG RENDERING
-// Variable penanda touch
-var isTouchAction = false;
+// Lock timer untuk cegah double trigger dalam waktu singkat (Debounce)
+var lastClickTimes = {};
 
-// CATALOG RENDERING (BISA SCROLL & GAK KELIPATAN 2)
+// CATALOG RENDERING
 function renderCatalog(itemsToRender) {
   var container = document.getElementById('catalog-container');
   var list = itemsToRender || productsData;
@@ -494,11 +493,11 @@ function renderCatalog(itemsToRender) {
       <div class="menu-grid">
         ${items.map(p => `
           <div class="menu-card" 
-               onmousedown="startHold('${p.id}', false)" 
-               onmouseup="endHold('${p.id}', false)" 
+               onmousedown="startHold('${p.id}')" 
+               onmouseup="endHold('${p.id}')" 
                onmouseleave="cancelHold()"
-               ontouchstart="startHold('${p.id}', true)" 
-               ontouchend="endHold('${p.id}', true)"
+               ontouchstart="startHold('${p.id}')" 
+               ontouchend="endHold('${p.id}')"
                ontouchcancel="cancelHold()">
             <h4>${p.nama}</h4>
             <div class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
@@ -509,12 +508,11 @@ function renderCatalog(itemsToRender) {
   }).join('');
 }
 
-// HOLD & CLICK CONTROL (FIXED SCROLL + NO DOUBLE TRIGGER)
-function startHold(productId, isTouch) {
-  if (isTouch) {
-    isTouchAction = true; // Tandai kalau ini aksi dari HP/Touch
-  } else if (isTouchAction) {
-    // Jika event mouse terpicu padahal tadi udah lewat touch, abaikan!
+// HOLD & CLICK CONTROL (BULLETPROOF DEBOUNCE 300MS)
+function startHold(productId) {
+  var now = Date.now();
+  // Jika produk ini baru aja diklik kurang dari 300ms yang lalu, abaikan!
+  if (lastClickTimes[productId] && (now - lastClickTimes[productId] < 300)) {
     return;
   }
 
@@ -526,21 +524,23 @@ function startHold(productId, isTouch) {
   }, 500);
 }
 
-function endHold(productId, isTouch) {
+function endHold(productId) {
   clearTimeout(holdTimer);
 
-  if (!isTouch && isTouchAction) {
-    // Abaikan onmouseup buatan browser mobile
+  var now = Date.now();
+  // Cek lagi di endHold biar gak ter-fire 2x dari ontouchend + onmouseup
+  if (lastClickTimes[productId] && (now - lastClickTimes[productId] < 300)) {
     return;
   }
+  lastClickTimes[productId] = now; // Catat waktu klik terakhir
 
   if (currentRestoredTransId) {
     return showAlert('Pesanan dari Hold/Pending di-kunci. Tidak bisa menambah menu baru!', 'Peringatan', 'error');
   }
-  if (!isLongPress) { directAddToCart(productId); }
 
-  // Reset penanda setelah beberapa saat
-  setTimeout(function() { isTouchAction = false; }, 300);
+  if (!isLongPress) { 
+    directAddToCart(productId); 
+  }
 }
 
 function filterCatalogMenu() {
