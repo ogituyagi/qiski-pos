@@ -472,6 +472,7 @@ document.addEventListener('click', function(e) {
 });
 
 // CATALOG RENDERING
+// 1. CATALOG RENDERING (Ganti fungsi renderCatalog lama dengan ini)
 function renderCatalog(itemsToRender) {
   var container = document.getElementById('catalog-container');
   var list = itemsToRender || productsData;
@@ -493,8 +494,8 @@ function renderCatalog(itemsToRender) {
                onmousedown="startHold('${p.id}')" 
                onmouseup="endHold('${p.id}')" 
                onmouseleave="cancelHold()"
-               ontouchstart="startHold('${p.id}')" 
-               ontouchend="endHold('${p.id}')"
+               ontouchstart="handleTouchStart(event, '${p.id}')" 
+               ontouchend="handleTouchEnd(event, '${p.id}')"
                ontouchcancel="cancelHold()">
             <h4>${p.nama}</h4>
             <div class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
@@ -503,6 +504,17 @@ function renderCatalog(itemsToRender) {
       </div>
     `;
   }).join('');
+}
+
+// 2. HELPER EVENT TOUCH (Tambahkan di bawah fungsi renderCatalog)
+function handleTouchStart(e, productId) {
+  e.preventDefault(); // Mengunci event mouse agar tidak terpicu ganda di HP
+  startHold(productId);
+}
+
+function handleTouchEnd(e, productId) {
+  e.preventDefault(); // Mengunci event mouse agar tidak terpicu ganda di HP
+  endHold(productId);
 }
 
 function filterCatalogMenu() {
