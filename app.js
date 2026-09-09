@@ -1642,7 +1642,7 @@ async function printReceiptDirect() {
 
     let receipt = encoder.initialize().codepage('cp437').align('center');
 
-    // 1. HEADER & LOGO
+// 1. HEADER & LOGO
     if (logoCanvas) {
       receipt
         .image(logoCanvas, logoCanvas.width, logoCanvas.height, 'threshold')
@@ -1651,21 +1651,22 @@ async function printReceiptDirect() {
       receipt.bold(true).line('QISKI JUICE').bold(false);
     }
 
-    // Alamat & Header Detail (Ukuran Normal/Kecil)
+    // Alamat Toko: Pakai Font B (Kecil/Ringkas)
     receipt
-      .size(0, 0)
+      .font('b')
       .line('Jl. Parakan Saat, Cisaranten Endah')
       .line('Arcamanik, Kota Bandung')
+      .font('a') // Kembalikan ke Font A
       .line('--------------------------------')
 
-      // 2. METADATA (Dipisah: ID & Tanggal Format DD/MM/YYYY HH:mm)
+      // 2. METADATA
       .align('left')
-      .line(`ID Trans : ${t.transId}`)
-      .line(`Tanggal  : ${formatDateCustom(t.waktu)}`)
-      .line(`Customer : ${t.customerName}`)
+      .line(`ID Pesanan : ${t.transId}`)
+      .line(`Tanggal    : ${formatDateCustom(t.waktu)}`)
+      .line(`Customer   : ${t.customerName}`)
       .line('--------------------------------');
 
-    // 3. ITEMS (Font Ukuran Standar 0,0)
+    // 3. ITEMS
     if (t.items && t.items.length > 0) {
       t.items.forEach(item => {
         const itemTotal = item.harga * item.qty;
@@ -1673,15 +1674,17 @@ async function printReceiptDirect() {
         const totalPrice = `Rp ${itemTotal.toLocaleString('id-ID')}`;
 
         receipt
+          .bold(true)
           .line(item.nama)
+          .bold(false)
           .line(formatTwoColumns(priceDetail, totalPrice));
 
-        // Jika ada catatan, langsung cetak miring tanpa kata "Catatan:"
+        // Catatan Item: Pakai Font B (Kecil/Ringkas)
         if (item.notes && item.notes !== 'Normal') {
           receipt
-            .italic(true)
-            .line(` * ${item.notes}`)
-            .italic(false); // Kembalikan ke teks tegak biasa
+            .font('b')
+            .line(`  └ ${item.notes}`)
+            .font('a'); // Kembalikan ke Font A
         }
       });
     }
@@ -1690,7 +1693,9 @@ async function printReceiptDirect() {
     receipt
       .line('--------------------------------')
       .bold(true)
+      .size(1, 1)
       .line(formatTwoColumns('TOTAL', `Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}`))
+      .size(0, 0)
       .bold(false)
       .line(formatTwoColumns('Metode', t.metode));
 
@@ -1705,7 +1710,7 @@ async function printReceiptDirect() {
       .line('--------------------------------')
       .align('center')
       .line('Terima Kasih!')
-      .line('WA: 0857 5022 9773')
+      .line('WA: 081234567890')
       .newline()
       .newline()
       .newline()
