@@ -1555,7 +1555,7 @@ function handleCartClick(e) {
 }
 
 // Helper untuk Load Image/Base64 ke Canvas (Maksimal 250px biar pas di tengah kertas 58mm)
-function loadLogoToCanvas(imageSrc, maxWidth = 240) { // Default diubah ke 240 (Kelipatan 8: 240 / 8 = 30)
+function loadLogoToCanvas(imageSrc, maxWidth = 240) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
@@ -1564,15 +1564,19 @@ function loadLogoToCanvas(imageSrc, maxWidth = 240) { // Default diubah ke 240 (
       let width = img.width;
       let height = img.height;
 
-      // Resize proporsional
+      // 1. Resize proporsional
       if (width > maxWidth) {
         height = Math.round((height * maxWidth) / width);
         width = maxWidth;
       }
 
-      // WAJIB: Bulatkan lebar ke kelipatan 8 ke bawah
+      // 2. WAJIB: Bulatkan Width & Height ke kelipatan 8 terdekat
       width = Math.floor(width / 8) * 8;
-      if (width < 8) width = 8; // Minimal 8px
+      height = Math.floor(height / 8) * 8;
+
+      // Safety check minimal 8px
+      if (width < 8) width = 8;
+      if (height < 8) height = 8;
 
       canvas.width = width;
       canvas.height = height;
