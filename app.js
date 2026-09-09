@@ -1728,7 +1728,7 @@ async function printReceiptDirect(customData = null) {
     if (t.metode === 'CASH') {
       receipt
         .line(formatTwoColumns('Tunai', `Rp ${Number(t.cashPaid || 0).toLocaleString('id-ID')}`))
-        .line(formatTwoColumns('Kembali', `Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}`));
+        .line(formatTwoColumns('Kembalian', `Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}`));
     }
 
     // 5. FOOTER
@@ -1736,7 +1736,7 @@ async function printReceiptDirect(customData = null) {
       .line('--------------------------------')
       .align('center')
       .line('Terima Kasih!')
-      .line('WA: 081234567890')
+      .line('WA: 0857 5022 9773')
       .newline()
       .newline()
       .newline()
