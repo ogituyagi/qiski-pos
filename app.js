@@ -475,6 +475,7 @@ document.addEventListener('click', function(e) {
 var lastClickTimes = {};
 
 // CATALOG RENDERING
+// CATALOG RENDERING (POINTER EVENTS - ANTI DOUBLE TRIGGER & BISA SCROLL)
 function renderCatalog(itemsToRender) {
   var container = document.getElementById('catalog-container');
   var list = itemsToRender || productsData;
@@ -493,12 +494,10 @@ function renderCatalog(itemsToRender) {
       <div class="menu-grid">
         ${items.map(p => `
           <div class="menu-card" 
-               onmousedown="startHold('${p.id}')" 
-               onmouseup="endHold('${p.id}')" 
-               onmouseleave="cancelHold()"
-               ontouchstart="startHold('${p.id}')" 
-               ontouchend="endHold('${p.id}')"
-               ontouchcancel="cancelHold()">
+               onpointerdown="startHold('${p.id}')" 
+               onpointerup="endHold('${p.id}')" 
+               onpointerleave="cancelHold()"
+               onpointercancel="cancelHold()">
             <h4>${p.nama}</h4>
             <div class="price">Rp ${Number(p.harga).toLocaleString('id-ID')}</div>
           </div>
@@ -508,16 +507,12 @@ function renderCatalog(itemsToRender) {
   }).join('');
 }
 
-// HOLD & CLICK CONTROL (BULLETPROOF DEBOUNCE 300MS)
+// HOLD & CLICK CONTROL
 function startHold(productId) {
-  var now = Date.now();
-  // Jika produk ini baru aja diklik kurang dari 300ms yang lalu, abaikan!
-  if (lastClickTimes[productId] && (now - lastClickTimes[productId] < 300)) {
-    return;
-  }
-
   if (currentRestoredTransId) return;
   isLongPress = false;
+  
+  clearTimeout(holdTimer);
   holdTimer = setTimeout(function() {
     isLongPress = true;
     openHoldCustomModal(productId);
@@ -526,13 +521,6 @@ function startHold(productId) {
 
 function endHold(productId) {
   clearTimeout(holdTimer);
-
-  var now = Date.now();
-  // Cek lagi di endHold biar gak ter-fire 2x dari ontouchend + onmouseup
-  if (lastClickTimes[productId] && (now - lastClickTimes[productId] < 300)) {
-    return;
-  }
-  lastClickTimes[productId] = now; // Catat waktu klik terakhir
 
   if (currentRestoredTransId) {
     return showAlert('Pesanan dari Hold/Pending di-kunci. Tidak bisa menambah menu baru!', 'Peringatan', 'error');
