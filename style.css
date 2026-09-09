@@ -795,7 +795,7 @@ header h1, .brand-title, .header-brand {
    ========================================== */
 @media screen and (max-width: 768px) {
   
-  /* FIX PENTING: Tambah ruang bawah agar kartu tidak tertutup Bottom Nav */
+  /* PADDING BAWAH AREA UMUM (Halaman Kantong / History) */
   .view-content,
   .orders-grid {
     padding-bottom: 120px !important;
@@ -810,18 +810,18 @@ header h1, .brand-title, .header-brand {
     position: relative !important;
   }
 
-/* Update ukuran indikator status online di mobile */
+  /* Indikator status online (Diperbesar) */
   #connection-status-indicator {
     order: 1 !important;
-    padding: 6px 12px !important;    /* Diperbesar padding-nya */
-    font-size: 12px !important;     /* Diperbesar font-nya (sebelumnya 9px) */
-    font-weight: 700 !important;    /* Dipertebal teksnya */
-    border-radius: 20px !important; /* Biar tetap membulat rapi */
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-radius: 20px !important;
   }
 
-   #connection-status-indicator::before {
-    width: 8px;
-    height: 8px;
+  #connection-status-indicator::before {
+    width: 8px !important;
+    height: 8px !important;
   }
 
   .header-brand {
@@ -844,23 +844,37 @@ header h1, .brand-title, .header-brand {
     display: none !important; 
   }
 
-  /* 2. LAYOUT POS MOBILE */
+  /* 2. LAYOUT POS MOBILE & ISOLASI SCROLL KATALOG */
   .pos-layout {
     display: flex !important;
     flex-direction: column !important;
-    height: auto !important;
-    padding-bottom: 120px !important;
+    height: calc(100dvh - 60px) !important; /* 60px = tinggi Header */
+    overflow: hidden !important; /* Mencegah seluruh frame layar bergeser */
+    padding-bottom: 0 !important;
   }
 
   .menu-section {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
-    max-height: none !important;
-    overflow-y: visible !important;
+    height: 100% !important;
+    overflow: hidden !important;
   }
 
   .menu-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
+  }
+
+  /* KONTAINER TERSENDIRI KHUSUS SCROLL MENU */
+  #catalog-container {
+    flex: 1 !important;
+    height: 100% !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 160px !important; /* Bantalan lega agar menu terbawah terangkat dari cart/nav */
+    box-sizing: border-box !important;
   }
 
   /* 3. HANDLE BAR */
@@ -1078,15 +1092,5 @@ header h1, .brand-title, .header-brand {
     height: auto !important;
     display: block !important;
     margin: 0 auto 4px auto !important;
-  }
-.menu-section {
-    width: 100% !important;
-    max-height: none !important;
-    overflow-y: visible !important;
-  }
-
-  /* Beri jarak bawah lebih besar di mobile biar menu terbawah tidak ke-hide floating cart */
-  #catalog-container {
-    padding-bottom: 140px !important; 
   }
 }
