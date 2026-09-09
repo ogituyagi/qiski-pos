@@ -1053,3 +1053,52 @@ body.login-active .bottom-nav-bar,
     box-sizing: border-box !important;
   }
 }
+
+/* ==========================================
+   CSS KHUSUS CETAK STRUK THERMAL 58MM
+   ========================================== */
+@media print {
+  /* 1. Paksa ukuran halaman ke roll 58mm */
+  @page {
+    size: 58mm auto !important;
+    margin: 0mm !important;
+  }
+
+  /* 2. Sembunyikan elemen HTML biasa (web app) */
+  body * {
+    visibility: hidden !important;
+  }
+
+  html, body {
+    width: 58mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  /* 3. Hanya tampilkan kontainer struk */
+  #receipt-print-area, 
+  #receipt-print-area * {
+    visibility: visible !important;
+  }
+
+  #receipt-print-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 58mm !important;
+    max-width: 58mm !important;
+    padding: 2mm 3mm !important; /* Padding tipis kanan-kiri biar gak mepet margin fisik printer */
+    box-sizing: border-box !important;
+    font-family: 'Courier New', Courier, monospace !important; /* Font monospace paling aman buat printer thermal */
+    color: #000 !important;
+  }
+
+  /* Adjust Gambar Logo agar pas di kertas 58mm */
+  #receipt-print-area img {
+    max-width: 40mm !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0 auto 4px auto !important;
+  }
+}
