@@ -1210,7 +1210,8 @@ function reprintReceipt(transId) {
   }
 
   lastSuccessfulTransaction = target;
-  printReceipt();
+  // printReceipt();
+  printReceiptDirect();
 }
 
 function openCompletedOrdersTab() {
@@ -1331,7 +1332,7 @@ function showSuccessAlertWithPrint(message) {
 
   if (btnContainer) {
     btnContainer.innerHTML = `
-      <button type="button" onclick="printReceipt()" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; background: #eee; color: #333; border: none; border-radius: 6px; cursor: pointer;">Cetak Struk</button>
+      <button type="button" onclick="printReceiptDirect()" class="btn btn-secondary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800; background: #eee; color: #333; border: none; border-radius: 6px; cursor: pointer;">Cetak Struk</button>
       <button type="button" onclick="closeCustomAlert()" class="btn btn-primary" style="flex: 1; padding: 10px; font-size: 12px; font-weight: 800;">OK</button>
     `;
   }
@@ -1553,5 +1554,144 @@ function handleCartClick(e) {
   }
 }
 
+// Variable untuk menyimpan koneksi printer Bluetooth
+let bluetoothDevice = null;
+let printCharacteristic = null;
 
-printReceipt
+// FUNGSI UTAMA: Cetak Langsung via Bluetooth (ESC/POS)
+async function printReceiptDirect() {
+  if (!lastSuccessfulTransaction) {
+    showAlert('Data transaksi tidak ditemukan.', 'Error', 'error');
+    return;
+  }
+
+  showLoading('Mencetak Struk...');
+
+  try {
+    // 1. Hubungkan ke Printer jika belum terkoneksi
+    if (!printCharacteristic || !bluetoothDevice || !bluetoothDevice.gatt.connected) {
+      await connectBluetoothPrinter();
+    }
+
+    // 2. Buat Perintah ESC/POS menggunakan Encoder
+    const encoder = new ReceiptPrinterEncoder();
+    const t = lastSuccessfulTransaction;
+
+    let receiptData = encoder
+      .initialize()
+      .codepage('cp437')
+      .align('center')
+      .bold(true)
+      .size(1, 1) // Font agak besar untuk Header
+      .text('QISKI JUICE\n')
+      .size(0, 0) // Kembali ke ukuran normal
+      .bold(false)
+      .text('Jl. Parakan Saat, Cisaranten Endah\n')
+      .text('Arcamanik, Kota Bandung\n')
+      .line('--------------------------------')
+      .align('left')
+      .text(`ID  : ${t.transId}\n`)
+      .text(`Tgl : ${t.waktu || '-'}\n`)
+      .text(`Ksr : ${currentUser ? currentUser.nama : 'Kasir'}\n`)
+      .text(`Cst : ${t.customerName}\n`)
+      .line('--------------------------------');
+
+    // Item-item Transaksi
+    if (t.items && t.items.length > 0) {
+      t.items.forEach(item => {
+        const itemTotal = item.harga * item.qty;
+        receiptData
+          .bold(true)
+          .text(`${item.nama}\n`)
+          .bold(false)
+          .text(`${item.qty}x @${Number(item.harga).toLocaleString('id-ID')}`)
+          .align('right')
+          .text(` Rp ${itemTotal.toLocaleString('id-ID')}\n`)
+          .align('left');
+
+        if (item.notes && item.notes !== 'Normal') {
+          receiptData.text(` * ${item.notes}\n`);
+        }
+      });
+    }
+
+    receiptData
+      .line('--------------------------------')
+      .align('left')
+      .text(`Metode : ${t.metode}\n`)
+      .bold(true)
+      .text(`TOTAL  : Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}\n`)
+      .bold(false);
+
+    if (t.metode === 'CASH') {
+      receiptData
+        .text(`Tunai  : Rp ${Number(t.cashPaid || 0).toLocaleString('id-ID')}\n`)
+        .text(`Kembali: Rp ${Number(t.kembalian || 0).toLocaleString('id-ID')}\n`);
+    }
+
+    receiptData
+      .line('--------------------------------')
+      .align('center')
+      .text('Terima Kasih!\n')
+      .text('WA: 081234567890\n\n\n\n') // Spasi tarik kertas kosong
+      .encode();
+
+    // 3. Kirim Chunk Byte Data ke Printer Bluetooth
+    const data = receiptData.encode();
+    await sendDataInChunks(data);
+
+    hideLoading();
+    closeCustomAlert();
+    showAlert('Struk berhasil dicetak!', 'Sukses', 'success');
+
+  } catch (err) {
+    hideLoading();
+    console.error("Gagal Cetak Bluetooth:", err);
+    showAlert('Gagal mencetak: ' + err.message + '\n\nMemproses ke opsi cetak biasa...', 'Bluetooth Info', 'info');
+    
+    // Fallback ke browser print biasa jika bluetooth disconnect / gagal
+    window.print();
+  }
+}
+
+// FUNGSI HUBUNGKAN KONEKSI BLUETOOTH PRINTER
+async function connectBluetoothPrinter() {
+  // Minta browser scan perangkat Bluetooth sekitar
+  bluetoothDevice = await navigator.bluetooth.requestDevice({
+    acceptAllDevices: true,
+    optionalServices: [
+      '000018f0-0000-1000-8000-00805f9b34fb', // Standard Printer Service UUID
+      'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+      '0000ff00-0000-1000-8000-00805f9b34fb'
+    ]
+  });
+
+  const server = await bluetoothDevice.gatt.connect();
+  const services = await server.getPrimaryServices();
+  
+  // Cari karakteristik write data printer
+  for (const service of services) {
+    const characteristics = await service.getCharacteristics();
+    for (const char of characteristics) {
+      if (char.properties.write || char.properties.writeWithoutResponse) {
+        printCharacteristic = char;
+        break;
+      }
+    }
+    if (printCharacteristic) break;
+  }
+
+  if (!printCharacteristic) {
+    throw new Error('Karakteristik cetak printer tidak ditemukan.');
+  }
+}
+
+// Helper untuk mengirim data byte secara bertahap (biar gak overload di buffer printer)
+async function sendDataInChunks(data) {
+  const chunkSize = 100; // Kirim per 100 bytes
+  for (let i = 0; i < data.length; i += chunkSize) {
+    const chunk = data.slice(i, i + chunkSize);
+    await printCharacteristic.writeValue(chunk);
+  }
+}
+
