@@ -1654,22 +1654,23 @@ async function printReceiptDirect() {
   }
 }
 
-// FUNGSI HUBUNGKAN KONEKSI BLUETOOTH PRINTER
+// FUNGSI KONEKSI BLUETOOTH PRINTER
 async function connectBluetoothPrinter() {
-  // Minta browser scan perangkat Bluetooth sekitar
+  // 1. Minta browser scan perangkat Bluetooth
   bluetoothDevice = await navigator.bluetooth.requestDevice({
     acceptAllDevices: true,
     optionalServices: [
-      '000018f0-0000-1000-8000-00805f9b34fb', // Standard Printer Service UUID
-      'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
-      '0000ff00-0000-1000-8000-00805f9b34fb'
+      '000018f0-0000-1000-8000-00805f9b34fb',
+      '0000ff00-0000-1000-8000-00805f9b34fb',
+      '0000ffe0-0000-1000-8000-00805f9b34fb', // UUID standar RPP02N / Bluetooth Thermal
+      '49535343-fe7d-435e-8ab0-99161392650e'
     ]
   });
 
   const server = await bluetoothDevice.gatt.connect();
   const services = await server.getPrimaryServices();
   
-  // Cari karakteristik write data printer
+  // 2. Cari karakteristik write yang valid
   for (const service of services) {
     const characteristics = await service.getCharacteristics();
     for (const char of characteristics) {
@@ -1686,12 +1687,18 @@ async function connectBluetoothPrinter() {
   }
 }
 
-// Helper untuk mengirim data byte secara bertahap (biar gak overload di buffer printer)
+// HELPER SEND DATA (CHUNK LEBIH KECIL BIAR PRINTER GAK FREEZE)
 async function sendDataInChunks(data) {
-  const chunkSize = 100; // Kirim per 100 bytes
+  const chunkSize = 20; // Diturunkan ke 20 bytes (standar BLE GATT buffer)
   for (let i = 0; i < data.length; i += chunkSize) {
     const chunk = data.slice(i, i + chunkSize);
-    await printCharacteristic.writeValue(chunk);
+    if (printCharacteristic.properties.writeWithoutResponse) {
+      await printCharacteristic.writeValueWithoutResponse(chunk);
+    } else {
+      await printCharacteristic.writeValue(chunk);
+    }
+    // Delay kecil agar buffer memori printer tidak kewalahan
+    await new Promise(resolve => setTimeout(resolve, 20));
   }
 }
 
