@@ -1574,7 +1574,7 @@ async function printReceiptDirect() {
     }
 
     // 2. Buat Perintah ESC/POS menggunakan Encoder
-    const encoder = new ReceiptPrinterEncoder();
+    const encoder = new EscPosEncoder();
     const t = lastSuccessfulTransaction;
 
     let receiptData = encoder
