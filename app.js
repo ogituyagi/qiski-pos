@@ -1346,9 +1346,8 @@ function printReceipt() {
   }
 
   var t = lastSuccessfulTransaction;
-  var dividerHTML = '<div style="border-top: 1px dashed #000; width: 100%; margin: 6px 0;"></div>';
 
-  // 1. Header Metadata (Format Sejajar Biasa & Tanpa Jenis Pelanggan)
+  // 1. Header Metadata
   var metaHTML = `
     <div>ID Pesanan: <b>${t.transId}</b></div>
     <div>Tanggal: ${t.waktu || '-'}</div>
@@ -1380,7 +1379,7 @@ function printReceipt() {
   }
   document.getElementById('receipt-items').innerHTML = itemsHTML;
 
-  // 3. Totals (Langsung Total Akhir, Tanpa Subtotal)
+  // 3. Totals
   var totalsHTML = `
     <div style="display: flex; justify-content: space-between;"><span>Metode:</span><span><b>${t.metode}</b></span></div>
     <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 10px; margin-top: 2px;"><span>Total:</span><span>Rp ${Number(t.totalAkhir).toLocaleString('id-ID')}</span></div>
@@ -1394,10 +1393,23 @@ function printReceipt() {
   }
   document.getElementById('receipt-totals').innerHTML = totalsHTML;
 
-  // 4. Eksekusi Cetak
+  // 4. Tutup Alert Modal
   closeCustomAlert();
+
+  // 5. Pastikan Class Hidden-Print Dilepas Pas Mau Print
+  var receiptArea = document.getElementById('receipt-print-area');
+  if (receiptArea) {
+    receiptArea.classList.remove('hidden-print');
+  }
+
+  // 6. Eksekusi Cetak & Sembunyikan Kembali Setelah Print
   setTimeout(function() {
     window.print();
+    
+    // Kembalikan class hidden-print setelah dialog print ditutup
+    if (receiptArea) {
+      receiptArea.classList.add('hidden-print');
+    }
   }, 300);
 }
 
@@ -1540,3 +1552,6 @@ function handleCartClick(e) {
     }
   }
 }
+
+
+printReceipt
