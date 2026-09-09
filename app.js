@@ -1677,19 +1677,19 @@ async function printReceiptDirect() {
       receipt.bold(true).line('QISKI JUICE').bold(false);
     }
 
-    // Alamat Toko: Pakai Font B (Kecil/Ringkas)
+    // Alamat Toko: Pakai Font Small (Ganti ke .size('small'))
     receipt
-      .font('b')
+      .size('small')
       .line('Jl. Parakan Saat, Cisaranten Endah')
       .line('Arcamanik, Kota Bandung')
-      .font('a') // Kembalikan ke Font A
+      .size('normal') // Kembalikan ke Font Normal
       .line('--------------------------------')
 
       // 2. METADATA
       .align('left')
-      .line(`ID Pesanan : ${t.transId}`)
-      .line(`Tanggal    : ${formatDateCustom(t.waktu)}`)
-      .line(`Customer   : ${t.customerName}`)
+      .line(`ID Trans : ${t.transId}`)
+      .line(`Tanggal  : ${formatDateCustom(t.waktu)}`)
+      .line(`Customer : ${t.customerName}`)
       .line('--------------------------------');
 
     // 3. ITEMS
@@ -1705,12 +1705,12 @@ async function printReceiptDirect() {
           .bold(false)
           .line(formatTwoColumns(priceDetail, totalPrice));
 
-        // Catatan Item: Pakai Font B (Kecil/Ringkas)
+        // Catatan Item: Pakai Font Small (Ganti ke .size('small'))
         if (item.notes && item.notes !== 'Normal') {
           receipt
-            .font('b')
+            .size('small')
             .line(`  └ ${item.notes}`)
-            .font('a'); // Kembalikan ke Font A
+            .size('normal'); // Kembalikan ke Font Normal
         }
       });
     }
